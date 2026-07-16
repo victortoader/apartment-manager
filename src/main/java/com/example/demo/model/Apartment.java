@@ -21,11 +21,11 @@ public class Apartment {
 
     private String location;
 
-    private double price;
+    private Double price;
 
-    private int rooms;
+    private Integer rooms;
 
-    private double area;
+    private Double area;
 
     @ElementCollection
     @CollectionTable(name = "apartment_photos", joinColumns = @JoinColumn(name = "apartment_id"))
@@ -36,7 +36,7 @@ public class Apartment {
 
     public Apartment() {}
 
-    public Apartment(String title, String description, String location, double price, int rooms, double area) {
+    public Apartment(String title, String description, String location, Double price, Integer rooms, Double area) {
         this.title = title;
         this.description = description;
         this.location = location;
@@ -57,14 +57,14 @@ public class Apartment {
     public String getLocation() { return location; }
     public void setLocation(String location) { this.location = location; }
 
-    public double getPrice() { return price; }
-    public void setPrice(double price) { this.price = price; }
+    public Double getPrice() { return price; }
+    public void setPrice(Double price) { this.price = price; }
 
-    public int getRooms() { return rooms; }
-    public void setRooms(int rooms) { this.rooms = rooms; }
+    public Integer getRooms() { return rooms; }
+    public void setRooms(Integer rooms) { this.rooms = rooms; }
 
-    public double getArea() { return area; }
-    public void setArea(double area) { this.area = area; }
+    public Double getArea() { return area; }
+    public void setArea(Double area) { this.area = area; }
 
     public List<String> getPhotoPaths() { return photoPaths; }
     public void setPhotoPaths(List<String> photoPaths) { this.photoPaths = photoPaths; }
