@@ -2,7 +2,6 @@ package com.example.demo.model;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Positive;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -20,10 +19,8 @@ public class Apartment {
 
     private String description;
 
-    @NotBlank(message = "Location is required")
     private String location;
 
-    @Positive(message = "Price must be positive")
     private double price;
 
     private int rooms;

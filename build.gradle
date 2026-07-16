@@ -6,6 +6,9 @@ plugins {
 
 group = 'com.example'
 version = '0.0.1-SNAPSHOT'
+base {
+    archivesName = 'apartment-manager'
+}
 description = 'apartment-manager'
 
 java {
