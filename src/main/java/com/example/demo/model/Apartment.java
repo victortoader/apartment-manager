@@ -1,5 +1,7 @@
 package com.example.demo.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import java.time.LocalDateTime;
@@ -32,7 +34,21 @@ public class Apartment {
     @Column(name = "photo_path")
     private List<String> photoPaths = new ArrayList<>();
 
+    @OneToMany(mappedBy = "apartment")
+    @JsonIgnore
+    private List<User> tenants = new ArrayList<>();
+
     private LocalDateTime createdAt = LocalDateTime.now();
+
+    @JsonProperty("tenant")
+    public String getTenantName() {
+        if (tenants == null || tenants.isEmpty()) return null;
+        return tenants.stream()
+                .filter(u -> u.getRole() == Role.TENANT)
+                .map(User::getUsername)
+                .findFirst()
+                .orElse(null);
+    }
 
     public Apartment() {}
 

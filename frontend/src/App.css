@@ -27,6 +27,20 @@ header {
   box-shadow: 0 2px 8px rgba(0,0,0,0.1);
 }
 
+.header-right {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.header-user {
+  font-size: 13px;
+  color: #666;
+  background: #f0f2f5;
+  padding: 6px 12px;
+  border-radius: 6px;
+}
+
 h1 {
   color: #1a73e8;
 }
@@ -411,6 +425,203 @@ h1 {
 .btn-delete-small:hover {
   color: #ea4335;
   background: #fef0ef;
+}
+
+/* Login Page */
+.login-page {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #f0f2f5;
+}
+
+.login-card {
+  background: white;
+  padding: 40px;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  width: 100%;
+  max-width: 400px;
+}
+
+.login-card h1 {
+  text-align: center;
+  margin-bottom: 8px;
+}
+
+.login-subtitle {
+  text-align: center;
+  color: #888;
+  margin-bottom: 24px;
+}
+
+.login-form {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.login-form input {
+  padding: 10px 14px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  font-size: 14px;
+}
+
+.login-form input:focus {
+  outline: none;
+  border-color: #1a73e8;
+}
+
+.login-form .btn-primary {
+  padding: 12px;
+  margin-top: 4px;
+}
+
+.login-error {
+  background: #fef0ef;
+  color: #ea4335;
+  padding: 10px 14px;
+  border-radius: 8px;
+  font-size: 13px;
+}
+
+/* No Apartment Message */
+.no-apartment-msg {
+  background: white;
+  border-radius: 12px;
+  padding: 60px 40px;
+  text-align: center;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+.no-apartment-msg p {
+  color: #888;
+  font-size: 16px;
+}
+
+/* User Management */
+.user-management {
+  background: white;
+  border-radius: 12px;
+  padding: 24px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  margin-bottom: 30px;
+}
+
+.user-panel-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.user-panel-header h2 {
+  font-size: 18px;
+  color: #333;
+}
+
+.btn-close {
+  background: none;
+  border: none;
+  font-size: 24px;
+  color: #999;
+  cursor: pointer;
+  padding: 4px 8px;
+}
+
+.btn-close:hover {
+  color: #333;
+}
+
+.user-create-form {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+}
+
+.user-create-form input,
+.user-create-form select {
+  padding: 8px 12px;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  font-size: 13px;
+}
+
+.user-create-form input:focus,
+.user-create-form select:focus {
+  outline: none;
+  border-color: #1a73e8;
+}
+
+.user-create-form .btn-primary {
+  padding: 8px 16px;
+  font-size: 13px;
+}
+
+.user-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.user-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 14px;
+  border: 1px solid #f0f0f0;
+  border-radius: 8px;
+}
+
+.user-info {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 200px;
+}
+
+.user-name {
+  font-weight: 500;
+  font-size: 14px;
+}
+
+.role-badge {
+  font-size: 11px;
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-weight: 500;
+}
+
+.role-owner {
+  background: #e8f0fe;
+  color: #1a73e8;
+}
+
+.role-admin {
+  background: #e6f4ea;
+  color: #137333;
+}
+
+.role-tenant {
+  background: #fef7e0;
+  color: #b06000;
+}
+
+.apt-select {
+  padding: 6px 10px;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  font-size: 13px;
+  background: white;
+  cursor: pointer;
+}
+
+.apt-select:focus {
+  outline: none;
+  border-color: #1a73e8;
 }
 
 @media (max-width: 768px) {

@@ -1,15 +1,20 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
+import { useAuth } from './AuthContext';
 
-const API = process.env.REACT_APP_API_URL || 'http://localhost:8080';
+const API = process.env.REACT_APP_API_URL || '';
 
 function ApartmentDetail() {
   const { id } = useParams();
   const navigate = useNavigate();
+  const { user, authHeader } = useAuth();
   const [apartment, setApartment] = useState(null);
   const [protocols, setProtocols] = useState([]);
   const [uploading, setUploading] = useState(false);
   const [selectedDocType, setSelectedDocType] = useState('HANDOVER_PROTOCOL');
+
+  const canDelete = user?.role === 'OWNER';
+  const canUpload = user?.role === 'OWNER' || user?.role === 'ADMIN';
 
   useEffect(() => {
     fetchApartment();
@@ -17,14 +22,16 @@ function ApartmentDetail() {
   }, [id]);
 
   const fetchApartment = async () => {
-    const res = await fetch(`${API}/api/apartments/${id}`);
+    const res = await fetch(`${API}/api/apartments/${id}`, { headers: authHeader() });
     if (res.ok) {
       setApartment(await res.json());
+    } else if (res.status === 403 || res.status === 404) {
+      navigate('/');
     }
   };
 
   const fetchProtocols = async () => {
-    const res = await fetch(`${API}/api/apartments/${id}/protocols`);
+    const res = await fetch(`${API}/api/apartments/${id}/protocols`, { headers: authHeader() });
     if (res.ok) {
       setProtocols(await res.json());
     }
@@ -35,6 +42,7 @@ function ApartmentDetail() {
     formData.append('file', file);
     await fetch(`${API}/api/apartments/${id}/photos`, {
       method: 'POST',
+      headers: authHeader(),
       body: formData
     });
     fetchApartment();
@@ -47,6 +55,7 @@ function ApartmentDetail() {
     formData.append('documentType', selectedDocType);
     await fetch(`${API}/api/apartments/${id}/protocols`, {
       method: 'POST',
+      headers: authHeader(),
       body: formData
     });
     setUploading(false);
@@ -55,7 +64,10 @@ function ApartmentDetail() {
 
   const handleDeleteProtocol = async (protocolId) => {
     if (window.confirm('Delete this protocol?')) {
-      await fetch(`${API}/api/apartments/protocols/${protocolId}`, { method: 'DELETE' });
+      await fetch(`${API}/api/apartments/protocols/${protocolId}`, {
+        method: 'DELETE',
+        headers: authHeader()
+      });
       fetchProtocols();
     }
   };
@@ -96,10 +108,12 @@ function ApartmentDetail() {
             ) : (
               <img src="/placeholder.svg" alt="No photos" className="placeholder-img" />
             )}
-            <label className="btn-upload large">
-              + Add Photo
-              <input type="file" accept="image/*" hidden onChange={(e) => handlePhotoUpload(e.target.files[0])} />
-            </label>
+            {canUpload && (
+              <label className="btn-upload large">
+                + Add Photo
+                <input type="file" accept="image/*" hidden onChange={(e) => handlePhotoUpload(e.target.files[0])} />
+              </label>
+            )}
           </div>
 
           <div className="detail-info">
@@ -119,6 +133,12 @@ function ApartmentDetail() {
               <span className="label">Area</span>
               <span>{apartment.area} sqm</span>
             </div>
+            {apartment.tenant && (
+              <div className="info-row">
+                <span className="label">Tenant</span>
+                <span>{apartment.tenant}</span>
+              </div>
+            )}
             {apartment.description && (
               <div className="info-row full">
                 <span className="label">Description</span>
@@ -131,28 +151,30 @@ function ApartmentDetail() {
         <div className="detail-protocols">
           <div className="protocols-header">
             <h2>Documents</h2>
-            <div className="upload-controls">
-              <select
-                value={selectedDocType}
-                onChange={(e) => setSelectedDocType(e.target.value)}
-                className="doc-type-select"
-              >
-                <option value="HANDOVER_PROTOCOL">Handover Protocol</option>
-                <option value="BILLS">Bills</option>
-                <option value="PHOTOS">Photos</option>
-                <option value="OTHER">Other</option>
-              </select>
-              <label className="btn-upload">
-                {uploading ? 'Uploading...' : '+ Upload'}
-                <input
-                  type="file"
-                  accept=".pdf,.doc,.docx,.jpeg,.jpg,.png"
-                  hidden
-                  onChange={(e) => handleProtocolUpload(e.target.files[0])}
-                  disabled={uploading}
-                />
-              </label>
-            </div>
+            {canUpload && (
+              <div className="upload-controls">
+                <select
+                  value={selectedDocType}
+                  onChange={(e) => setSelectedDocType(e.target.value)}
+                  className="doc-type-select"
+                >
+                  <option value="HANDOVER_PROTOCOL">Handover Protocol</option>
+                  <option value="BILLS">Bills</option>
+                  <option value="PHOTOS">Photos</option>
+                  <option value="OTHER">Other</option>
+                </select>
+                <label className="btn-upload">
+                  {uploading ? 'Uploading...' : '+ Upload'}
+                  <input
+                    type="file"
+                    accept=".pdf,.doc,.docx,.jpeg,.jpg,.png"
+                    hidden
+                    onChange={(e) => handleProtocolUpload(e.target.files[0])}
+                    disabled={uploading}
+                  />
+                </label>
+              </div>
+            )}
           </div>
 
           {protocols.length === 0 ? (
@@ -180,7 +202,9 @@ function ApartmentDetail() {
                       </div>
                     </div>
                   </a>
-                  <button className="btn-delete-small" onClick={() => handleDeleteProtocol(proto.id)}>×</button>
+                  {canDelete && (
+                    <button className="btn-delete-small" onClick={() => handleDeleteProtocol(proto.id)}>×</button>
+                  )}
                 </div>
               ))}
             </div>

@@ -3,6 +3,8 @@ package com.example.demo.controller;
 import com.example.demo.model.Apartment;
 import com.example.demo.model.DocumentType;
 import com.example.demo.model.HandoverProtocol;
+import com.example.demo.model.User;
+import com.example.demo.repository.UserRepository;
 import com.example.demo.service.ApartmentService;
 import com.example.demo.service.HandoverProtocolService;
 import com.example.demo.service.PhotoStorageService;
@@ -11,6 +13,8 @@ import org.springframework.core.io.UrlResource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -20,37 +24,55 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/apartments")
-@CrossOrigin(origins = "*")
 public class ApartmentController {
 
     private final ApartmentService apartmentService;
     private final PhotoStorageService photoStorageService;
     private final HandoverProtocolService protocolService;
+    private final UserRepository userRepository;
 
     public ApartmentController(ApartmentService apartmentService,
                                PhotoStorageService photoStorageService,
-                               HandoverProtocolService protocolService) {
+                               HandoverProtocolService protocolService,
+                               UserRepository userRepository) {
         this.apartmentService = apartmentService;
         this.photoStorageService = photoStorageService;
         this.protocolService = protocolService;
+        this.userRepository = userRepository;
     }
 
     @GetMapping
-    public List<Apartment> getAll() {
+    public List<Apartment> getAll(Authentication auth) {
+        User user = userRepository.findByUsername(auth.getName()).orElseThrow();
+        if (user.getRole() == com.example.demo.model.Role.TENANT) {
+            if (user.getApartment() == null) {
+                return List.of();
+            }
+            return List.of(apartmentService.findById(user.getApartment().getId()));
+        }
         return apartmentService.findAll();
     }
 
     @GetMapping("/{id}")
-    public Apartment getById(@PathVariable Long id) {
-        return apartmentService.findById(id);
+    public Apartment getById(@PathVariable Long id, Authentication auth) {
+        Apartment apartment = apartmentService.findById(id);
+        User user = userRepository.findByUsername(auth.getName()).orElseThrow();
+        if (user.getRole() == com.example.demo.model.Role.TENANT) {
+            if (user.getApartment() == null || !user.getApartment().getId().equals(id)) {
+                throw new RuntimeException("Access denied");
+            }
+        }
+        return apartment;
     }
 
     @PostMapping
+    @PreAuthorize("hasAnyRole('OWNER', 'ADMIN')")
     public Apartment create(@RequestBody Apartment apartment) {
         return apartmentService.save(apartment);
     }
 
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasRole('OWNER')")
     public ResponseEntity<Void> delete(@PathVariable Long id) {
         apartmentService.delete(id);
         return ResponseEntity.noContent().build();
@@ -58,7 +80,15 @@ public class ApartmentController {
 
     @PostMapping("/{id}/photos")
     public ResponseEntity<Apartment> uploadPhoto(@PathVariable Long id,
-                                                  @RequestParam("file") MultipartFile file) {
+                                                  @RequestParam("file") MultipartFile file,
+                                                  Authentication auth) {
+        User user = userRepository.findByUsername(auth.getName()).orElseThrow();
+        if (user.getRole() == com.example.demo.model.Role.TENANT) {
+            if (user.getApartment() == null || !user.getApartment().getId().equals(id)) {
+                return ResponseEntity.status(403).build();
+            }
+        }
+
         try {
             String fileName = photoStorageService.store(file);
             Apartment apartment = apartmentService.findById(id);
@@ -88,14 +118,28 @@ public class ApartmentController {
     }
 
     @GetMapping("/{id}/protocols")
-    public List<HandoverProtocol> getProtocols(@PathVariable Long id) {
+    public List<HandoverProtocol> getProtocols(@PathVariable Long id, Authentication auth) {
+        User user = userRepository.findByUsername(auth.getName()).orElseThrow();
+        if (user.getRole() == com.example.demo.model.Role.TENANT) {
+            if (user.getApartment() == null || !user.getApartment().getId().equals(id)) {
+                return List.of();
+            }
+        }
         return protocolService.findByApartmentId(id);
     }
 
     @PostMapping("/{id}/protocols")
     public ResponseEntity<HandoverProtocol> uploadProtocol(@PathVariable Long id,
                                                            @RequestParam("file") MultipartFile file,
-                                                           @RequestParam("documentType") DocumentType documentType) {
+                                                           @RequestParam("documentType") DocumentType documentType,
+                                                           Authentication auth) {
+        User user = userRepository.findByUsername(auth.getName()).orElseThrow();
+        if (user.getRole() == com.example.demo.model.Role.TENANT) {
+            if (user.getApartment() == null || !user.getApartment().getId().equals(id)) {
+                return ResponseEntity.status(403).build();
+            }
+        }
+
         try {
             Apartment apartment = apartmentService.findById(id);
             HandoverProtocol protocol = protocolService.upload(id, file, documentType, apartment);
@@ -124,6 +168,7 @@ public class ApartmentController {
     }
 
     @DeleteMapping("/protocols/{id}")
+    @PreAuthorize("hasRole('OWNER')")
     public ResponseEntity<Void> deleteProtocol(@PathVariable Long id) {
         protocolService.delete(id);
         return ResponseEntity.noContent().build();
