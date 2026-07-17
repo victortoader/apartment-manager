@@ -1,6 +1,7 @@
 package com.example.demo.service;
 
 import com.example.demo.model.Apartment;
+import com.example.demo.model.DocumentType;
 import com.example.demo.model.HandoverProtocol;
 import com.example.demo.repository.HandoverProtocolRepository;
 import org.springframework.stereotype.Service;
@@ -25,9 +26,9 @@ public class HandoverProtocolService {
         return repository.findByApartmentId(apartmentId);
     }
 
-    public HandoverProtocol upload(Long apartmentId, MultipartFile file, Apartment apartment) throws IOException {
+    public HandoverProtocol upload(Long apartmentId, MultipartFile file, DocumentType documentType, Apartment apartment) throws IOException {
         String storedName = photoStorage.store(file);
-        HandoverProtocol protocol = new HandoverProtocol(storedName, file.getOriginalFilename(), file.getContentType(), apartment);
+        HandoverProtocol protocol = new HandoverProtocol(storedName, file.getOriginalFilename(), file.getContentType(), documentType, apartment);
         return repository.save(protocol);
     }
 

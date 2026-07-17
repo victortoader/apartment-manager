@@ -1,6 +1,7 @@
 package com.example.demo.controller;
 
 import com.example.demo.model.Apartment;
+import com.example.demo.model.DocumentType;
 import com.example.demo.model.HandoverProtocol;
 import com.example.demo.service.ApartmentService;
 import com.example.demo.service.HandoverProtocolService;
@@ -93,10 +94,11 @@ public class ApartmentController {
 
     @PostMapping("/{id}/protocols")
     public ResponseEntity<HandoverProtocol> uploadProtocol(@PathVariable Long id,
-                                                           @RequestParam("file") MultipartFile file) {
+                                                           @RequestParam("file") MultipartFile file,
+                                                           @RequestParam("documentType") DocumentType documentType) {
         try {
             Apartment apartment = apartmentService.findById(id);
-            HandoverProtocol protocol = protocolService.upload(id, file, apartment);
+            HandoverProtocol protocol = protocolService.upload(id, file, documentType, apartment);
             return ResponseEntity.ok(protocol);
         } catch (IOException e) {
             return ResponseEntity.badRequest().build();

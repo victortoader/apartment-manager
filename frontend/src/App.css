@@ -295,6 +295,26 @@ h1 {
   color: #333;
 }
 
+.upload-controls {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.doc-type-select {
+  padding: 6px 10px;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  font-size: 13px;
+  background: white;
+  cursor: pointer;
+}
+
+.doc-type-select:focus {
+  outline: none;
+  border-color: #1a73e8;
+}
+
 .empty-protocols {
   color: #999;
   text-align: center;
@@ -356,6 +376,21 @@ h1 {
   font-size: 14px;
   font-weight: 500;
   transition: color 0.2s;
+}
+
+.protocol-meta {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+
+.protocol-type {
+  font-size: 11px;
+  color: #1a73e8;
+  background: #e8f0fe;
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-weight: 500;
 }
 
 .protocol-date {

@@ -9,6 +9,7 @@ function ApartmentDetail() {
   const [apartment, setApartment] = useState(null);
   const [protocols, setProtocols] = useState([]);
   const [uploading, setUploading] = useState(false);
+  const [selectedDocType, setSelectedDocType] = useState('HANDOVER_PROTOCOL');
 
   useEffect(() => {
     fetchApartment();
@@ -43,6 +44,7 @@ function ApartmentDetail() {
     setUploading(true);
     const formData = new FormData();
     formData.append('file', file);
+    formData.append('documentType', selectedDocType);
     await fetch(`${API}/api/apartments/${id}/protocols`, {
       method: 'POST',
       body: formData
@@ -65,6 +67,16 @@ function ApartmentDetail() {
     if (contentType?.includes('word') || contentType?.includes('doc')) return 'DOC';
     if (contentType?.includes('image')) return 'IMG';
     return 'FILE';
+  };
+
+  const formatDocType = (docType) => {
+    const types = {
+      'HANDOVER_PROTOCOL': 'Handover Protocol',
+      'BILLS': 'Bills',
+      'PHOTOS': 'Photos',
+      'OTHER': 'Other'
+    };
+    return types[docType] || docType;
   };
 
   return (
@@ -118,21 +130,33 @@ function ApartmentDetail() {
 
         <div className="detail-protocols">
           <div className="protocols-header">
-            <h2>Handover Protocols</h2>
-            <label className="btn-upload">
-              {uploading ? 'Uploading...' : '+ Upload Document'}
-              <input
-                type="file"
-                accept=".pdf,.doc,.docx,.jpeg,.jpg,.png"
-                hidden
-                onChange={(e) => handleProtocolUpload(e.target.files[0])}
-                disabled={uploading}
-              />
-            </label>
+            <h2>Documents</h2>
+            <div className="upload-controls">
+              <select
+                value={selectedDocType}
+                onChange={(e) => setSelectedDocType(e.target.value)}
+                className="doc-type-select"
+              >
+                <option value="HANDOVER_PROTOCOL">Handover Protocol</option>
+                <option value="BILLS">Bills</option>
+                <option value="PHOTOS">Photos</option>
+                <option value="OTHER">Other</option>
+              </select>
+              <label className="btn-upload">
+                {uploading ? 'Uploading...' : '+ Upload'}
+                <input
+                  type="file"
+                  accept=".pdf,.doc,.docx,.jpeg,.jpg,.png"
+                  hidden
+                  onChange={(e) => handleProtocolUpload(e.target.files[0])}
+                  disabled={uploading}
+                />
+              </label>
+            </div>
           </div>
 
           {protocols.length === 0 ? (
-            <p className="empty-protocols">No protocols uploaded yet.</p>
+            <p className="empty-protocols">No documents uploaded yet.</p>
           ) : (
             <div className="protocol-list">
               {protocols.map(proto => (
@@ -148,9 +172,12 @@ function ApartmentDetail() {
                     </span>
                     <div className="protocol-info">
                       <span className="protocol-name">{proto.originalName}</span>
-                      <span className="protocol-date">
-                        {new Date(proto.createdAt).toLocaleDateString()}
-                      </span>
+                      <div className="protocol-meta">
+                        <span className="protocol-type">{formatDocType(proto.documentType)}</span>
+                        <span className="protocol-date">
+                          {new Date(proto.createdAt).toLocaleDateString()}
+                        </span>
+                      </div>
                     </div>
                   </a>
                   <button className="btn-delete-small" onClick={() => handleDeleteProtocol(proto.id)}>×</button>

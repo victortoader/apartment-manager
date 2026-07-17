@@ -18,6 +18,9 @@ public class HandoverProtocol {
 
     private String contentType;
 
+    @Enumerated(EnumType.STRING)
+    private DocumentType documentType;
+
     private LocalDateTime createdAt = LocalDateTime.now();
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -27,10 +30,11 @@ public class HandoverProtocol {
 
     public HandoverProtocol() {}
 
-    public HandoverProtocol(String fileName, String originalName, String contentType, Apartment apartment) {
+    public HandoverProtocol(String fileName, String originalName, String contentType, DocumentType documentType, Apartment apartment) {
         this.fileName = fileName;
         this.originalName = originalName;
         this.contentType = contentType;
+        this.documentType = documentType;
         this.apartment = apartment;
     }
 
@@ -45,6 +49,9 @@ public class HandoverProtocol {
 
     public String getContentType() { return contentType; }
     public void setContentType(String contentType) { this.contentType = contentType; }
+
+    public DocumentType getDocumentType() { return documentType; }
+    public void setDocumentType(DocumentType documentType) { this.documentType = documentType; }
 
     public LocalDateTime getCreatedAt() { return createdAt; }
     public void setCreatedAt(LocalDateTime createdAt) { this.createdAt = createdAt; }
