@@ -39,8 +39,9 @@ public class UserManagementController {
         try {
             String username = body.get("username");
             String password = body.get("password");
+            String email = body.get("email");
             Role role = Role.valueOf(body.get("role"));
-            User user = userService.createUser(username, password, role);
+            User user = userService.createUser(username, password, role, email);
             User actor = userRepository.findByUsername(auth.getName()).orElseThrow();
             auditService.log(actor.getUsername(), actor.getRole().name(), "USER_CREATED",
                     "Created user '" + username + "' with role " + role, null);

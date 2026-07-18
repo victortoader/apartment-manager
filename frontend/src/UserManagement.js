@@ -7,7 +7,7 @@ function UserManagement() {
   const { user, logout, authHeader } = useAuth();
   const [users, setUsers] = useState([]);
   const [apartments, setApartments] = useState([]);
-  const [form, setForm] = useState({ username: '', password: '', role: 'TENANT' });
+  const [form, setForm] = useState({ username: '', password: '', email: '', role: 'TENANT' });
   const [error, setError] = useState('');
 
   useEffect(() => {
@@ -38,7 +38,7 @@ function UserManagement() {
       body: JSON.stringify(form)
     });
     if (res.ok) {
-      setForm({ username: '', password: '', role: 'TENANT' });
+      setForm({ username: '', password: '', email: '', role: 'TENANT' });
       fetchUsers();
     } else {
       const data = await res.json();
@@ -98,6 +98,13 @@ function UserManagement() {
             onChange={(e) => setForm({ ...form, password: e.target.value })}
             required
           />
+          <input
+            type="email"
+            placeholder="Email"
+            value={form.email}
+            onChange={(e) => setForm({ ...form, email: e.target.value })}
+            required
+          />
           <select value={form.role} onChange={(e) => setForm({ ...form, role: e.target.value })}>
             <option value="OWNER">Owner</option>
             <option value="ADMIN">Admin</option>
@@ -111,6 +118,7 @@ function UserManagement() {
             <div key={u.id} className="user-item">
               <div className="user-info">
                 <span className="user-name">{u.username}</span>
+                {u.email && <span className="user-email">{u.email}</span>}
                 {roleBadge(u.role)}
               </div>
               {u.role === 'TENANT' && (

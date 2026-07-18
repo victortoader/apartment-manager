@@ -43,10 +43,8 @@ public class SecurityConfig {
                 .requestMatchers("/api/tickets/photos/**").permitAll()
                 .requestMatchers("/api/bills/**").permitAll()
                 .requestMatchers(HttpMethod.GET, "/api/apartments/*/presentation").permitAll()
-                .requestMatchers("/h2-console/**").permitAll()
                 .anyRequest().authenticated()
             )
-            .headers(headers -> headers.frameOptions(fo -> fo.sameOrigin()))
             .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();

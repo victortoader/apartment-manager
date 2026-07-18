@@ -22,6 +22,8 @@ public interface TicketRepository extends JpaRepository<Ticket, Long> {
     @Query("SELECT t FROM Ticket t LEFT JOIN FETCH t.apartment LEFT JOIN FETCH t.createdBy WHERE t.createdBy.id = :userId ORDER BY t.createdAt DESC")
     List<Ticket> findByCreatedByIdWithUser(Long userId);
 
+    void deleteByApartment(com.example.demo.model.Apartment apartment);
+
     @Query("SELECT COUNT(t) FROM Ticket t WHERE t NOT IN (SELECT t2 FROM Ticket t2 JOIN t2.readBy u WHERE u.id = :userId)")
     long countUnreadForUser(Long userId);
 

@@ -74,12 +74,12 @@ public class SeedDataService {
             tenant.setApartment(ap1);
             userRepository.save(tenant);
         } else {
-            tenant = userRepository.save(new User("tenant", passwordEncoder.encode("tenant"), Role.TENANT));
+            tenant = userRepository.save(new User("tenant", passwordEncoder.encode("tenant"), Role.TENANT, "tenant@example.com"));
             tenant.setApartment(ap1);
             userRepository.save(tenant);
         }
 
-        User tenant2 = userRepository.save(new User("tenant2", passwordEncoder.encode("tenant2"), Role.TENANT));
+        User tenant2 = userRepository.save(new User("tenant2", passwordEncoder.encode("tenant2"), Role.TENANT, "tenant2@example.com"));
         tenant2.setApartment(ap2);
         userRepository.save(tenant2);
 

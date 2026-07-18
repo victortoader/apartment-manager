@@ -27,9 +27,9 @@ public class UserService {
     @PostConstruct
     public void init() {
         if (userRepository.count() == 0) {
-            userRepository.save(new User("owner", passwordEncoder.encode("owner"), Role.OWNER));
-            userRepository.save(new User("admin", passwordEncoder.encode("admin"), Role.ADMIN));
-            userRepository.save(new User("tenant", passwordEncoder.encode("tenant"), Role.TENANT));
+            userRepository.save(new User("owner", passwordEncoder.encode("owner"), Role.OWNER, "owner@example.com"));
+            userRepository.save(new User("admin", passwordEncoder.encode("admin"), Role.ADMIN, "admin@example.com"));
+            userRepository.save(new User("tenant", passwordEncoder.encode("tenant"), Role.TENANT, "tenant@example.com"));
         }
     }
 
@@ -45,11 +45,11 @@ public class UserService {
         return userRepository.findByUsername(username).orElseThrow(() -> new RuntimeException("User not found"));
     }
 
-    public User createUser(String username, String password, Role role) {
+    public User createUser(String username, String password, Role role, String email) {
         if (userRepository.existsByUsername(username)) {
             throw new RuntimeException("Username already exists");
         }
-        User user = new User(username, passwordEncoder.encode(password), role);
+        User user = new User(username, passwordEncoder.encode(password), role, email);
         return userRepository.save(user);
     }
 

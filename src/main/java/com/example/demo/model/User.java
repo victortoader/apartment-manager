@@ -22,16 +22,19 @@ public class User {
     @Column(nullable = false)
     private Role role;
 
+    private String email;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "apartment_id")
     private Apartment apartment;
 
     public User() {}
 
-    public User(String username, String password, Role role) {
+    public User(String username, String password, Role role, String email) {
         this.username = username;
         this.password = password;
         this.role = role;
+        this.email = email;
     }
 
     public Long getId() { return id; }
@@ -45,6 +48,9 @@ public class User {
 
     public Role getRole() { return role; }
     public void setRole(Role role) { this.role = role; }
+
+    public String getEmail() { return email; }
+    public void setEmail(String email) { this.email = email; }
 
     public Apartment getApartment() { return apartment; }
     public void setApartment(Apartment apartment) { this.apartment = apartment; }
