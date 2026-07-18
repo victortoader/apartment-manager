@@ -7,6 +7,7 @@ import com.example.demo.model.User;
 import com.example.demo.repository.UserRepository;
 import com.example.demo.service.PhotoStorageService;
 import com.example.demo.service.TicketService;
+import com.example.demo.service.AuditService;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
 import org.springframework.http.HttpHeaders;
@@ -16,6 +17,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import jakarta.servlet.http.HttpServletRequest;
 
 import java.io.IOException;
 import java.nio.file.Path;
@@ -29,12 +31,14 @@ public class TicketController {
     private final TicketService ticketService;
     private final UserRepository userRepository;
     private final PhotoStorageService photoStorageService;
+    private final AuditService auditService;
 
     public TicketController(TicketService ticketService, UserRepository userRepository,
-                            PhotoStorageService photoStorageService) {
+                            PhotoStorageService photoStorageService, AuditService auditService) {
         this.ticketService = ticketService;
         this.userRepository = userRepository;
         this.photoStorageService = photoStorageService;
+        this.auditService = auditService;
     }
 
     @PostMapping("/apartments/{apartmentId}/tickets")
@@ -59,6 +63,8 @@ public class TicketController {
                 body.get("description"),
                 apartmentId,
                 user.getId());
+        auditService.log(user.getUsername(), user.getRole().name(), "TICKET_CREATED",
+                "Created ticket #" + ticket.getId() + " in apartment #" + apartmentId + ": " + title, null);
         return ResponseEntity.ok(ticket);
     }
 
@@ -131,6 +137,9 @@ public class TicketController {
                                                 Authentication auth) {
         TicketStatus status = TicketStatus.valueOf(body.get("status"));
         Ticket ticket = ticketService.updateStatus(id, status);
+        User user = userRepository.findByUsername(auth.getName()).orElseThrow();
+        auditService.log(user.getUsername(), user.getRole().name(), "TICKET_STATUS_UPDATED",
+                "Updated ticket #" + id + " status to " + status, null);
         return ResponseEntity.ok(ticket);
     }
 
@@ -154,6 +163,8 @@ public class TicketController {
             String fileName = photoStorageService.store(file);
             ticket.getPhotoPaths().add(fileName);
             ticketService.save(ticket);
+            auditService.log(user.getUsername(), user.getRole().name(), "TICKET_PHOTO_UPLOADED",
+                    "Uploaded photo to ticket #" + id, null);
             return ResponseEntity.ok(ticket);
         } catch (IOException e) {
             return ResponseEntity.badRequest().build();

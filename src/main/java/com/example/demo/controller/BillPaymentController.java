@@ -6,6 +6,7 @@ import com.example.demo.model.User;
 import com.example.demo.repository.UserRepository;
 import com.example.demo.service.ApartmentService;
 import com.example.demo.service.BillPaymentService;
+import com.example.demo.service.AuditService;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
 import org.springframework.http.HttpHeaders;
@@ -15,6 +16,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import jakarta.servlet.http.HttpServletRequest;
 
 import java.io.IOException;
 import java.nio.file.Path;
@@ -27,13 +29,16 @@ public class BillPaymentController {
     private final BillPaymentService billPaymentService;
     private final ApartmentService apartmentService;
     private final UserRepository userRepository;
+    private final AuditService auditService;
 
     public BillPaymentController(BillPaymentService billPaymentService,
                                  ApartmentService apartmentService,
-                                 UserRepository userRepository) {
+                                 UserRepository userRepository,
+                                 AuditService auditService) {
         this.billPaymentService = billPaymentService;
         this.apartmentService = apartmentService;
         this.userRepository = userRepository;
+        this.auditService = auditService;
     }
 
     @GetMapping("/apartments/{id}/bills")
@@ -68,6 +73,8 @@ public class BillPaymentController {
         try {
             Apartment apartment = apartmentService.findById(id);
             BillPayment bill = billPaymentService.upload(apartment, user, file, billType);
+            auditService.log(user.getUsername(), user.getRole().name(), "BILL_UPLOADED",
+                    "Uploaded bill for apartment #" + id + " (" + billType + "): " + file.getOriginalFilename(), null);
             return ResponseEntity.ok(bill);
         } catch (IOException e) {
             return ResponseEntity.badRequest().build();
@@ -98,8 +105,11 @@ public class BillPaymentController {
 
     @DeleteMapping("/bills/{id}")
     @PreAuthorize("hasRole('OWNER')")
-    public ResponseEntity<Void> deleteBill(@PathVariable Long id) {
+    public ResponseEntity<Void> deleteBill(@PathVariable Long id, Authentication auth) {
         billPaymentService.delete(id);
+        User user = userRepository.findByUsername(auth.getName()).orElseThrow();
+        auditService.log(user.getUsername(), user.getRole().name(), "BILL_DELETED",
+                "Deleted bill #" + id, null);
         return ResponseEntity.noContent().build();
     }
 }

@@ -162,6 +162,9 @@ function ApartmentList() {
           {isOwner && (
             <a href="/users" className="btn-primary">Users</a>
           )}
+          {isOwner && (
+            <a href="/audit" className="btn-primary">Audit Log</a>
+          )}
           <a href="/tickets" className="btn-primary tickets-btn">
             Tickets
             {unreadTickets > 0 && <span className="unread-badge">{unreadTickets}</span>}

@@ -6,6 +6,7 @@ import ApartmentDetail from './ApartmentDetail';
 import UserManagement from './UserManagement';
 import Tickets from './Tickets';
 import Presentation from './Presentation';
+import AuditLog from './AuditLog';
 import Login from './Login';
 import './App.css';
 
@@ -26,6 +27,7 @@ function App() {
           <Route path="/apartments/:id" element={<ProtectedRoute><ApartmentDetail /></ProtectedRoute>} />
           <Route path="/users" element={<ProtectedRoute><UserManagement /></ProtectedRoute>} />
           <Route path="/tickets" element={<ProtectedRoute><Tickets /></ProtectedRoute>} />
+          <Route path="/audit" element={<ProtectedRoute><AuditLog /></ProtectedRoute>} />
         </Routes>
       </BrowserRouter>
     </AuthProvider>

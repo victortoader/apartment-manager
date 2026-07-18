@@ -11,6 +11,7 @@ import com.example.demo.repository.UserRepository;
 import com.example.demo.service.ApartmentService;
 import com.example.demo.service.HandoverProtocolService;
 import com.example.demo.service.PhotoStorageService;
+import com.example.demo.service.AuditService;
 import com.example.demo.model.TicketStatus;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
@@ -21,6 +22,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import jakarta.servlet.http.HttpServletRequest;
 
 import jakarta.validation.Valid;
 import java.io.IOException;
@@ -37,19 +39,22 @@ public class ApartmentController {
     private final UserRepository userRepository;
     private final BillPaymentRepository billPaymentRepository;
     private final TicketRepository ticketRepository;
+    private final AuditService auditService;
 
     public ApartmentController(ApartmentService apartmentService,
                                PhotoStorageService photoStorageService,
                                HandoverProtocolService protocolService,
                                UserRepository userRepository,
                                BillPaymentRepository billPaymentRepository,
-                               TicketRepository ticketRepository) {
+                               TicketRepository ticketRepository,
+                               AuditService auditService) {
         this.apartmentService = apartmentService;
         this.photoStorageService = photoStorageService;
         this.protocolService = protocolService;
         this.userRepository = userRepository;
         this.billPaymentRepository = billPaymentRepository;
         this.ticketRepository = ticketRepository;
+        this.auditService = auditService;
     }
 
     @GetMapping
@@ -107,14 +112,23 @@ public class ApartmentController {
 
     @PostMapping
     @PreAuthorize("hasAnyRole('OWNER', 'ADMIN')")
-    public Apartment create(@Valid @RequestBody Apartment apartment) {
-        return apartmentService.save(apartment);
+    public Apartment create(@Valid @RequestBody Apartment apartment, Authentication auth) {
+        User user = userRepository.findByUsername(auth.getName()).orElseThrow();
+        Apartment saved = apartmentService.save(apartment);
+        auditService.log(user.getUsername(), user.getRole().name(), "APARTMENT_CREATED",
+                "Created apartment #" + saved.getId() + ": " + saved.getTitle(), null);
+        return saved;
     }
 
     @DeleteMapping("/{id}")
     @PreAuthorize("hasRole('OWNER')")
-    public ResponseEntity<Void> delete(@PathVariable Long id) {
+    public ResponseEntity<Void> delete(@PathVariable Long id, Authentication auth) {
+        String actorName = auth.getName();
+        User actor = userRepository.findByUsername(actorName).orElseThrow();
+        String actorRole = actor.getRole().name();
         apartmentService.delete(id);
+        auditService.log(actorName, actorRole, "APARTMENT_DELETED",
+                "Deleted apartment #" + id, null);
         return ResponseEntity.noContent().build();
     }
 
@@ -134,6 +148,8 @@ public class ApartmentController {
             Apartment apartment = apartmentService.findById(id);
             apartment.getPhotoPaths().add(fileName);
             apartmentService.save(apartment);
+            auditService.log(user.getUsername(), user.getRole().name(), "APARTMENT_PHOTO_UPLOADED",
+                    "Uploaded photo to apartment #" + id, null);
             return ResponseEntity.ok(apartment);
         } catch (IOException e) {
             return ResponseEntity.badRequest().build();
@@ -183,6 +199,8 @@ public class ApartmentController {
         try {
             Apartment apartment = apartmentService.findById(id);
             HandoverProtocol protocol = protocolService.upload(id, file, documentType, apartment);
+            auditService.log(user.getUsername(), user.getRole().name(), "PROTOCOL_UPLOADED",
+                    "Uploaded protocol (" + documentType + ") to apartment #" + id, null);
             return ResponseEntity.ok(protocol);
         } catch (IOException e) {
             return ResponseEntity.badRequest().build();
@@ -233,16 +251,19 @@ public class ApartmentController {
 
     @PutMapping("/{id}/presentation")
     @PreAuthorize("hasRole('OWNER')")
-    public ResponseEntity<String> updatePresentation(@PathVariable Long id, @RequestBody String content) {
+    public ResponseEntity<String> updatePresentation(@PathVariable Long id, @RequestBody String content, Authentication auth) {
         Apartment apartment = apartmentService.findById(id);
         apartment.setPresentation(content);
         apartmentService.save(apartment);
+        User user = userRepository.findByUsername(auth.getName()).orElseThrow();
+        auditService.log(user.getUsername(), user.getRole().name(), "PRESENTATION_UPDATED",
+                "Updated presentation for apartment #" + id, null);
         return ResponseEntity.ok(content);
     }
 
     @PutMapping("/{id}/details")
     @PreAuthorize("hasRole('OWNER')")
-    public ResponseEntity<Apartment> updateDetails(@PathVariable Long id, @RequestBody java.util.Map<String, Object> body) {
+    public ResponseEntity<Apartment> updateDetails(@PathVariable Long id, @RequestBody java.util.Map<String, Object> body, Authentication auth) {
         Apartment apartment = apartmentService.findById(id);
         if (body.containsKey("price")) {
             apartment.setPrice(body.get("price") != null ? Double.parseDouble(body.get("price").toString()) : null);
@@ -251,6 +272,9 @@ public class ApartmentController {
             apartment.setDescription((String) body.get("description"));
         }
         apartmentService.save(apartment);
+        User user = userRepository.findByUsername(auth.getName()).orElseThrow();
+        auditService.log(user.getUsername(), user.getRole().name(), "APARTMENT_DETAILS_UPDATED",
+                "Updated details for apartment #" + id, null);
         return ResponseEntity.ok(apartment);
     }
 
