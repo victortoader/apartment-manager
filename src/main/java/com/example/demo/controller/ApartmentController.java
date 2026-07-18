@@ -175,6 +175,32 @@ public class ApartmentController {
         return ResponseEntity.noContent().build();
     }
 
+    @GetMapping("/{id}/presentation")
+    public ResponseEntity<PresentationDto> getPresentation(@PathVariable Long id) {
+        Apartment apartment = apartmentService.findById(id);
+        PresentationDto dto = new PresentationDto(
+            apartment.getId(),
+            apartment.getTitle(),
+            apartment.getLocation(),
+            apartment.getPrice(),
+            apartment.getRooms(),
+            apartment.getArea(),
+            apartment.getDescription(),
+            apartment.getPresentation() != null ? apartment.getPresentation() : "",
+            apartment.getPhotoPaths() != null ? apartment.getPhotoPaths() : List.of()
+        );
+        return ResponseEntity.ok(dto);
+    }
+
+    @PutMapping("/{id}/presentation")
+    @PreAuthorize("hasRole('OWNER')")
+    public ResponseEntity<String> updatePresentation(@PathVariable Long id, @RequestBody String content) {
+        Apartment apartment = apartmentService.findById(id);
+        apartment.setPresentation(content);
+        apartmentService.save(apartment);
+        return ResponseEntity.ok(content);
+    }
+
     private String determineContentType(String fileName) {
         if (fileName.endsWith(".pdf")) return "application/pdf";
         if (fileName.endsWith(".doc") || fileName.endsWith(".docx")) return "application/msword";

@@ -38,6 +38,16 @@ public class Apartment {
     @JsonIgnore
     private List<User> tenants = new ArrayList<>();
 
+    @OneToMany(mappedBy = "apartment", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Contact> contacts = new ArrayList<>();
+
+    @Column(columnDefinition = "TEXT")
+    private String presentation;
+
+    @OneToMany(mappedBy = "apartment", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonIgnore
+    private List<Note> notes = new ArrayList<>();
+
     private LocalDateTime createdAt = LocalDateTime.now();
 
     @JsonProperty("tenant")
@@ -85,8 +95,14 @@ public class Apartment {
     public List<User> getTenants() { return tenants; }
     public void setTenants(List<User> tenants) { this.tenants = tenants; }
 
+    public List<Contact> getContacts() { return contacts; }
+    public void setContacts(List<Contact> contacts) { this.contacts = contacts; }
+
     public List<String> getPhotoPaths() { return photoPaths; }
     public void setPhotoPaths(List<String> photoPaths) { this.photoPaths = photoPaths; }
+
+    public String getPresentation() { return presentation; }
+    public void setPresentation(String presentation) { this.presentation = presentation; }
 
     public LocalDateTime getCreatedAt() { return createdAt; }
     public void setCreatedAt(LocalDateTime createdAt) { this.createdAt = createdAt; }

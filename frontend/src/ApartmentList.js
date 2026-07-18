@@ -179,6 +179,7 @@ function ApartmentList() {
                     <input type="file" accept="image/*" hidden onChange={(e) => handlePhotoUpload(apt.id, e.target.files[0])} />
                   </label>
                 )}
+                <a href={`/presentations/apartments/${apt.id}`} className="btn-upload" target="_blank" rel="noreferrer">Presentation</a>
                 {canDelete && (
                   <button className="btn-delete" onClick={() => handleDelete(apt.id)}>Delete</button>
                 )}

@@ -2,6 +2,8 @@ package com.example.demo.service;
 
 import com.example.demo.model.*;
 import com.example.demo.repository.ApartmentRepository;
+import com.example.demo.repository.ContactRepository;
+import com.example.demo.repository.NoteRepository;
 import com.example.demo.repository.TicketRepository;
 import com.example.demo.repository.UserRepository;
 import jakarta.annotation.PostConstruct;
@@ -21,7 +23,10 @@ public class SeedDataService {
 
     private final UserRepository userRepository;
     private final ApartmentRepository apartmentRepository;
+    private final ApartmentService apartmentService;
     private final TicketRepository ticketRepository;
+    private final ContactRepository contactRepository;
+    private final NoteRepository noteRepository;
     private final PasswordEncoder passwordEncoder;
 
     @Value("${app.seed.enabled:false}")
@@ -29,12 +34,18 @@ public class SeedDataService {
 
     public SeedDataService(UserRepository userRepository,
                            ApartmentRepository apartmentRepository,
+                           ApartmentService apartmentService,
                            TicketRepository ticketRepository,
+                           ContactRepository contactRepository,
+                           NoteRepository noteRepository,
                            PasswordEncoder passwordEncoder,
                            UserService userService) {
         this.userRepository = userRepository;
         this.apartmentRepository = apartmentRepository;
+        this.apartmentService = apartmentService;
         this.ticketRepository = ticketRepository;
+        this.contactRepository = contactRepository;
+        this.noteRepository = noteRepository;
         this.passwordEncoder = passwordEncoder;
     }
 
@@ -108,33 +119,76 @@ public class SeedDataService {
             }
             ticketRepository.save(ticket);
         }
+
+        contactRepository.save(new Contact("Building Administration", "admin@berlin-housing.de", ap1));
+        contactRepository.save(new Contact("Emergency Plumber", "+49 30 12345678", ap1));
+        contactRepository.save(new Contact("Electrician", "electric@berlin-housing.de", ap1));
+
+        contactRepository.save(new Contact("Building Administration", "admin@berlin-housing.de", ap2));
+        contactRepository.save(new Contact("Garden Maintenance", "+49 30 87654321", ap2));
+        contactRepository.save(new Contact("Locksmith", "locks@berlin-housing.de", ap2));
+
+        int[][] ap1Colors = {
+            {0x42, 0x85, 0xF4}, {0x34, 0xA8, 0x53}, {0xFB, 0xBC, 0x05},
+            {0xEA, 0x43, 0x35}, {0x9C, 0x27, 0xB0}, {0x00, 0xBC, 0xD4},
+            {0xFF, 0x98, 0x00}, {0x79, 0x55, 0x48}, {0x60, 0x7D, 0x8B},
+            {0xE9, 0x1E, 0x63}
+        };
+        for (int i = 0; i < 10; i++) {
+            String fileName = UUID.randomUUID() + ".jpg";
+            Path filePath = uploadPath.resolve(fileName);
+            try {
+                byte[] placeholder = createSolidImage(ap1Colors[i][0], ap1Colors[i][1], ap1Colors[i][2], "Apt 1 - Photo " + (i + 1));
+                Files.write(filePath, placeholder);
+            } catch (IOException e) { continue; }
+            ap1.getPhotoPaths().add(fileName);
+        }
+        apartmentService.save(ap1);
+
+        int[][] ap2Colors = {
+            {0x3F, 0x51, 0xB5}, {0x00, 0x96, 0x88}, {0x8B, 0xC3, 0x4A},
+            {0xFF, 0x57, 0x22}, {0x67, 0x3A, 0xB7}, {0x03, 0xA9, 0xF4},
+            {0xF4, 0x43, 0x36}, {0x00, 0xE6, 0x76}, {0xFF, 0xEB, 0x3B},
+            {0x21, 0x21, 0x21}
+        };
+        for (int i = 0; i < 10; i++) {
+            String fileName = UUID.randomUUID() + ".jpg";
+            Path filePath = uploadPath.resolve(fileName);
+            try {
+                byte[] placeholder = createSolidImage(ap2Colors[i][0], ap2Colors[i][1], ap2Colors[i][2], "Apt 2 - Photo " + (i + 1));
+                Files.write(filePath, placeholder);
+            } catch (IOException e) { continue; }
+            ap2.getPhotoPaths().add(fileName);
+        }
+        apartmentService.save(ap2);
+
+        noteRepository.save(new Note("Rent increased to 850 EUR as of January 2025. Previous tenant had a cat — check for scratches.", ap1));
+        noteRepository.save(new Note("Appliance warranty expires March 2026. Keep receipts for any repairs.", ap1));
+        noteRepository.save(new Note("Garden maintenance included in rent. Tenant responsible for watering plants.", ap2));
+        noteRepository.save(new Note("Key safe code changed on 15.06.2025. New code shared with tenant2.", ap2));
+
+        ap1.setPresentation("Bright and spacious 2-bedroom apartment in the heart of Berlin-Mitte, just steps away from Unter den Linden. The apartment features high ceilings, original parquet flooring, and large windows flooding every room with natural light.\n\nThe open-plan kitchen is fully equipped with modern appliances including dishwasher and washing machine. The bathroom has been recently renovated with a walk-in shower.\n\nPublic transport: U5 Museumsinsel (3 min walk), S-Bahn Hackescher Markt (8 min walk). Grocery stores, restaurants, and parks are all within walking distance.\n\nAvailable immediately. Long-term lease preferred. Deposit: 2 months' rent.");
+        ap1 = apartmentService.save(ap1);
+
+        ap2.setPresentation("Charming garden apartment on the ground floor of a quiet residential building in Berlin-Charlottenburg. This 3-room apartment offers a private garden terrace, perfect for families or anyone who loves outdoor space.\n\nThe apartment has been tastefully renovated while preserving its original character. Features include a modern open kitchen, spacious living room with garden access, two bright bedrooms, and a separate dining area.\n\nThe building has a shared courtyard with children's play area and bike storage. Street parking is available with a resident permit.\n\nNearest transit: U3 Wilmersdorfer Straße (5 min walk), bus 109 direct to Kurfürstendamm. Close to Savignyplatz, Charlottenburg Palace, and KaDeWe.\n\nPets are welcome upon discussion.");
+        ap2 = apartmentService.save(ap2);
     }
 
     private byte[] createPlaceholderImage(String label) {
-        int width = 200;
-        int height = 150;
+        return createSolidImage(0x42, 0x85, 0xF4, label);
+    }
+
+    private byte[] createSolidImage(int r, int g, int b, String label) {
+        int width = 640;
+        int height = 480;
         byte[] pixels = new byte[width * height * 3];
 
         for (int y = 0; y < height; y++) {
-                for (int x = 0; x < width; x++) {
+            for (int x = 0; x < width; x++) {
                 int idx = (y * width + x) * 3;
-                int region = (y * 3) / height;
-                switch (region) {
-                    case 0:
-                        pixels[idx] = (byte) 0x42;
-                        pixels[idx + 1] = (byte) 0x85;
-                        pixels[idx + 2] = (byte) 0xF4;
-                        break;
-                    case 1:
-                        pixels[idx] = (byte) 0x34;
-                        pixels[idx + 1] = (byte) 0xA8;
-                        pixels[idx + 2] = (byte) 0x53;
-                        break;
-                    default:
-                        pixels[idx] = (byte) 0x88;
-                        pixels[idx + 1] = (byte) 0x88;
-                        pixels[idx + 2] = (byte) 0x88;
-                }
+                pixels[idx]     = (byte) r;
+                pixels[idx + 1] = (byte) g;
+                pixels[idx + 2] = (byte) b;
             }
         }
 

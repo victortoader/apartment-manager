@@ -840,6 +840,102 @@ h1 {
   background: #c5221f;
 }
 
+/* Contacts */
+.contact-form {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+
+.contact-form input {
+  padding: 8px 12px;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  font-size: 13px;
+}
+
+.contact-form input:focus {
+  outline: none;
+  border-color: #1a73e8;
+}
+
+.contact-form .btn-primary {
+  padding: 8px 16px;
+  font-size: 13px;
+  width: fit-content;
+}
+
+.contact-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.contact-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px;
+  border: 1px solid #f0f0f0;
+  border-radius: 8px;
+}
+
+.contact-info {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.contact-name {
+  font-weight: 500;
+  font-size: 14px;
+}
+
+.contact-value {
+  font-size: 13px;
+  color: #1a73e8;
+}
+
+.contact-actions {
+  display: flex;
+  gap: 4px;
+  align-items: center;
+}
+
+/* Notes */
+.note-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.note-item {
+  padding: 12px;
+  border: 1px solid #f0f0f0;
+  border-radius: 8px;
+  background: #fefefe;
+}
+
+.note-content {
+  font-size: 14px;
+  color: #333;
+  line-height: 1.5;
+  white-space: pre-wrap;
+  margin-bottom: 8px;
+}
+
+.note-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.note-date {
+  font-size: 11px;
+  color: #999;
+}
+
 .file-count {
   font-size: 13px;
   color: #888;
@@ -902,4 +998,280 @@ h1 {
   font-size: 12px;
   color: #999;
   white-space: nowrap;
+}
+
+/* Presentation page – standalone landing page */
+.pres {
+  min-height: 100vh;
+  background: #f5f5f7;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+
+.pres-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px 48px;
+  background: #fff;
+  border-bottom: 1px solid #e5e5e5;
+}
+
+.pres-logo {
+  font-size: 20px;
+  font-weight: 700;
+  color: #667eea;
+  text-decoration: none;
+}
+
+.pres-nav {
+  display: flex;
+  gap: 16px;
+}
+
+.pres-nav-link {
+  font-size: 14px;
+  color: #666;
+  text-decoration: none;
+}
+
+.pres-nav-link:hover { color: #667eea; }
+
+.pres-main {
+  max-width: 960px;
+  margin: 0 auto;
+  padding: 0 24px 48px;
+}
+
+/* Hero */
+.pres-hero {
+  padding: 48px 0 32px;
+}
+
+.pres-hero-inner h1 {
+  font-size: 36px;
+  font-weight: 700;
+  color: #111;
+  margin: 8px 0 6px;
+}
+
+.pres-badge {
+  display: inline-block;
+  padding: 4px 14px;
+  background: #667eea;
+  color: #fff;
+  font-size: 12px;
+  font-weight: 600;
+  border-radius: 20px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.pres-location {
+  font-size: 16px;
+  color: #888;
+  margin-bottom: 20px;
+}
+
+.pres-stats {
+  display: flex;
+  gap: 32px;
+}
+
+.pres-stat {
+  display: flex;
+  flex-direction: column;
+}
+
+.pres-stat-value {
+  font-size: 28px;
+  font-weight: 700;
+  color: #667eea;
+}
+
+.pres-stat-label {
+  font-size: 13px;
+  color: #999;
+  margin-top: 2px;
+}
+
+/* Gallery */
+.pres-gallery {
+  margin-bottom: 40px;
+}
+
+.pres-gallery-main {
+  position: relative;
+  border-radius: 12px;
+  overflow: hidden;
+  background: #e0e0e0;
+  aspect-ratio: 16 / 9;
+}
+
+.pres-gallery-main img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.pres-gallery-arrow {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 40px;
+  height: 40px;
+  border: none;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.85);
+  font-size: 22px;
+  color: #333;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+  transition: background 0.15s;
+}
+
+.pres-gallery-arrow:hover { background: #fff; }
+.pres-gallery-arrow.left { left: 12px; }
+.pres-gallery-arrow.right { right: 12px; }
+
+.pres-gallery-counter {
+  position: absolute;
+  bottom: 12px;
+  right: 14px;
+  background: rgba(0,0,0,0.55);
+  color: #fff;
+  font-size: 12px;
+  padding: 3px 10px;
+  border-radius: 12px;
+}
+
+.pres-gallery-thumbs {
+  display: flex;
+  gap: 8px;
+  margin-top: 10px;
+  overflow-x: auto;
+  padding-bottom: 4px;
+}
+
+.pres-thumb {
+  flex-shrink: 0;
+  width: 72px;
+  height: 52px;
+  border: 2px solid transparent;
+  border-radius: 6px;
+  overflow: hidden;
+  padding: 0;
+  cursor: pointer;
+  background: none;
+}
+
+.pres-thumb img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.pres-thumb.active {
+  border-color: #667eea;
+}
+
+/* Sections */
+.pres-section {
+  background: #fff;
+  border-radius: 12px;
+  padding: 28px 32px;
+  margin-bottom: 20px;
+}
+
+.pres-section h2 {
+  font-size: 18px;
+  font-weight: 600;
+  color: #222;
+  margin-bottom: 16px;
+}
+
+.pres-body-text {
+  font-size: 15px;
+  line-height: 1.7;
+  color: #555;
+}
+
+.pres-rich-text {
+  font-size: 15px;
+  line-height: 1.8;
+  color: #444;
+}
+
+.pres-empty {
+  color: #aaa;
+  font-style: italic;
+}
+
+/* Editor */
+.pres-editor textarea {
+  width: 100%;
+  min-height: 280px;
+  padding: 14px 16px;
+  font-size: 15px;
+  font-family: inherit;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  resize: vertical;
+  line-height: 1.7;
+  box-sizing: border-box;
+}
+
+.pres-editor textarea:focus {
+  outline: none;
+  border-color: #667eea;
+  box-shadow: 0 0 0 3px rgba(102,126,234,0.12);
+}
+
+.pres-editor-btns {
+  display: flex;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.pres-btn {
+  padding: 8px 20px;
+  font-size: 14px;
+  border-radius: 6px;
+  border: 1px solid #ddd;
+  background: #f5f5f5;
+  color: #555;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.pres-btn:hover { background: #e8e8e8; }
+
+.pres-btn.primary {
+  background: #667eea;
+  color: #fff;
+  border-color: #667eea;
+}
+
+.pres-btn.primary:hover { background: #5a6fd6; }
+
+.pres-btn.outline {
+  margin-top: 16px;
+  background: #fff;
+  color: #667eea;
+  border-color: #667eea;
+}
+
+.pres-btn.outline:hover { background: #f0f3ff; }
+
+/* Footer */
+.pres-footer {
+  text-align: center;
+  padding: 24px;
+  font-size: 13px;
+  color: #aaa;
+  border-top: 1px solid #eee;
 }
