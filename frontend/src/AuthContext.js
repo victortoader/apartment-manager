@@ -7,6 +7,7 @@ export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
   const [token, setToken] = useState(localStorage.getItem('token'));
   const [loading, setLoading] = useState(true);
+  const [unreadTickets, setUnreadTickets] = useState(0);
 
   useEffect(() => {
     if (token) {
@@ -43,7 +44,7 @@ export function AuthProvider({ children }) {
     const data = await res.json();
     localStorage.setItem('token', data.token);
     setToken(data.token);
-    setUser({ username: data.username, role: data.role, apartmentId: data.apartmentId });
+    setUser({ id: data.id, username: data.username, role: data.role, apartmentId: data.apartmentId });
     return data;
   };
 
@@ -57,8 +58,23 @@ export function AuthProvider({ children }) {
     'Authorization': `Bearer ${token}`
   });
 
+  const fetchUnreadCount = async () => {
+    if (!token) return;
+    const role = user?.role;
+    if (role !== 'OWNER' && role !== 'ADMIN') return;
+    try {
+      const res = await fetch(`${API}/api/tickets/unread/count`, {
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+      if (res.ok) {
+        const data = await res.json();
+        setUnreadTickets(data.count);
+      }
+    } catch (e) {}
+  };
+
   return (
-    <AuthContext.Provider value={{ user, token, login, logout, authHeader, loading, isAuthenticated: !!token && !!user }}>
+    <AuthContext.Provider value={{ user, token, login, logout, authHeader, loading, isAuthenticated: !!token && !!user, unreadTickets, fetchUnreadCount }}>
       {children}
     </AuthContext.Provider>
   );

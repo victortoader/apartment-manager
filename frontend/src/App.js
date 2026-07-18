@@ -4,6 +4,7 @@ import { AuthProvider, useAuth } from './AuthContext';
 import ApartmentList from './ApartmentList';
 import ApartmentDetail from './ApartmentDetail';
 import UserManagement from './UserManagement';
+import Tickets from './Tickets';
 import Login from './Login';
 import './App.css';
 
@@ -22,6 +23,7 @@ function App() {
           <Route path="/" element={<ProtectedRoute><ApartmentList /></ProtectedRoute>} />
           <Route path="/apartments/:id" element={<ProtectedRoute><ApartmentDetail /></ProtectedRoute>} />
           <Route path="/users" element={<ProtectedRoute><UserManagement /></ProtectedRoute>} />
+          <Route path="/tickets" element={<ProtectedRoute><Tickets /></ProtectedRoute>} />
         </Routes>
       </BrowserRouter>
     </AuthProvider>

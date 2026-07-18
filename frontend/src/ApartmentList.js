@@ -4,24 +4,35 @@ import { useAuth } from './AuthContext';
 const API = process.env.REACT_APP_API_URL || '';
 
 function ApartmentList() {
-  const { user, logout, authHeader } = useAuth();
+  const { user, logout, authHeader, unreadTickets, fetchUnreadCount } = useAuth();
   const [apartments, setApartments] = useState([]);
   const [form, setForm] = useState({
     title: '', description: '', location: '', price: '', rooms: '', area: ''
   });
   const [showForm, setShowForm] = useState(false);
+  const [unreadList, setUnreadList] = useState([]);
 
   const canCreate = user?.role === 'OWNER' || user?.role === 'ADMIN';
   const canDelete = user?.role === 'OWNER';
 
   useEffect(() => {
     fetchApartments();
+    fetchUnreadCount();
+    if (canCreate) fetchUnreadTickets();
   }, []);
 
   const fetchApartments = async () => {
     const res = await fetch(`${API}/api/apartments`, { headers: authHeader() });
     const data = await res.json();
     setApartments(data);
+  };
+
+  const fetchUnreadTickets = async () => {
+    const res = await fetch(`${API}/api/tickets/unread`, { headers: authHeader() });
+    if (res.ok) {
+      const data = await res.json();
+      setUnreadList(data);
+    }
   };
 
   const handleChange = (e) => {
@@ -102,9 +113,34 @@ function ApartmentList() {
           {user?.role === 'OWNER' && (
             <a href="/users" className="btn-primary">Users</a>
           )}
+          <a href="/tickets" className="btn-primary tickets-btn">
+            Tickets
+            {unreadTickets > 0 && <span className="unread-badge">{unreadTickets}</span>}
+          </a>
           <button className="btn-back" onClick={logout}>Logout</button>
         </div>
       </header>
+
+      {canCreate && unreadList.length > 0 && (
+        <div className="unread-tickets-section">
+          <h2>New Tickets</h2>
+          <div className="unread-tickets-list">
+            {unreadList.map(ticket => (
+              <div key={ticket.id} className="unread-ticket-item">
+                <div className="unread-ticket-info">
+                  <span className="unread-ticket-title">
+                    {ticket.apartment ? `[${ticket.apartment.title}] ` : ''}{ticket.title}
+                  </span>
+                  <span className="unread-ticket-desc">{ticket.description}</span>
+                </div>
+                <span className="unread-ticket-date">
+                  {new Date(ticket.createdAt).toLocaleDateString()}
+                </span>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
 
       {showForm && (
         <form className="apartment-form" onSubmit={handleSubmit}>

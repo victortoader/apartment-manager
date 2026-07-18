@@ -39,6 +39,7 @@ public class SecurityConfig {
                 .requestMatchers("/api/auth/login").permitAll()
                 .requestMatchers("/api/apartments/photos/**").permitAll()
                 .requestMatchers("/api/apartments/protocols/**").permitAll()
+                .requestMatchers("/api/tickets/photos/**").permitAll()
                 .requestMatchers("/h2-console/**").permitAll()
                 .anyRequest().authenticated()
             )

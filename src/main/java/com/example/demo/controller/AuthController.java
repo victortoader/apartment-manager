@@ -45,6 +45,7 @@ public class AuthController {
 
         var response = new java.util.HashMap<String, Object>();
         response.put("token", token);
+        response.put("id", user.getId());
         response.put("username", username);
         response.put("role", user.getRole().name());
         if (user.getApartment() != null) {
@@ -64,6 +65,7 @@ public class AuthController {
         User user = userRepository.findByUsername(username).orElseThrow();
 
         var response = new java.util.HashMap<String, Object>();
+        response.put("id", user.getId());
         response.put("username", user.getUsername());
         response.put("role", user.getRole().name());
         if (user.getApartment() != null) {

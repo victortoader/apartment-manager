@@ -12,6 +12,8 @@ function ApartmentDetail() {
   const [protocols, setProtocols] = useState([]);
   const [uploading, setUploading] = useState(false);
   const [selectedDocType, setSelectedDocType] = useState('HANDOVER_PROTOCOL');
+  const [ticketForm, setTicketForm] = useState({ title: '', description: '' });
+  const [showTicketForm, setShowTicketForm] = useState(false);
 
   const canDelete = user?.role === 'OWNER';
   const canUpload = user?.role === 'OWNER' || user?.role === 'ADMIN';
@@ -70,6 +72,17 @@ function ApartmentDetail() {
       });
       fetchProtocols();
     }
+  };
+
+  const handleTicketSubmit = async (e) => {
+    e.preventDefault();
+    await fetch(`${API}/api/apartments/${id}/tickets`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', ...authHeader() },
+      body: JSON.stringify(ticketForm)
+    });
+    setTicketForm({ title: '', description: '' });
+    setShowTicketForm(false);
   };
 
   if (!apartment) return <div className="app"><p>Loading...</p></div>;
@@ -208,6 +221,37 @@ function ApartmentDetail() {
                 </div>
               ))}
             </div>
+          )}
+        </div>
+
+        <div className="detail-tickets">
+          <div className="protocols-header">
+            <h2>Tickets</h2>
+            <div className="upload-controls">
+              <button className="btn-primary" onClick={() => setShowTicketForm(!showTicketForm)}>
+                {showTicketForm ? 'Cancel' : '+ New Ticket'}
+              </button>
+              <a href="/tickets" className="btn-back">View All</a>
+            </div>
+          </div>
+
+          {showTicketForm && (
+            <form className="apartment-form" onSubmit={handleTicketSubmit}>
+              <input
+                name="title"
+                placeholder="Ticket title"
+                value={ticketForm.title}
+                onChange={(e) => setTicketForm({ ...ticketForm, title: e.target.value })}
+                required
+              />
+              <textarea
+                name="description"
+                placeholder="Describe the issue..."
+                value={ticketForm.description}
+                onChange={(e) => setTicketForm({ ...ticketForm, description: e.target.value })}
+              />
+              <button type="submit" className="btn-primary">Submit Ticket</button>
+            </form>
           )}
         </div>
       </div>
