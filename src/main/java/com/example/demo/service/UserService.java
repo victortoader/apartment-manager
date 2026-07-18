@@ -29,13 +29,7 @@ public class UserService {
         if (userRepository.count() == 0) {
             userRepository.save(new User("owner", passwordEncoder.encode("owner"), Role.OWNER));
             userRepository.save(new User("admin", passwordEncoder.encode("admin"), Role.ADMIN));
-
-            User tenant = new User("tenant", passwordEncoder.encode("tenant"), Role.TENANT);
-            List<Apartment> apartments = apartmentRepository.findAll();
-            if (!apartments.isEmpty()) {
-                tenant.setApartment(apartments.get(0));
-            }
-            userRepository.save(tenant);
+            userRepository.save(new User("tenant", passwordEncoder.encode("tenant"), Role.TENANT));
         }
     }
 
