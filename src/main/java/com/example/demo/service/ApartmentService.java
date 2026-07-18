@@ -18,11 +18,11 @@ public class ApartmentService {
     }
 
     public List<Apartment> findAll() {
-        return repository.findAll();
+        return repository.findAllWithTenants();
     }
 
     public Apartment findById(Long id) {
-        return repository.findById(id)
+        return repository.findByIdWithTenants(id)
                 .orElseThrow(() -> new RuntimeException("Apartment not found with id: " + id));
     }
 

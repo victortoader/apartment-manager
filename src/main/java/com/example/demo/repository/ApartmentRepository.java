@@ -1,17 +1,17 @@
 package com.example.demo.repository;
 
 import com.example.demo.model.Apartment;
-import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 
 import java.util.List;
 import java.util.Optional;
 
 public interface ApartmentRepository extends JpaRepository<Apartment, Long> {
 
-    @EntityGraph(attributePaths = {"tenants"})
-    List<Apartment> findAll();
+    @Query("SELECT DISTINCT a FROM Apartment a LEFT JOIN FETCH a.tenants")
+    List<Apartment> findAllWithTenants();
 
-    @EntityGraph(attributePaths = {"tenants"})
-    Optional<Apartment> findById(Long id);
+    @Query("SELECT DISTINCT a FROM Apartment a LEFT JOIN FETCH a.tenants WHERE a.id = :id")
+    Optional<Apartment> findByIdWithTenants(Long id);
 }

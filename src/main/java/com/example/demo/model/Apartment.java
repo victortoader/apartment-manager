@@ -41,7 +41,7 @@ public class Apartment {
     private LocalDateTime createdAt = LocalDateTime.now();
 
     @JsonProperty("tenant")
-    public String getTenantName() {
+    public String getTenant() {
         if (tenants == null || tenants.isEmpty()) return null;
         return tenants.stream()
                 .filter(u -> u.getRole() == Role.TENANT)
@@ -81,6 +81,9 @@ public class Apartment {
 
     public Double getArea() { return area; }
     public void setArea(Double area) { this.area = area; }
+
+    public List<User> getTenants() { return tenants; }
+    public void setTenants(List<User> tenants) { this.tenants = tenants; }
 
     public List<String> getPhotoPaths() { return photoPaths; }
     public void setPhotoPaths(List<String> photoPaths) { this.photoPaths = photoPaths; }

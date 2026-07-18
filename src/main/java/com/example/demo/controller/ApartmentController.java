@@ -18,6 +18,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import jakarta.validation.Valid;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.List;
@@ -67,7 +68,7 @@ public class ApartmentController {
 
     @PostMapping
     @PreAuthorize("hasAnyRole('OWNER', 'ADMIN')")
-    public Apartment create(@RequestBody Apartment apartment) {
+    public Apartment create(@Valid @RequestBody Apartment apartment) {
         return apartmentService.save(apartment);
     }
 
