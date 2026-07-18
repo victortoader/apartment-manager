@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useAuth } from './AuthContext';
+import PaidBills from './PaidBills';
 
 const API = process.env.REACT_APP_API_URL || '';
 
@@ -211,9 +212,7 @@ function ApartmentDetail() {
         <div className="detail-main">
           <div className="detail-photos">
             {apartment.photoPaths && apartment.photoPaths.length > 0 ? (
-              apartment.photoPaths.map((photo, i) => (
-                <img key={i} src={`${API}/api/apartments/photos/${photo}`} alt={`Photo ${i + 1}`} />
-              ))
+              <img src={`${API}/api/apartments/photos/${apartment.photoPaths[0]}`} alt="Photo" />
             ) : (
               <img src="/placeholder.svg" alt="No photos" className="placeholder-img" />
             )}
@@ -231,10 +230,6 @@ function ApartmentDetail() {
               <span>{apartment.location}</span>
             </div>
             <div className="info-row">
-              <span className="label">Price</span>
-              <span className="price">{apartment.price} RON/luna</span>
-            </div>
-            <div className="info-row">
               <span className="label">Rooms</span>
               <span>{apartment.rooms}</span>
             </div>
@@ -246,12 +241,6 @@ function ApartmentDetail() {
               <div className="info-row">
                 <span className="label">Tenant</span>
                 <span>{apartment.tenant}</span>
-              </div>
-            )}
-            {apartment.description && (
-              <div className="info-row full">
-                <span className="label">Description</span>
-                <p>{apartment.description}</p>
               </div>
             )}
           </div>
@@ -414,6 +403,8 @@ function ApartmentDetail() {
           </div>
         )}
 
+        <PaidBills apartmentId={id} />
+
         <div className="detail-tickets">
           <div className="protocols-header">
             <h2>Tickets</h2>
@@ -421,7 +412,7 @@ function ApartmentDetail() {
               <button className="btn-primary" onClick={() => setShowTicketForm(!showTicketForm)}>
                 {showTicketForm ? 'Cancel' : '+ New Ticket'}
               </button>
-              <a href="/tickets" className="btn-back">View All</a>
+              <a href={`/tickets?apartmentId=${id}`} className="btn-back">View All</a>
             </div>
           </div>
 

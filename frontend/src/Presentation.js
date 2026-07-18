@@ -11,6 +11,8 @@ function Presentation() {
   const [content, setContent] = useState('');
   const [editing, setEditing] = useState(false);
   const [draft, setDraft] = useState('');
+  const [draftPrice, setDraftPrice] = useState('');
+  const [draftDescription, setDraftDescription] = useState('');
   const [saving, setSaving] = useState(false);
   const [loading, setLoading] = useState(true);
   const [activePhoto, setActivePhoto] = useState(0);
@@ -27,18 +29,30 @@ function Presentation() {
       .catch(() => setLoading(false));
   }, [id]);
 
-  const handleSave = () => {
+  const handleSave = async () => {
     setSaving(true);
-    fetch(`/api/apartments/${id}/presentation`, {
+    const token = localStorage.getItem('token');
+    const headers = { 'Authorization': 'Bearer ' + token };
+
+    await fetch(`/api/apartments/${id}/presentation`, {
       method: 'PUT',
-      headers: {
-        'Content-Type': 'text/plain',
-        'Authorization': 'Bearer ' + localStorage.getItem('token')
-      },
+      headers: { 'Content-Type': 'text/plain', ...headers },
       body: draft
-    })
-      .then(r => r.ok ? r.json() : content)
-      .then(text => { setContent(text); setDraft(text); setEditing(false); setSaving(false); });
+    });
+
+    await fetch(`/api/apartments/${id}/details`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json', ...headers },
+      body: JSON.stringify({
+        price: draftPrice !== '' ? parseFloat(draftPrice) : null,
+        description: draftDescription
+      })
+    });
+
+    setContent(draft);
+    setApt({ ...apt, presentation: draft, price: draftPrice !== '' ? parseFloat(draftPrice) : apt.price, description: draftDescription });
+    setEditing(false);
+    setSaving(false);
   };
 
   if (loading) return <div className="pres"><p className="loading">Loading...</p></div>;
@@ -94,22 +108,31 @@ function Presentation() {
           </section>
         )}
 
-        {apt.description && (
-          <section className="pres-section">
-            <h2>About this apartment</h2>
-            <p className="pres-body-text">{apt.description}</p>
-          </section>
-        )}
+        <section className="pres-section">
+          <h2>About this apartment</h2>
+          {editing ? (
+            <div className="pres-editor">
+              <label className="pres-field-label">Description</label>
+              <textarea value={draftDescription} onChange={e => setDraftDescription(e.target.value)} rows={4} disabled={saving} placeholder="Short description of the apartment..." />
+              <label className="pres-field-label">Price (EUR/month)</label>
+              <input type="number" step="0.01" value={draftPrice} onChange={e => setDraftPrice(e.target.value)} disabled={saving} placeholder="e.g. 850" className="pres-price-input" />
+            </div>
+          ) : (
+            <>
+              {apt.description ? (
+                <p className="pres-body-text">{apt.description}</p>
+              ) : (
+                <p className="pres-empty">No description added yet.</p>
+              )}
+            </>
+          )}
+        </section>
 
         <section className="pres-section">
           <h2>Details &amp; Highlights</h2>
           {editing ? (
             <div className="pres-editor">
               <textarea value={draft} onChange={e => setDraft(e.target.value)} rows={14} disabled={saving} placeholder="Write the presentation content here..." />
-              <div className="pres-editor-btns">
-                <button className="pres-btn primary" onClick={handleSave} disabled={saving}>{saving ? 'Saving...' : 'Save'}</button>
-                <button className="pres-btn" onClick={() => { setDraft(content); setEditing(false); }} disabled={saving}>Cancel</button>
-              </div>
             </div>
           ) : content ? (
             <div className="pres-rich-text">
@@ -119,7 +142,13 @@ function Presentation() {
             <p className="pres-empty">No details added yet.</p>
           )}
           {isOwner && !editing && (
-            <button className="pres-btn outline" onClick={() => { setDraft(content); setEditing(true); }}>Edit Presentation</button>
+            <button className="pres-btn outline" onClick={() => { setDraft(content); setDraftPrice(apt.price || ''); setDraftDescription(apt.description || ''); setEditing(true); }}>Edit Presentation</button>
+          )}
+          {editing && (
+            <div className="pres-editor-btns">
+              <button className="pres-btn primary" onClick={handleSave} disabled={saving}>{saving ? 'Saving...' : 'Save'}</button>
+              <button className="pres-btn" onClick={() => { setDraft(content); setEditing(false); }} disabled={saving}>Cancel</button>
+            </div>
           )}
         </section>
       </main>

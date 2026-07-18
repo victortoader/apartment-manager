@@ -1,13 +1,17 @@
 package com.example.demo.controller;
 
 import com.example.demo.model.Apartment;
+import com.example.demo.model.BillPayment;
 import com.example.demo.model.DocumentType;
 import com.example.demo.model.HandoverProtocol;
 import com.example.demo.model.User;
+import com.example.demo.repository.BillPaymentRepository;
+import com.example.demo.repository.TicketRepository;
 import com.example.demo.repository.UserRepository;
 import com.example.demo.service.ApartmentService;
 import com.example.demo.service.HandoverProtocolService;
 import com.example.demo.service.PhotoStorageService;
+import com.example.demo.model.TicketStatus;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
 import org.springframework.http.HttpHeaders;
@@ -31,15 +35,21 @@ public class ApartmentController {
     private final PhotoStorageService photoStorageService;
     private final HandoverProtocolService protocolService;
     private final UserRepository userRepository;
+    private final BillPaymentRepository billPaymentRepository;
+    private final TicketRepository ticketRepository;
 
     public ApartmentController(ApartmentService apartmentService,
                                PhotoStorageService photoStorageService,
                                HandoverProtocolService protocolService,
-                               UserRepository userRepository) {
+                               UserRepository userRepository,
+                               BillPaymentRepository billPaymentRepository,
+                               TicketRepository ticketRepository) {
         this.apartmentService = apartmentService;
         this.photoStorageService = photoStorageService;
         this.protocolService = protocolService;
         this.userRepository = userRepository;
+        this.billPaymentRepository = billPaymentRepository;
+        this.ticketRepository = ticketRepository;
     }
 
     @GetMapping
@@ -52,6 +62,35 @@ public class ApartmentController {
             return List.of(apartmentService.findById(user.getApartment().getId()));
         }
         return apartmentService.findAll();
+    }
+
+    @GetMapping("/summary")
+    public List<ApartmentSummaryDto> getSummary(Authentication auth) {
+        User user = userRepository.findByUsername(auth.getName()).orElseThrow();
+        List<Apartment> apts;
+        if (user.getRole() == com.example.demo.model.Role.TENANT) {
+            if (user.getApartment() == null) return List.of();
+            apts = List.of(apartmentService.findById(user.getApartment().getId()));
+        } else {
+            apts = apartmentService.findAll();
+        }
+
+        return apts.stream().map(apt -> {
+            List<BillPayment> bills = billPaymentRepository.findByApartmentIdOrderByUploadDateDesc(apt.getId());
+            List<ApartmentSummaryDto.BillSummary> recentBills = bills.stream()
+                    .limit(5)
+                    .map(b -> new ApartmentSummaryDto.BillSummary(
+                            b.getId(), b.getOriginalFileName(), b.getStoredFileName(), b.getBillType(), b.getUploadDate()))
+                    .toList();
+
+            long openTickets = ticketRepository.countByApartmentIdAndStatus(apt.getId(), com.example.demo.model.TicketStatus.NEW);
+
+            return new ApartmentSummaryDto(
+                    apt.getId(), apt.getTitle(), apt.getLocation(), apt.getPrice(),
+                    apt.getRooms(), apt.getArea(), apt.getTenant(),
+                    apt.getPhotoPaths() != null ? apt.getPhotoPaths() : List.of(),
+                    recentBills, (int) openTickets);
+        }).toList();
     }
 
     @GetMapping("/{id}")
@@ -199,6 +238,20 @@ public class ApartmentController {
         apartment.setPresentation(content);
         apartmentService.save(apartment);
         return ResponseEntity.ok(content);
+    }
+
+    @PutMapping("/{id}/details")
+    @PreAuthorize("hasRole('OWNER')")
+    public ResponseEntity<Apartment> updateDetails(@PathVariable Long id, @RequestBody java.util.Map<String, Object> body) {
+        Apartment apartment = apartmentService.findById(id);
+        if (body.containsKey("price")) {
+            apartment.setPrice(body.get("price") != null ? Double.parseDouble(body.get("price").toString()) : null);
+        }
+        if (body.containsKey("description")) {
+            apartment.setDescription((String) body.get("description"));
+        }
+        apartmentService.save(apartment);
+        return ResponseEntity.ok(apartment);
     }
 
     private String determineContentType(String fileName) {

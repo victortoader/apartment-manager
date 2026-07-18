@@ -130,10 +130,261 @@ h1 {
   padding: 12px;
 }
 
-.apartment-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+.apartment-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.apartment-row {
+  display: flex;
   gap: 20px;
+  background: #fff;
+  border-radius: 10px;
+  padding: 18px;
+  text-decoration: none;
+  color: inherit;
+  align-items: stretch;
+  transition: box-shadow 0.15s;
+  border: 1px solid #f0f0f0;
+}
+
+.apartment-row:hover {
+  box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+}
+
+.row-photo {
+  width: 140px;
+  height: 110px;
+  flex-shrink: 0;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.row-photo img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.row-info {
+  flex: 1;
+  display: flex;
+  gap: 28px;
+  min-width: 0;
+}
+
+.row-main {
+  flex: 1;
+  min-width: 0;
+}
+
+.row-main h3 {
+  margin: 0 0 2px;
+  font-size: 16px;
+  color: #222;
+}
+
+.row-location {
+  color: #888;
+  font-size: 13px;
+  margin: 0 0 4px;
+}
+
+.row-price {
+  color: #667eea;
+  font-size: 14px;
+  font-weight: 600;
+  margin: 0 0 2px;
+}
+
+.row-tenant {
+  color: #999;
+  font-size: 12px;
+  margin: 0;
+}
+
+.row-bills {
+  width: 320px;
+  flex-shrink: 0;
+}
+
+.row-bills h4,
+.row-tickets-inline h4 {
+  margin: 0 0 4px;
+  font-size: 11px;
+  color: #aaa;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.row-bill-item {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+  padding: 2px 0;
+  font-size: 12px;
+}
+
+.row-bill-type {
+  background: #f0f0f5;
+  padding: 1px 5px;
+  border-radius: 3px;
+  color: #666;
+  font-size: 10px;
+  flex-shrink: 0;
+  max-width: 120px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.row-bill-name {
+  color: #444;
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.row-bill-date {
+  color: #bbb;
+  font-size: 11px;
+  flex-shrink: 0;
+}
+
+.row-bills-empty {
+  color: #ccc;
+  font-size: 12px;
+  font-style: italic;
+  margin: 4px 0 0;
+}
+
+.row-tickets-inline {
+  margin-top: 8px;
+}
+
+.row-ticket-badge {
+  background: #ea4335;
+  color: #fff;
+  font-size: 11px;
+  font-weight: 600;
+  padding: 2px 8px;
+  border-radius: 10px;
+}
+
+.row-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  align-items: flex-end;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.btn-presentation {
+  display: inline-block;
+  padding: 4px 10px;
+  background: #667eea;
+  color: #fff;
+  border-radius: 5px;
+  font-size: 12px;
+  text-decoration: none;
+  text-align: center;
+}
+
+.btn-presentation:hover { background: #5a6fd6; }
+
+.btn-upload.small {
+  font-size: 11px;
+  padding: 3px 8px;
+}
+
+.btn-delete.small {
+  font-size: 11px;
+  padding: 3px 8px;
+}
+
+/* Manage button */
+.btn-manage {
+  padding: 6px 14px;
+  background: #fff;
+  color: #667eea;
+  border: 1px solid #667eea;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 13px;
+}
+
+.btn-manage:hover { background: #f0f3ff; }
+
+.btn-manage.active {
+  background: #667eea;
+  color: #fff;
+  border-color: #667eea;
+}
+
+/* Password modal */
+.modal-overlay {
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(0,0,0,0.4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.modal-box {
+  background: #fff;
+  border-radius: 12px;
+  padding: 28px 32px;
+  width: 360px;
+  box-shadow: 0 8px 30px rgba(0,0,0,0.2);
+}
+
+.modal-box h3 {
+  margin: 0 0 8px;
+  font-size: 18px;
+}
+
+.modal-box p {
+  color: #888;
+  font-size: 13px;
+  margin: 0 0 16px;
+}
+
+.modal-box input[type="password"] {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  font-size: 14px;
+  box-sizing: border-box;
+}
+
+.modal-box input[type="password"]:focus {
+  outline: none;
+  border-color: #667eea;
+}
+
+.modal-error {
+  color: #d32f2f;
+  font-size: 13px;
+  margin: 8px 0 0 !important;
+}
+
+.modal-actions {
+  display: flex;
+  gap: 8px;
+  justify-content: flex-end;
+  margin-top: 16px;
+}
+
+.btn-primary.small {
+  font-size: 13px;
+  padding: 6px 16px;
 }
 
 .apartment-card {
@@ -231,7 +482,6 @@ h1 {
 }
 
 .empty {
-  grid-column: 1 / -1;
   text-align: center;
   color: #999;
   padding: 40px;
@@ -1231,6 +1481,34 @@ h1 {
   box-shadow: 0 0 0 3px rgba(102,126,234,0.12);
 }
 
+.pres-field-label {
+  display: block;
+  font-size: 12px;
+  font-weight: 600;
+  color: #888;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 4px;
+  margin-top: 12px;
+}
+
+.pres-field-label:first-child {
+  margin-top: 0;
+}
+
+.pres-price-input {
+  width: 200px;
+  padding: 8px 12px;
+  font-size: 15px;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+}
+
+.pres-price-input:focus {
+  outline: none;
+  border-color: #667eea;
+}
+
 .pres-editor-btns {
   display: flex;
   gap: 8px;
@@ -1274,4 +1552,184 @@ h1 {
   font-size: 13px;
   color: #aaa;
   border-top: 1px solid #eee;
+}
+
+/* Paid Bills */
+.paid-bills-section {
+  padding: 0 0 16px;
+}
+
+.paid-bills-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.paid-bills-header h3 {
+  margin: 0;
+  font-size: 16px;
+  color: #333;
+}
+
+.paid-bills-empty {
+  color: #999;
+  font-style: italic;
+  font-size: 13px;
+}
+
+.paid-bills-groups {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.paid-bills-month-label {
+  font-size: 13px;
+  font-weight: 700;
+  color: #667eea;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin: 0 0 6px;
+  padding-bottom: 4px;
+  border-bottom: 1px solid #eee;
+}
+
+.paid-bills-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.paid-bills-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 0;
+  font-size: 13px;
+  border-bottom: 1px solid #f5f5f5;
+}
+
+.paid-bills-item:last-child {
+  border-bottom: none;
+}
+
+.paid-bills-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 20px;
+  border-radius: 3px;
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  flex-shrink: 0;
+}
+
+.paid-bills-icon.pdf {
+  background: #fde8e8;
+  color: #d32f2f;
+}
+
+.paid-bills-icon.img {
+  background: #e8f5e9;
+  color: #388e3c;
+}
+
+.paid-bills-link {
+  color: #333;
+  text-decoration: none;
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.paid-bills-link:hover {
+  color: #667eea;
+}
+
+.paid-bills-date {
+  color: #999;
+  font-size: 12px;
+  flex-shrink: 0;
+}
+
+.paid-bills-uploader {
+  color: #bbb;
+  font-size: 11px;
+  flex-shrink: 0;
+}
+
+.btn-delete.tiny {
+  background: none;
+  border: none;
+  color: #ccc;
+  font-size: 16px;
+  cursor: pointer;
+  padding: 0 4px;
+  line-height: 1;
+  flex-shrink: 0;
+}
+
+.btn-delete.tiny:hover {
+  color: #d32f2f;
+}
+
+.btn-upload.small {
+  font-size: 12px;
+  padding: 4px 10px;
+}
+
+.paid-bills-form {
+  background: #f9f9fb;
+  border: 1px solid #eee;
+  border-radius: 8px;
+  padding: 12px;
+  margin-bottom: 12px;
+}
+
+.paid-bills-select {
+  width: 100%;
+  padding: 8px 10px;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  font-size: 13px;
+  margin-bottom: 10px;
+  background: #fff;
+}
+
+.paid-bills-select:focus {
+  outline: none;
+  border-color: #667eea;
+}
+
+.paid-bills-form-row {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.btn-cancel.small {
+  font-size: 12px;
+  padding: 4px 10px;
+  background: #e0e0e0;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  color: #555;
+}
+
+.btn-cancel.small:hover { background: #d0d0d0; }
+
+.paid-bills-type {
+  display: inline-block;
+  padding: 1px 6px;
+  background: #f0f0f5;
+  border-radius: 3px;
+  font-size: 11px;
+  color: #666;
+  flex-shrink: 0;
+  white-space: nowrap;
 }

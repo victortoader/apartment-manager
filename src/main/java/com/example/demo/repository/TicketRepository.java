@@ -1,6 +1,7 @@
 package com.example.demo.repository;
 
 import com.example.demo.model.Ticket;
+import com.example.demo.model.TicketStatus;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
@@ -9,6 +10,8 @@ import java.util.List;
 public interface TicketRepository extends JpaRepository<Ticket, Long> {
 
     List<Ticket> findByApartmentIdOrderByCreatedAtDesc(Long apartmentId);
+
+    long countByApartmentIdAndStatus(Long apartmentId, TicketStatus status);
 
     @Query("SELECT t FROM Ticket t LEFT JOIN FETCH t.apartment LEFT JOIN FETCH t.createdBy ORDER BY t.createdAt DESC")
     List<Ticket> findAllWithApartmentAndUser();

@@ -1,10 +1,13 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useAuth } from './AuthContext';
+import { useSearchParams } from 'react-router-dom';
 
 const API = process.env.REACT_APP_API_URL || '';
 
 function Tickets() {
   const { user, authHeader, fetchUnreadCount } = useAuth();
+  const [searchParams] = useSearchParams();
+  const filterApartmentId = searchParams.get('apartmentId');
   const [tickets, setTickets] = useState([]);
   const [loading, setLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);
@@ -20,9 +23,14 @@ function Tickets() {
 
   const fetchTickets = async () => {
     setLoading(true);
-    const url = isAdminOrOwner
-      ? `${API}/api/tickets`
-      : `${API}/api/apartments/${user.apartmentId}/tickets`;
+    let url;
+    if (filterApartmentId) {
+      url = `${API}/api/apartments/${filterApartmentId}/tickets`;
+    } else if (isAdminOrOwner) {
+      url = `${API}/api/tickets`;
+    } else {
+      url = `${API}/api/apartments/${user.apartmentId}/tickets`;
+    }
 
     const res = await fetch(url, { headers: authHeader() });
     if (res.ok) {
@@ -115,9 +123,9 @@ function Tickets() {
     return (
       <div className="app">
         <header>
-          <h1>Tickets</h1>
+          <h1>Tickets{filterApartmentId ? ` — Apartment ${filterApartmentId}` : ''}</h1>
           <div className="header-right">
-            <a href="/" className="btn-back">Back</a>
+            {filterApartmentId ? <a href={`/apartments/${filterApartmentId}`} className="btn-back">Back to Apartment</a> : <a href="/" className="btn-back">Back</a>}
           </div>
         </header>
         <p className="empty">Loading...</p>
@@ -128,7 +136,7 @@ function Tickets() {
   return (
     <div className="app">
       <header>
-        <h1>Tickets</h1>
+        <h1>Tickets{filterApartmentId ? ` — Apartment ${filterApartmentId}` : ''}</h1>
         <div className="header-right">
           <span className="header-user">{user.username} ({user.role})</span>
           {isTenant && user.apartmentId && (
@@ -136,7 +144,7 @@ function Tickets() {
               {showForm ? 'Cancel' : '+ New Ticket'}
             </button>
           )}
-          <a href="/" className="btn-back">Back</a>
+          {filterApartmentId ? <a href={`/apartments/${filterApartmentId}`} className="btn-back">Back to Apartment</a> : <a href="/" className="btn-back">Back</a>}
         </div>
       </header>
 

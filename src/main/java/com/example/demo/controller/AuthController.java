@@ -9,6 +9,7 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
@@ -20,11 +21,13 @@ public class AuthController {
     private final AuthenticationManager authenticationManager;
     private final JwtUtil jwtUtil;
     private final UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
 
-    public AuthController(AuthenticationManager authenticationManager, JwtUtil jwtUtil, UserRepository userRepository) {
+    public AuthController(AuthenticationManager authenticationManager, JwtUtil jwtUtil, UserRepository userRepository, PasswordEncoder passwordEncoder) {
         this.authenticationManager = authenticationManager;
         this.jwtUtil = jwtUtil;
         this.userRepository = userRepository;
+        this.passwordEncoder = passwordEncoder;
     }
 
     @PostMapping("/login")
@@ -72,5 +75,18 @@ public class AuthController {
             response.put("apartmentId", user.getApartment().getId());
         }
         return ResponseEntity.ok(response);
+    }
+
+    @PostMapping("/verify-password")
+    public ResponseEntity<?> verifyPassword(@RequestBody Map<String, String> body, Authentication auth) {
+        String password = body.get("password");
+        if (auth == null || !auth.isAuthenticated()) {
+            return ResponseEntity.status(401).build();
+        }
+        User user = userRepository.findByUsername(auth.getName()).orElseThrow();
+        if (passwordEncoder.matches(password, user.getPassword())) {
+            return ResponseEntity.ok(Map.of("verified", true));
+        }
+        return ResponseEntity.status(401).body(Map.of("error", "Invalid password"));
     }
 }
