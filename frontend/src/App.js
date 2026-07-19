@@ -1,5 +1,6 @@
 import React from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { AuthProvider, useAuth } from './AuthContext';
 import ApartmentList from './ApartmentList';
 import ApartmentDetail from './ApartmentDetail';
@@ -11,8 +12,9 @@ import Login from './Login';
 import './App.css';
 
 function ProtectedRoute({ children }) {
+  const { t } = useTranslation();
   const { isAuthenticated, loading } = useAuth();
-  if (loading) return <div className="app"><p>Loading...</p></div>;
+  if (loading) return <div className="app"><p>{t('loading')}</p></div>;
   return isAuthenticated ? children : <Navigate to="/login" />;
 }
 

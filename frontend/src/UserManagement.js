@@ -1,9 +1,36 @@
 import React, { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useAuth } from './AuthContext';
 
 const API = process.env.REACT_APP_API_URL || '';
 
+const LANGUAGES = [
+  { code: 'en', label: 'EN' },
+  { code: 'de', label: 'DE' },
+  { code: 'it', label: 'IT' },
+  { code: 'fr', label: 'FR' },
+  { code: 'ro', label: 'RO' }
+];
+
+function LanguageSwitcher() {
+  const { i18n } = useTranslation();
+  return (
+    <div className="lang-switcher">
+      {LANGUAGES.map(l => (
+        <button
+          key={l.code}
+          className={`lang-btn${i18n.language === l.code ? ' active' : ''}`}
+          onClick={() => i18n.changeLanguage(l.code)}
+        >
+          {l.label}
+        </button>
+      ))}
+    </div>
+  );
+}
+
 function UserManagement() {
+  const { t } = useTranslation();
   const { user, logout, authHeader } = useAuth();
   const [users, setUsers] = useState([]);
   const [apartments, setApartments] = useState([]);
@@ -42,7 +69,7 @@ function UserManagement() {
       fetchUsers();
     } else {
       const data = await res.json();
-      setError(data.error || 'Failed to create user');
+      setError(data.error || t('userManagement.createFailed'));
     }
   };
 
@@ -57,7 +84,7 @@ function UserManagement() {
   };
 
   const handleDelete = async (userId) => {
-    if (window.confirm('Delete this user?')) {
+    if (window.confirm(t('userManagement.deleteConfirm'))) {
       await fetch(`${API}/api/users/${userId}`, {
         method: 'DELETE',
         headers: authHeader()
@@ -74,11 +101,12 @@ function UserManagement() {
   return (
     <div className="app">
       <header>
-        <h1>User Administration</h1>
+        <h1>{t('userManagement.title')}</h1>
         <div className="header-right">
           <span className="header-user">{user.username} ({user.role})</span>
-          <a href="/" className="btn-back">Apartments</a>
-          <button className="btn-back" onClick={logout}>Logout</button>
+          <LanguageSwitcher />
+          <a href="/" className="btn-back">{t('header.apartments')}</a>
+          <button className="btn-back" onClick={logout}>{t('logout')}</button>
         </div>
       </header>
 
@@ -86,31 +114,31 @@ function UserManagement() {
         <form className="user-create-form" onSubmit={handleCreate}>
           {error && <div className="login-error">{error}</div>}
           <input
-            placeholder="Username"
+            placeholder={t('userManagement.username')}
             value={form.username}
             onChange={(e) => setForm({ ...form, username: e.target.value })}
             required
           />
           <input
             type="password"
-            placeholder="Password"
+            placeholder={t('userManagement.password')}
             value={form.password}
             onChange={(e) => setForm({ ...form, password: e.target.value })}
             required
           />
           <input
             type="email"
-            placeholder="Email"
+            placeholder={t('userManagement.email')}
             value={form.email}
             onChange={(e) => setForm({ ...form, email: e.target.value })}
             required
           />
           <select value={form.role} onChange={(e) => setForm({ ...form, role: e.target.value })}>
-            <option value="OWNER">Owner</option>
-            <option value="ADMIN">Admin</option>
-            <option value="TENANT">Tenant</option>
+            <option value="OWNER">{t('userManagement.owner')}</option>
+            <option value="ADMIN">{t('userManagement.admin')}</option>
+            <option value="TENANT">{t('userManagement.tenant')}</option>
           </select>
-          <button type="submit" className="btn-primary">Create User</button>
+          <button type="submit" className="btn-primary">{t('userManagement.createUser')}</button>
         </form>
 
         <div className="user-list">
@@ -127,7 +155,7 @@ function UserManagement() {
                   value={u.apartment ? u.apartment.id : ''}
                   onChange={(e) => handleAssign(u.id, e.target.value)}
                 >
-                  <option value="">No apartment</option>
+                  <option value="">{t('userManagement.noApartment')}</option>
                   {apartments.map(apt => (
                     <option key={apt.id} value={apt.id}>{apt.title}</option>
                   ))}

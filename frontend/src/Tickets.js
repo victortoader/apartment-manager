@@ -1,10 +1,37 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useAuth } from './AuthContext';
 import { useSearchParams } from 'react-router-dom';
 
 const API = process.env.REACT_APP_API_URL || '';
 
+const LANGUAGES = [
+  { code: 'en', label: 'EN' },
+  { code: 'de', label: 'DE' },
+  { code: 'it', label: 'IT' },
+  { code: 'fr', label: 'FR' },
+  { code: 'ro', label: 'RO' }
+];
+
+function LanguageSwitcher() {
+  const { i18n } = useTranslation();
+  return (
+    <div className="lang-switcher">
+      {LANGUAGES.map(l => (
+        <button
+          key={l.code}
+          className={`lang-btn${i18n.language === l.code ? ' active' : ''}`}
+          onClick={() => i18n.changeLanguage(l.code)}
+        >
+          {l.label}
+        </button>
+      ))}
+    </div>
+  );
+}
+
 function Tickets() {
+  const { t } = useTranslation();
   const { user, authHeader, fetchUnreadCount } = useAuth();
   const [searchParams] = useSearchParams();
   const filterApartmentId = searchParams.get('apartmentId');
@@ -111,10 +138,10 @@ function Tickets() {
 
   const statusLabel = (status) => {
     switch (status) {
-      case 'NEW': return 'New';
-      case 'IN_PROGRESS': return 'In Progress';
-      case 'DONE': return 'Done';
-      case 'REJECTED': return 'Rejected';
+      case 'NEW': return t('tickets.status.NEW');
+      case 'IN_PROGRESS': return t('tickets.status.IN_PROGRESS');
+      case 'DONE': return t('tickets.status.DONE');
+      case 'REJECTED': return t('tickets.status.REJECTED');
       default: return status;
     }
   };
@@ -123,12 +150,12 @@ function Tickets() {
     return (
       <div className="app">
         <header>
-          <h1>Tickets{filterApartmentId ? ` — Apartment ${filterApartmentId}` : ''}</h1>
+          <h1>{t('tickets.title')}{filterApartmentId ? ` — ${t('tickets.apartmentLabel')} ${filterApartmentId}` : ''}</h1>
           <div className="header-right">
-            {filterApartmentId ? <a href={`/apartments/${filterApartmentId}`} className="btn-back">Back to Apartment</a> : <a href="/" className="btn-back">Back</a>}
+            {filterApartmentId ? <a href={`/apartments/${filterApartmentId}`} className="btn-back">{t('tickets.backToApartment')}</a> : <a href="/" className="btn-back">{t('back')}</a>}
           </div>
         </header>
-        <p className="empty">Loading...</p>
+        <p className="empty">{t('loading')}</p>
       </div>
     );
   }
@@ -136,15 +163,16 @@ function Tickets() {
   return (
     <div className="app">
       <header>
-        <h1>Tickets{filterApartmentId ? ` — Apartment ${filterApartmentId}` : ''}</h1>
+        <h1>{t('tickets.title')}{filterApartmentId ? ` — ${t('tickets.apartmentLabel')} ${filterApartmentId}` : ''}</h1>
         <div className="header-right">
           <span className="header-user">{user.username} ({user.role})</span>
+          <LanguageSwitcher />
           {isTenant && user.apartmentId && (
             <button className="btn-primary" onClick={() => setShowForm(!showForm)}>
-              {showForm ? 'Cancel' : '+ New Ticket'}
+              {showForm ? t('cancel') : t('tickets.newTicket')}
             </button>
           )}
-          {filterApartmentId ? <a href={`/apartments/${filterApartmentId}`} className="btn-back">Back to Apartment</a> : <a href="/" className="btn-back">Back</a>}
+          {filterApartmentId ? <a href={`/apartments/${filterApartmentId}`} className="btn-back">{t('tickets.backToApartment')}</a> : <a href="/" className="btn-back">{t('back')}</a>}
         </div>
       </header>
 
@@ -152,20 +180,20 @@ function Tickets() {
         <form className="apartment-form" onSubmit={handleCreateTicket}>
           <input
             name="title"
-            placeholder="Ticket title"
+            placeholder={t('tickets.ticketTitle')}
             value={form.title}
             onChange={(e) => setForm({ ...form, title: e.target.value })}
             required
           />
           <textarea
             name="description"
-            placeholder="Describe the issue..."
+            placeholder={t('tickets.describeIssue')}
             value={form.description}
             onChange={(e) => setForm({ ...form, description: e.target.value })}
           />
           <div className="ticket-photo-upload">
             <label className="btn-upload large">
-              {selectedFiles.length > 0 ? `${selectedFiles.length} photo(s) selected (max 5)` : '+ Add Photos'}
+              {selectedFiles.length > 0 ? t('tickets.photosSelected', { count: selectedFiles.length }) : t('tickets.addPhotos')}
               <input
                 type="file"
                 accept="image/*"
@@ -192,12 +220,12 @@ function Tickets() {
               </div>
             )}
           </div>
-          <button type="submit" className="btn-primary">Submit Ticket</button>
+          <button type="submit" className="btn-primary">{t('tickets.submitTicket')}</button>
         </form>
       )}
 
       {tickets.length === 0 ? (
-        <p className="empty">No tickets found.</p>
+        <p className="empty">{t('tickets.noTickets')}</p>
       ) : (
         <div className="ticket-list">
           {tickets.map(ticket => (
@@ -226,12 +254,12 @@ function Tickets() {
               <div className="ticket-meta">
                 {ticket.apartment && (
                   <span className="ticket-apartment">
-                    Apt: {ticket.apartment.title}
+                    {t('tickets.apt')} {ticket.apartment.title}
                   </span>
                 )}
                 {ticket.createdBy && (
                   <span className="ticket-author">
-                    By: {ticket.createdBy.username}
+                    {t('tickets.by')} {ticket.createdBy.username}
                   </span>
                 )}
                 <span className="ticket-date">
@@ -241,7 +269,7 @@ function Tickets() {
               <div className="ticket-actions-row">
                 {canAddPhoto(ticket) && (!ticket.photoPaths || ticket.photoPaths.length < 5) && (
                   <label className="btn-upload btn-sm">
-                    + Photo
+                    {t('tickets.addPhoto')}
                     <input
                       type="file"
                       accept="image/*"
@@ -257,7 +285,7 @@ function Tickets() {
                         className="btn-sm"
                         onClick={() => handleStatusChange(ticket.id, 'NEW')}
                       >
-                        New
+                        {t('tickets.status.NEW')}
                       </button>
                     )}
                     {ticket.status !== 'IN_PROGRESS' && (
@@ -265,7 +293,7 @@ function Tickets() {
                         className="btn-sm btn-warning"
                         onClick={() => handleStatusChange(ticket.id, 'IN_PROGRESS')}
                       >
-                        In Progress
+                        {t('tickets.status.IN_PROGRESS')}
                       </button>
                     )}
                     {ticket.status !== 'DONE' && (
@@ -273,7 +301,7 @@ function Tickets() {
                         className="btn-sm btn-success"
                         onClick={() => handleStatusChange(ticket.id, 'DONE')}
                       >
-                        Done
+                        {t('tickets.status.DONE')}
                       </button>
                     )}
                     {ticket.status !== 'REJECTED' && (
@@ -281,7 +309,7 @@ function Tickets() {
                         className="btn-sm btn-danger"
                         onClick={() => handleStatusChange(ticket.id, 'REJECTED')}
                       >
-                        Reject
+                        {t('tickets.status.REJECTED')}
                       </button>
                     )}
                   </div>

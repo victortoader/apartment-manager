@@ -1,9 +1,36 @@
 import React, { useState, useEffect, useCallback } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useAuth } from './AuthContext';
 
 const API = process.env.REACT_APP_API_URL || '';
 
+const LANGUAGES = [
+  { code: 'en', label: 'EN' },
+  { code: 'de', label: 'DE' },
+  { code: 'it', label: 'IT' },
+  { code: 'fr', label: 'FR' },
+  { code: 'ro', label: 'RO' }
+];
+
+function LanguageSwitcher() {
+  const { i18n } = useTranslation();
+  return (
+    <div className="lang-switcher">
+      {LANGUAGES.map(l => (
+        <button
+          key={l.code}
+          className={`lang-btn${i18n.language === l.code ? ' active' : ''}`}
+          onClick={() => i18n.changeLanguage(l.code)}
+        >
+          {l.label}
+        </button>
+      ))}
+    </div>
+  );
+}
+
 function AuditLog() {
+  const { t } = useTranslation();
   const { user, logout, authHeader } = useAuth();
   const [logs, setLogs] = useState([]);
   const [filter, setFilter] = useState('');
@@ -51,7 +78,7 @@ function AuditLog() {
   };
 
   const roleBadge = (role) => {
-    if (!role) return <span className="role-badge role-tenant">UNKNOWN</span>;
+    if (!role) return <span className="role-badge role-tenant">{t('auditLog.unknown')}</span>;
     const cls = role === 'OWNER' ? 'role-owner' : role === 'ADMIN' ? 'role-admin' : 'role-tenant';
     return <span className={`role-badge ${cls}`}>{role}</span>;
   };
@@ -73,26 +100,27 @@ function AuditLog() {
   return (
     <div className="app">
       <header>
-        <h1>Audit Log</h1>
+        <h1>{t('auditLog.title')}</h1>
         <div className="header-right">
           <span className="header-user">{user.username} ({user.role})</span>
-          <a href="/" className="btn-back">Apartments</a>
-          <button className="btn-back" onClick={logout}>Logout</button>
+          <LanguageSwitcher />
+          <a href="/" className="btn-back">{t('header.apartments')}</a>
+          <button className="btn-back" onClick={logout}>{t('logout')}</button>
         </div>
       </header>
 
       <div className="audit-controls">
         <div className="audit-filter">
-          <label>Filter by user:</label>
+          <label>{t('auditLog.filterByUser')}</label>
           <select value={filter} onChange={(e) => setFilter(e.target.value)}>
-            <option value="">All users</option>
+            <option value="">{t('auditLog.allUsers')}</option>
             {uniqueUsernames.map(u => (
               <option key={u} value={u}>{u}</option>
             ))}
           </select>
           {filter && (
             <button className="btn-back" onClick={() => setFilter('')} style={{ marginLeft: '8px' }}>
-              Clear
+              {t('auditLog.clear')}
             </button>
           )}
         </div>
@@ -103,10 +131,10 @@ function AuditLog() {
               checked={autoRefresh}
               onChange={(e) => setAutoRefresh(e.target.checked)}
             />
-            {' '}Auto-refresh (5s)
+            {' '}{t('auditLog.autoRefresh')}
           </label>
           <button className="btn-back" onClick={fetchLogs} style={{ marginLeft: '12px' }}>
-            Refresh Now
+            {t('auditLog.refreshNow')}
           </button>
         </div>
       </div>
@@ -115,17 +143,17 @@ function AuditLog() {
         <table className="audit-table">
           <thead>
             <tr>
-              <th>Time</th>
-              <th>User</th>
-              <th>Role</th>
-              <th>Action</th>
-              <th>Details</th>
+              <th>{t('auditLog.time')}</th>
+              <th>{t('auditLog.user')}</th>
+              <th>{t('auditLog.role')}</th>
+              <th>{t('auditLog.action')}</th>
+              <th>{t('auditLog.details')}</th>
             </tr>
           </thead>
           <tbody>
             {logs.length === 0 && (
               <tr>
-                <td colSpan="5" className="audit-empty">No audit logs found</td>
+                <td colSpan="5" className="audit-empty">{t('auditLog.noLogs')}</td>
               </tr>
             )}
             {logs.map(log => (
@@ -142,7 +170,10 @@ function AuditLog() {
       </div>
 
       <div className="audit-count">
-        {logs.length} log{logs.length !== 1 ? 's' : ''} total
+        {logs.length === 1
+          ? t('auditLog.logTotal', { count: logs.length })
+          : t('auditLog.logsTotal', { count: logs.length })
+        }
       </div>
     </div>
   );

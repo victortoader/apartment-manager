@@ -1,26 +1,25 @@
 import React, { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useAuth } from './AuthContext';
 
 const API = process.env.REACT_APP_API_URL || '';
 
-const MONTHS = [
-  'January', 'February', 'March', 'April', 'May', 'June',
-  'July', 'August', 'September', 'October', 'November', 'December'
-];
-
 const BILL_TYPES = [
-  'Monthly Maintenance Fee',
-  'Electricity Bill',
-  'Internet Subscription',
-  'Other Payments'
+  { key: 'maintenance', apiValue: 'Monthly Maintenance Fee' },
+  { key: 'electricity', apiValue: 'Electricity Bill' },
+  { key: 'internet', apiValue: 'Internet Subscription' },
+  { key: 'other', apiValue: 'Other Payments' }
 ];
 
-function groupByMonth(bills) {
+const BILL_TYPE_TO_KEY = Object.fromEntries(BILL_TYPES.map(bt => [bt.apiValue, bt.key]));
+
+function groupByMonth(bills, t) {
   const groups = {};
   bills.forEach(bill => {
     const date = new Date(bill.uploadDate);
     const key = `${date.getFullYear()}-${date.getMonth()}`;
-    const label = `${MONTHS[date.getMonth()]} ${date.getFullYear()}`;
+    const monthName = t(`paidBills.months.${date.getMonth()}`);
+    const label = `${monthName} ${date.getFullYear()}`;
     if (!groups[key]) groups[key] = { label, items: [] };
     groups[key].items.push(bill);
   });
@@ -28,6 +27,7 @@ function groupByMonth(bills) {
 }
 
 function PaidBills({ apartmentId }) {
+  const { t } = useTranslation();
   const { user, authHeader } = useAuth();
   const isTenant = user?.role === 'TENANT';
   const isOwner = user?.role === 'OWNER';
@@ -36,7 +36,7 @@ function PaidBills({ apartmentId }) {
   const [bills, setBills] = useState([]);
   const [loading, setLoading] = useState(true);
   const [uploading, setUploading] = useState(false);
-  const [selectedType, setSelectedType] = useState(BILL_TYPES[0]);
+  const [selectedType, setSelectedType] = useState(BILL_TYPES[0].apiValue);
   const [showForm, setShowForm] = useState(false);
 
   useEffect(() => { fetchBills(); }, [apartmentId]);
@@ -68,7 +68,7 @@ function PaidBills({ apartmentId }) {
   };
 
   const handleDelete = async (billId) => {
-    if (!window.confirm('Delete this payment proof?')) return;
+    if (!window.confirm(t('paidBills.deleteConfirm'))) return;
     await fetch(`${API}/api/bills/${billId}`, {
       method: 'DELETE',
       headers: authHeader()
@@ -76,16 +76,16 @@ function PaidBills({ apartmentId }) {
     fetchBills();
   };
 
-  const grouped = groupByMonth(bills);
+  const grouped = groupByMonth(bills, t);
   const isPdf = (name) => /\.pdf$/i.test(name);
 
   return (
     <div className="paid-bills-section">
       <div className="paid-bills-header">
-        <h3>Paid Bills</h3>
+        <h3>{t('paidBills.title')}</h3>
         {canUpload && !showForm && (
           <button className="btn-upload small" onClick={() => setShowForm(true)}>
-            + Upload Proof
+            {t('paidBills.uploadProof')}
           </button>
         )}
       </div>
@@ -97,11 +97,13 @@ function PaidBills({ apartmentId }) {
             value={selectedType}
             onChange={e => setSelectedType(e.target.value)}
           >
-            {BILL_TYPES.map(t => <option key={t} value={t}>{t}</option>)}
+            {BILL_TYPES.map(bt => (
+              <option key={bt.key} value={bt.apiValue}>{t(`paidBills.billTypes.${bt.key}`)}</option>
+            ))}
           </select>
           <div className="paid-bills-form-row">
             <label className="btn-upload small">
-              {uploading ? 'Uploading...' : 'Choose File'}
+              {uploading ? t('paidBills.uploading') : t('paidBills.chooseFile')}
               <input
                 type="file"
                 accept=".pdf,.jpg,.jpeg,.png,.gif,.webp"
@@ -110,15 +112,15 @@ function PaidBills({ apartmentId }) {
                 onChange={(e) => handleUpload(e.target.files[0])}
               />
             </label>
-            <button className="btn-cancel small" onClick={() => setShowForm(false)} disabled={uploading}>Cancel</button>
+            <button className="btn-cancel small" onClick={() => setShowForm(false)} disabled={uploading}>{t('cancel')}</button>
           </div>
         </div>
       )}
 
       {loading ? (
-        <p className="paid-bills-empty">Loading...</p>
+        <p className="paid-bills-empty">{t('loading')}</p>
       ) : bills.length === 0 ? (
-        <p className="paid-bills-empty">No payment proofs uploaded yet.</p>
+        <p className="paid-bills-empty">{t('paidBills.noPayments')}</p>
       ) : (
         <div className="paid-bills-groups">
           {grouped.map(group => (
@@ -130,7 +132,7 @@ function PaidBills({ apartmentId }) {
                     <span className={`paid-bills-icon ${isPdf(bill.originalFileName) ? 'pdf' : 'img'}`}>
                       {isPdf(bill.originalFileName) ? 'PDF' : 'IMG'}
                     </span>
-                    <span className="paid-bills-type">{bill.billType || 'Other'}</span>
+                    <span className="paid-bills-type">{t(`paidBills.billTypes.${BILL_TYPE_TO_KEY[bill.billType] || 'other'}`)}</span>
                     <a
                       href={`${API}/api/bills/${bill.storedFileName}`}
                       target="_blank"

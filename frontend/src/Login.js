@@ -1,8 +1,10 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { useAuth } from './AuthContext';
 
 function Login() {
+  const { t } = useTranslation();
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
@@ -27,13 +29,13 @@ function Login() {
   return (
     <div className="login-page">
       <div className="login-card">
-        <h1>Apartment Manager</h1>
-        <p className="login-subtitle">Sign in to your account</p>
+        <h1>{t('appTitle')}</h1>
+        <p className="login-subtitle">{t('login.subtitle')}</p>
         <form className="login-form" onSubmit={handleSubmit}>
           {error && <div className="login-error">{error}</div>}
           <input
             type="text"
-            placeholder="Username"
+            placeholder={t('login.usernamePlaceholder')}
             value={username}
             onChange={(e) => setUsername(e.target.value)}
             required
@@ -41,13 +43,13 @@ function Login() {
           />
           <input
             type="password"
-            placeholder="Password"
+            placeholder={t('login.passwordPlaceholder')}
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             required
           />
           <button type="submit" className="btn-primary" disabled={loading}>
-            {loading ? 'Signing in...' : 'Sign In'}
+            {loading ? t('login.signingIn') : t('login.signIn')}
           </button>
         </form>
       </div>
