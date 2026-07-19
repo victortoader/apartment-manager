@@ -34,6 +34,11 @@ public class Apartment {
     @Column(name = "photo_path")
     private List<String> photoPaths = new ArrayList<>();
 
+    @ElementCollection
+    @CollectionTable(name = "apartment_metadata", joinColumns = @JoinColumn(name = "apartment_id"))
+    @Column(name = "metadata_value")
+    private List<String> metadata = new ArrayList<>();
+
     @OneToMany(mappedBy = "apartment")
     @JsonIgnore
     private List<User> tenants = new ArrayList<>();
@@ -100,6 +105,9 @@ public class Apartment {
 
     public List<String> getPhotoPaths() { return photoPaths; }
     public void setPhotoPaths(List<String> photoPaths) { this.photoPaths = photoPaths; }
+
+    public List<String> getMetadata() { return metadata; }
+    public void setMetadata(List<String> metadata) { this.metadata = metadata; }
 
     public String getPresentation() { return presentation; }
     public void setPresentation(String presentation) { this.presentation = presentation; }

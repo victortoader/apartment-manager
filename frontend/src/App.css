@@ -2196,3 +2196,74 @@ h1 {
   background: #1a73e8;
   color: white;
 }
+
+/* Metadata */
+.row-metadata {
+  margin-top: 10px;
+  padding-top: 10px;
+  border-top: 1px solid #eee;
+}
+
+.row-metadata h4 {
+  font-size: 13px;
+  color: #555;
+  margin-bottom: 4px;
+}
+
+.metadata-hint {
+  font-size: 11px;
+  color: #999;
+  margin-bottom: 8px;
+}
+
+.metadata-list {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 8px 0;
+}
+
+.metadata-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 4px 8px;
+  background: #f8f9fa;
+  border-radius: 4px;
+  margin-bottom: 4px;
+  font-size: 12px;
+}
+
+.metadata-item span {
+  word-break: break-word;
+}
+
+.metadata-add-row {
+  display: flex;
+  gap: 6px;
+  margin-bottom: 8px;
+}
+
+.metadata-add-row input {
+  flex: 1;
+  padding: 6px 10px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 12px;
+}
+
+.metadata-actions {
+  display: flex;
+  gap: 6px;
+}
+
+.metadata-empty {
+  font-size: 12px;
+  color: #999;
+  margin-bottom: 8px;
+}
+
+.metadata-view {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+}

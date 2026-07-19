@@ -51,7 +51,12 @@
     "passwordPrompt": "Entrez votre mot de passe pour activer le mode gestion.",
     "incorrectPassword": "Mot de passe incorrect",
     "verificationFailed": "Échec de la vérification",
-    "verifying": "Vérification en cours..."
+    "verifying": "Vérification en cours...",
+    "metadata": "Métadonnées",
+    "metadataHint": "Identifiants contrat/facturation pour l'affectation automatique des factures",
+    "addMetadataEntry": "+ Ajouter une entrée",
+    "noMetadata": "Aucune métadonnée pour le moment.",
+    "metadataPlaceholder": "ex. nom du locataire, numéro de contrat, code de facturation..."
   },
 
   "detail": {

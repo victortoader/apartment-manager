@@ -51,7 +51,12 @@
     "passwordPrompt": "Enter your password to enable management mode.",
     "incorrectPassword": "Incorrect password",
     "verificationFailed": "Verification failed",
-    "verifying": "Verifying..."
+    "verifying": "Verifying...",
+    "metadata": "Metadata",
+    "metadataHint": "Contract/billing identifiers for automated bill assignment",
+    "addMetadataEntry": "+ Add Entry",
+    "noMetadata": "No metadata entries yet.",
+    "metadataPlaceholder": "e.g. tenant name, contract number, billing code..."
   },
 
   "detail": {

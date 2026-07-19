@@ -51,7 +51,12 @@
     "passwordPrompt": "Inserisci la tua password per attivare la modalità gestione.",
     "incorrectPassword": "Password errata",
     "verificationFailed": "Verifica fallita",
-    "verifying": "Verifica in corso..."
+    "verifying": "Verifica in corso...",
+    "metadata": "Metadati",
+    "metadataHint": "Identificativi contratto/fatturazione per assegnazione automatica bollette",
+    "addMetadataEntry": "+ Aggiungi voce",
+    "noMetadata": "Nessun metadato ancora.",
+    "metadataPlaceholder": "es. nome inquilino, numero contratto, codice fatturazione..."
   },
 
   "detail": {

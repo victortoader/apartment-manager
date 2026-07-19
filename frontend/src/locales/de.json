@@ -51,7 +51,12 @@
     "passwordPrompt": "Geben Sie Ihr Passwort ein, um den Verwaltungsmodus zu aktivieren.",
     "incorrectPassword": "Falsches Passwort",
     "verificationFailed": "Verifizierung fehlgeschlagen",
-    "verifying": "Verifizierung läuft..."
+    "verifying": "Verifizierung läuft...",
+    "metadata": "Metadaten",
+    "metadataHint": "Vertrags-/Abrechnungskennungen für automatische Rechnungszuordnung",
+    "addMetadataEntry": "+ Eintrag hinzufügen",
+    "noMetadata": "Noch keine Metadaten-Einträge.",
+    "metadataPlaceholder": "z.B. Mietername, Vertragsnummer, Abrechnungscode..."
   },
 
   "detail": {

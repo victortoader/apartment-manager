@@ -51,7 +51,12 @@
     "passwordPrompt": "Introduceți parola pentru a activa modul de gestionare.",
     "incorrectPassword": "Parolă incorectă",
     "verificationFailed": "Verificare eșuată",
-    "verifying": "Se verifică..."
+    "verifying": "Se verifică...",
+    "metadata": "Metadate",
+    "metadataHint": "Identificatori contract/facturare pentru atribuirea automată a facturilor",
+    "addMetadataEntry": "+ Adaugă intrare",
+    "noMetadata": "Încă nicio intrare de metadate.",
+    "metadataPlaceholder": "ex. nume chiriaș, număr contract, cod facturare..."
   },
 
   "detail": {

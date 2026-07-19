@@ -44,6 +44,9 @@ function ApartmentList() {
   const [passwordInput, setPasswordInput] = useState('');
   const [passwordError, setPasswordError] = useState('');
   const [verifying, setVerifying] = useState(false);
+  const [editingMetadata, setEditingMetadata] = useState(null);
+  const [metadataDraft, setMetadataDraft] = useState([]);
+  const [metadataInput, setMetadataInput] = useState('');
 
   const isOwner = user?.role === 'OWNER';
   const isAdmin = user?.role === 'ADMIN';
@@ -150,6 +153,34 @@ function ApartmentList() {
     }
   };
 
+  const handleEditMetadata = (apt) => {
+    setEditingMetadata(apt.id);
+    setMetadataDraft(apt.metadata ? [...apt.metadata] : []);
+    setMetadataInput('');
+  };
+
+  const handleAddMetadataEntry = () => {
+    if (!metadataInput.trim()) return;
+    setMetadataDraft([...metadataDraft, metadataInput.trim()]);
+    setMetadataInput('');
+  };
+
+  const handleRemoveMetadataEntry = (index) => {
+    setMetadataDraft(metadataDraft.filter((_, i) => i !== index));
+  };
+
+  const handleSaveMetadata = async (aptId) => {
+    const res = await fetch(`${API}/api/apartments/${aptId}/metadata`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json', ...authHeader() },
+      body: JSON.stringify(metadataDraft)
+    });
+    if (res.ok) {
+      setEditingMetadata(null);
+      fetchApartments();
+    }
+  };
+
   if (user?.role === 'TENANT' && apartments.length === 0) {
     return (
       <div className="app">
@@ -178,7 +209,7 @@ function ApartmentList() {
         <div className="header-right">
           <span className="header-user">{user.username} ({user.role})</span>
           <LanguageSwitcher />
-          {canCreate && (
+          {canCreate && manageMode && (
             <button className="btn-primary" onClick={() => setShowForm(!showForm)}>
               {showForm ? t('cancel') : t('apartmentList.addApartment')}
             </button>
@@ -265,7 +296,7 @@ function ApartmentList() {
           const openTickets = s.openTickets || 0;
 
           return (
-            <a key={apt.id} href={`/apartments/${apt.id}`} className="apartment-row">
+            <div key={apt.id} className="apartment-row" onClick={() => window.location.href = `/apartments/${apt.id}`} style={{cursor: 'pointer'}}>
               <div className="row-photo">
                 <img
                   src={apt.photoPaths && apt.photoPaths.length > 0
@@ -304,21 +335,66 @@ function ApartmentList() {
                     <span className="row-ticket-badge">{openTickets} {t('apartmentList.open')}</span>
                   </div>
                 )}
+
+                {manageMode && isOwner && (
+                  <div className="row-metadata" onClick={e => e.stopPropagation()}>
+                    <h4>{t('apartmentList.metadata')}</h4>
+                    <p className="metadata-hint">{t('apartmentList.metadataHint')}</p>
+                    {editingMetadata === apt.id ? (
+                      <div className="metadata-editor">
+                        <ul className="metadata-list">
+                          {metadataDraft.map((entry, i) => (
+                            <li key={i} className="metadata-item">
+                              <span>{entry}</span>
+                              <button className="btn-delete-small" onClick={() => handleRemoveMetadataEntry(i)}>×</button>
+                            </li>
+                          ))}
+                        </ul>
+                        <div className="metadata-add-row">
+                          <input
+                            placeholder={t('apartmentList.metadataPlaceholder')}
+                            value={metadataInput}
+                            onChange={e => setMetadataInput(e.target.value)}
+                            onKeyDown={e => e.key === 'Enter' && handleAddMetadataEntry()}
+                          />
+                          <button className="btn-upload small" onClick={handleAddMetadataEntry}>{t('apartmentList.addMetadataEntry')}</button>
+                        </div>
+                        <div className="metadata-actions">
+                          <button className="btn-primary small" onClick={() => handleSaveMetadata(apt.id)}>{t('save')}</button>
+                          <button className="btn-cancel small" onClick={() => setEditingMetadata(null)}>{t('cancel')}</button>
+                        </div>
+                      </div>
+                    ) : (
+                      <div className="metadata-view">
+                        {apt.metadata && apt.metadata.length > 0 ? (
+                          <ul className="metadata-list">
+                            {apt.metadata.map((entry, i) => (
+                              <li key={i} className="metadata-item"><span>{entry}</span></li>
+                            ))}
+                          </ul>
+                        ) : (
+                          <p className="metadata-empty">{t('apartmentList.noMetadata')}</p>
+                        )}
+                        <button className="btn-upload small" onClick={() => handleEditMetadata(apt)}>{t('edit')}</button>
+                      </div>
+                    )}
+                  </div>
+                )}
               </div>
 
               <div className="row-actions">
                 <button className="btn-presentation" onClick={(e) => { e.stopPropagation(); e.preventDefault(); window.open(`/presentations/apartments/${apt.id}`, '_blank'); }}>{t('apartmentList.presentation')}</button>
                 {manageMode && canCreate && (
-                  <label className="btn-upload small">
+                  <label className="btn-upload small" onClick={e => e.stopPropagation()}>
                     {t('apartmentList.addPhoto')}
                     <input type="file" accept="image/*" hidden onChange={(e) => handlePhotoUpload(apt.id, e.target.files[0])} />
                   </label>
                 )}
                 {manageMode && canDelete && (
-                  <button className="btn-delete small" onClick={() => handleDelete(apt.id)}>{t('delete')}</button>
+                  <button className="btn-delete small" onClick={(e) => { e.stopPropagation(); handleDelete(apt.id); }}>{t('delete')}</button>
                 )}
               </div>
-            </a>
+            </div>
           );
         })}
       </div>

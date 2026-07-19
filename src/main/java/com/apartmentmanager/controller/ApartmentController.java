@@ -278,6 +278,19 @@ public class ApartmentController {
         return ResponseEntity.ok(apartment);
     }
 
+    @PutMapping("/{id}/metadata")
+    @PreAuthorize("hasRole('OWNER')")
+    public ResponseEntity<Apartment> updateMetadata(@PathVariable Long id,
+            @RequestBody List<String> metadata, Authentication auth) {
+        Apartment apartment = apartmentService.findById(id);
+        apartment.setMetadata(new java.util.ArrayList<>(metadata));
+        apartmentService.save(apartment);
+        User user = userRepository.findByUsername(auth.getName()).orElseThrow();
+        auditService.log(user.getUsername(), user.getRole().name(), "APARTMENT_METADATA_UPDATED",
+                "Updated metadata for apartment #" + id, null);
+        return ResponseEntity.ok(apartment);
+    }
+
     private String determineContentType(String fileName) {
         if (fileName.endsWith(".pdf")) return "application/pdf";
         if (fileName.endsWith(".doc") || fileName.endsWith(".docx")) return "application/msword";
