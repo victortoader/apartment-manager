@@ -29,20 +29,21 @@ A full-stack apartment management portal with JWT-based role-based access contro
 
 ## Prerequisites
 
-- Java 21+
-- Node.js 20+
+- Java 26+
+- Node.js 22+
 - Docker + Docker Compose (for PostgreSQL / production)
 - Gradle (or use included `./gradlew`)
+- AWS CLI configured (for EC2 deployment)
 
 ## Quick Start - Local Development (H2)
 
 No database setup needed. H2 runs in-memory.
 
 ```bash
-# Run backend
+# Run backend (terminal 1)
 ./gradlew bootRun
 
-# In a separate terminal, run frontend
+# Run frontend (terminal 2)
 cd frontend
 npm install
 npm start
@@ -54,28 +55,22 @@ npm start
 ## Run with PostgreSQL (Local)
 
 ```bash
-# 1. Start PostgreSQL in Docker
+# 1. Create a .env file in the project root (see .env.example)
+# 2. Start PostgreSQL in Docker
 docker compose up -d db
 
-# 2. Start the backend with PostgreSQL profile
+# 3. Start the backend with PostgreSQL profile
 ./gradlew bootRun --args='--spring.profiles.active=postgres'
 
-# 3. In a separate terminal, run frontend
+# 4. Run frontend (separate terminal)
 cd frontend
-npm install
 npm start
 ```
 
-Or use the convenience script:
-```bash
-chmod +x start-postgres.sh
-./start-postgres.sh
-```
-
-## Build and Run with Docker
+## Run with Docker Compose
 
 ```bash
-# Build and start all services (backend + frontend + PostgreSQL)
+# Build and start all services
 docker compose up -d --build
 
 # View logs
@@ -88,8 +83,9 @@ docker compose down
 docker compose down -v
 ```
 
-- Frontend: http://localhost:3000
-- Backend API: http://localhost:8080/api
+- Frontend + API: http://localhost:80
+
+A `docker-compose.override.yml` is automatically loaded locally to use `nginx/default.local.conf` (plain HTTP, no SSL). On EC2, only `docker-compose.yml` is used with the production nginx config.
 
 ## Run Tests
 
@@ -98,6 +94,52 @@ docker compose down -v
 ```
 
 All tests use H2 in-memory database (no external dependencies needed).
+
+## Deploy to EC2
+
+Deployment is automated via GitHub Actions. Pushing to `main` triggers the CI/CD pipeline which runs tests, builds the frontend, and deploys to EC2.
+
+### One-time AWS setup
+
+**1. Create SSM parameters on the EC2 instance:**
+
+```bash
+aws ssm put-parameter --name "/apartment-manager/DB_USERNAME" --type String --value "apartment_user"
+aws ssm put-parameter --name "/apartment-manager/DB_PASSWORD" --type SecureString --value "<your-strong-password>"
+aws ssm put-parameter --name "/apartment-manager/JWT_SECRET" --type SecureString --value "<your-base64-secret>"
+```
+
+Generate a JWT secret: `openssl rand -base64 48`
+
+**2. Attach an IAM role to the EC2 instance** with SSM read access:
+
+```json
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Effect": "Allow",
+      "Action": "ssm:GetParameter",
+      "Resource": "arn:aws:ssm:*:*:parameter/apartment-manager/*"
+    }
+  ]
+}
+```
+
+**3. GitHub Actions secrets** (in repo Settings → Secrets):
+
+| Secret | Description |
+|--------|-------------|
+| `EC2_SSH_KEY` | Private SSH key for the EC2 instance |
+| `EC2_HOST` | EC2 public IP or hostname |
+| `EC2_USER` | SSH username (e.g. `ubuntu`) |
+
+### How it works
+
+1. GitHub Actions runs backend tests + builds the frontend
+2. SSHs into EC2 and runs `scripts/deploy.sh`
+3. `deploy.sh` pulls the latest code, fetches secrets from SSM Parameter Store, then runs `docker compose up -d --build`
+4. Docker Compose rebuilds and restarts all services
 
 ## API Endpoints
 
@@ -177,21 +219,35 @@ All tests use H2 in-memory database (no external dependencies needed).
 
 ## Environment Variables
 
-| Variable | Default (H2) | Docker/PostgreSQL | Description |
-|----------|--------------|-------------------|-------------|
-| `DB_URL` | `jdbc:h2:mem:apartments` | `jdbc:postgresql://db:5432/apartment-management-db` | Database URL |
-| `DB_DRIVER` | `org.h2.Driver` | `org.postgresql.Driver` | JDBC driver |
-| `DB_USER` | `sa` | `apartment_user` | Database username |
-| `DB_PASS` | (empty) | `changeme` | Database password |
-| `DB_DIALECT` | `org.hibernate.dialect.H2Dialect` | `org.hibernate.dialect.PostgreSQLDialect` | Hibernate dialect |
-| `SPRING_PROFILES_ACTIVE` | (none) | `postgres` | Active Spring profile |
-| `app.seed.enabled` | `true` | `true` | Seed test data on startup |
+### Local Development (H2)
+
+No environment variables needed. Defaults are in `application.properties`.
+
+### Local Development (PostgreSQL)
+
+Set these in a `.env` file in the project root (gitignored):
+
+| Variable | Example | Description |
+|----------|---------|-------------|
+| `DB_USERNAME` | `apartment_user` | PostgreSQL username |
+| `DB_PASSWORD` | `changeme` | PostgreSQL password |
+| `JWT_SECRET` | base64 string | JWT signing secret (min 32 bytes decoded) |
+
+### Production (EC2)
+
+Secrets are stored in AWS SSM Parameter Store and fetched at deploy time by `deploy.sh`:
+
+| SSM Parameter | Description |
+|---------------|-------------|
+| `/apartment-manager/DB_USERNAME` | PostgreSQL username |
+| `/apartment-manager/DB_PASSWORD` | PostgreSQL password |
+| `/apartment-manager/JWT_SECRET` | JWT signing secret |
 
 ## Project Structure
 
 ```
 demo/
-├── src/main/java/com/example/demo/
+├── src/main/java/com/apartmentmanager/
 │   ├── model/          # JPA entities (Apartment, User, Ticket, etc.)
 │   ├── controller/     # REST controllers
 │   ├── service/        # Business logic + seed data
@@ -209,9 +265,14 @@ demo/
 │   │   ├── PaidBills.js        # Bill upload/view
 │   │   ├── UserManagement.js   # User admin (owner)
 │   │   └── AuditLog.js         # Audit log (owner)
-│   └── nginx.conf      # Production nginx config
+│   └── Dockerfile
+├── scripts/
+│   └── deploy.sh       # EC2 deployment script (fetches secrets from SSM)
+├── nginx/
+│   └── default.conf    # Production nginx config
 ├── docker-compose.yml
 ├── Dockerfile.backend
-├── start-postgres.sh
+├── .env                # Local dev secrets (gitignored)
+├── .env.example        # Template for .env
 └── build.gradle
 ```
