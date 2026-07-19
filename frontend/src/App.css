@@ -907,6 +907,248 @@ h1 {
   }
 }
 
+/* ===== Mobile Responsive ===== */
+@media (max-width: 600px) {
+  html, body {
+    overflow-x: hidden;
+    max-width: 100vw;
+  }
+
+  .app {
+    padding: 12px;
+    max-width: 100%;
+    overflow: hidden;
+  }
+
+  /* Header */
+  header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 14px;
+  }
+
+  header h1 {
+    font-size: 18px;
+    width: 100%;
+  }
+
+  .header-right {
+    flex-wrap: wrap;
+    gap: 8px;
+    width: 100%;
+  }
+
+  .header-right .btn-primary {
+    font-size: 12px;
+    padding: 8px 14px;
+  }
+
+  .header-right .btn-manage {
+    font-size: 12px;
+    padding: 6px 10px;
+  }
+
+  .header-user {
+    font-size: 12px;
+    padding: 4px 10px;
+    order: -1;
+  }
+
+  /* Apartment rows */
+  .apartment-row {
+    flex-direction: column;
+    gap: 12px;
+    padding: 14px;
+  }
+
+  .row-photo {
+    width: 100%;
+    height: 160px;
+    border-radius: 8px;
+  }
+
+  .row-info {
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .row-bills {
+    width: 100%;
+  }
+
+  .row-actions {
+    flex-direction: row;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+
+  /* Apartment form */
+  .apartment-form {
+    grid-template-columns: 1fr;
+    padding: 16px;
+    gap: 10px;
+  }
+
+  /* Modal */
+  .modal-box {
+    width: calc(100% - 32px);
+    max-width: 360px;
+    padding: 20px 24px;
+  }
+
+  /* Login */
+  .login-card {
+    padding: 24px;
+    margin: 12px;
+  }
+
+  .login-card h1 {
+    font-size: 22px;
+  }
+
+  /* Detail */
+  .detail-layout {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+
+  .detail-photos img {
+    width: 100%;
+    height: 160px;
+  }
+
+  /* User management */
+  .user-management {
+    padding: 16px;
+  }
+
+  .user-create-form {
+    flex-direction: column;
+  }
+
+  .user-create-form input,
+  .user-create-form select {
+    width: 100%;
+  }
+
+  .user-info {
+    min-width: 0;
+    flex-wrap: wrap;
+  }
+
+  .user-panel-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+
+  /* Ticket cards */
+  .ticket-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+
+  .ticket-meta {
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  /* Audit */
+  .audit-controls {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .audit-filter {
+    flex-wrap: wrap;
+  }
+
+  .audit-table-wrapper {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .audit-table {
+    min-width: 600px;
+  }
+
+  /* Presentation */
+  .pres-header {
+    flex-direction: column;
+    gap: 12px;
+    padding: 14px 16px;
+  }
+
+  .pres-hero-inner h1 {
+    font-size: 24px;
+  }
+
+  .pres-stats {
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  .pres-section {
+    padding: 20px 16px;
+  }
+
+  .pres-gallery-main {
+    aspect-ratio: 4 / 3;
+  }
+
+  .pres-price-input {
+    width: 100%;
+    box-sizing: border-box;
+  }
+
+  .pres-editor textarea {
+    min-height: 180px;
+  }
+
+  .pres-editor-btns {
+    flex-direction: column;
+  }
+
+  /* Paid bills */
+  .paid-bills-form-row {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  /* No apartment message */
+  .no-apartment-msg {
+    padding: 40px 20px;
+  }
+
+  /* Protocols */
+  .protocols-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+
+  .upload-controls {
+    flex-wrap: wrap;
+  }
+
+  .protocol-item {
+    flex-wrap: wrap;
+  }
+
+  /* Unread tickets */
+  .unread-ticket-item {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .unread-ticket-desc {
+    max-width: none;
+  }
+}
+
 /* Tickets */
 .detail-tickets {
   background: white;
