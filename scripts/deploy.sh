@@ -15,9 +15,16 @@ echo "Updating local working copy..."
 git reset --hard "origin/$BRANCH"
 
 echo "Fetching secrets from Parameter Store..."
-export DB_USERNAME=$(aws ssm get-parameter --name "$SSM_PREFIX/DB_USERNAME" --with-decryption --query "Parameter.Value" --output text)
-export DB_PASSWORD=$(aws ssm get-parameter --name "$SSM_PREFIX/DB_PASSWORD" --with-decryption --query "Parameter.Value" --output text)
-export JWT_SECRET=$(aws ssm get-parameter --name "$SSM_PREFIX/JWT_SECRET" --with-decryption --query "Parameter.Value" --output text)
+DB_USERNAME=$(aws ssm get-parameter --name "$SSM_PREFIX/DB_USERNAME" --with-decryption --query "Parameter.Value" --output text)
+DB_PASSWORD=$(aws ssm get-parameter --name "$SSM_PREFIX/DB_PASSWORD" --with-decryption --query "Parameter.Value" --output text)
+JWT_SECRET=$(aws ssm get-parameter --name "$SSM_PREFIX/JWT_SECRET" --with-decryption --query "Parameter.Value" --output text)
+
+cat > .env <<EOF
+DB_USERNAME=$DB_USERNAME
+DB_PASSWORD=$DB_PASSWORD
+JWT_SECRET=$JWT_SECRET
+EOF
+chmod 600 .env
 
 echo "Rebuilding and restarting application..."
 docker compose up -d --build --remove-orphans
