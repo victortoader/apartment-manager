@@ -3,8 +3,8 @@ services:
     image: postgres:16
     environment:
       POSTGRES_DB: apartment-management-db
-      POSTGRES_USER: apartment_user
-      POSTGRES_PASSWORD: changeme
+      POSTGRES_USER: ${DB_USERNAME}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
     volumes:
       - pgdata:/var/lib/postgresql/data
     restart: always
@@ -17,8 +17,9 @@ services:
     environment:
       - SPRING_PROFILES_ACTIVE=postgres
       - SPRING_DATASOURCE_URL=jdbc:postgresql://db:5432/apartment-management-db
-      - SPRING_DATASOURCE_USERNAME=apartment_user
-      - SPRING_DATASOURCE_PASSWORD=changeme
+      - SPRING_DATASOURCE_USERNAME=${DB_USERNAME}
+      - SPRING_DATASOURCE_PASSWORD=${DB_PASSWORD}
+      - JWT_SECRET=${JWT_SECRET}
     expose:
       - "8080"
     volumes:
