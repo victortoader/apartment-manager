@@ -29,10 +29,9 @@ A full-stack apartment management portal with JWT-based role-based access contro
 
 ## Prerequisites
 
-- Java 26+
-- Node.js 22+
+- Java 21+
+- Node.js 20+
 - Docker + Docker Compose (for PostgreSQL / production)
-- Gradle (or use included `./gradlew`)
 - AWS CLI configured (for EC2 deployment)
 
 ## Quick Start - Local Development (H2)
@@ -40,12 +39,14 @@ A full-stack apartment management portal with JWT-based role-based access contro
 No database setup needed. H2 runs in-memory.
 
 ```bash
+# First time only: install frontend dependencies
+cd frontend && npm install && cd ..
+
 # Run backend (terminal 1)
 ./gradlew bootRun
 
 # Run frontend (terminal 2)
 cd frontend
-npm install
 npm start
 ```
 

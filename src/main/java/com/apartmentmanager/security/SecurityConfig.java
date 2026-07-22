@@ -38,6 +38,7 @@ public class SecurityConfig {
             .sessionManagement(sm -> sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             .authorizeHttpRequests(auth -> auth
                 .requestMatchers("/api/auth/login").permitAll()
+                .requestMatchers("/favicon.ico").permitAll()
                 .requestMatchers("/api/apartments/photos/**").permitAll()
                 .requestMatchers("/api/apartments/protocols/**").permitAll()
                 .requestMatchers("/api/tickets/photos/**").permitAll()
