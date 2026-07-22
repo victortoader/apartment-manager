@@ -157,25 +157,6 @@ function PaidBills({ apartmentId }) {
         )}
       </div>
 
-      {bills.length > 0 && (
-        <div className="paid-bills-summary">
-          <div className="summary-row">
-            <span className="summary-label">{t('paidBills.summary.totalBills')}</span>
-            <span className="summary-value positive">{totalBills.toFixed(2)} {mainCurrency}</span>
-          </div>
-          <div className="summary-row">
-            <span className="summary-label">{t('paidBills.summary.totalPaid')}</span>
-            <span className="summary-value negative">-{totalPaid.toFixed(2)} {mainCurrency}</span>
-          </div>
-          <div className="summary-row total">
-            <span className="summary-label">{t('paidBills.summary.balance')}</span>
-            <span className={`summary-value ${grandBalance > 0 ? 'positive' : grandBalance < 0 ? 'negative' : 'zero'}`}>
-              {grandBalance >= 0 ? '' : ''}{grandBalance.toFixed(2)} {mainCurrency}
-            </span>
-          </div>
-        </div>
-      )}
-
       {canUpload && showForm && (
         <div className="paid-bills-form">
           <div className="paid-bills-form-row">
@@ -303,6 +284,25 @@ function PaidBills({ apartmentId }) {
               </ul>
             </div>
           ))}
+        </div>
+      )}
+
+      {bills.length > 0 && (
+        <div className="paid-bills-summary">
+          <div className="summary-row">
+            <span className="summary-label">{t('paidBills.summary.totalBills')}</span>
+            <span className="summary-value positive">{totalBills.toFixed(2)} {mainCurrency}</span>
+          </div>
+          <div className="summary-row">
+            <span className="summary-label">{t('paidBills.summary.totalPaid')}</span>
+            <span className="summary-value negative">-{totalPaid.toFixed(2)} {mainCurrency}</span>
+          </div>
+          <div className="summary-row total">
+            <span className="summary-label">{t('paidBills.summary.balance')}</span>
+            <span className={`summary-value ${grandBalance > 0 ? 'positive' : grandBalance < 0 ? 'negative' : 'zero'}`}>
+              {grandBalance >= 0 ? '' : ''}{grandBalance.toFixed(2)} {mainCurrency}
+            </span>
+          </div>
         </div>
       )}
     </div>

@@ -246,6 +246,8 @@ function ApartmentDetail() {
               </div>
             )}
           </div>
+
+          <PaidBills apartmentId={id} />
         </div>
 
         <div className="detail-protocols">
@@ -404,8 +406,6 @@ function ApartmentDetail() {
             )}
           </div>
         )}
-
-        <PaidBills apartmentId={id} />
 
         <div className="detail-tickets">
           <div className="protocols-header">
