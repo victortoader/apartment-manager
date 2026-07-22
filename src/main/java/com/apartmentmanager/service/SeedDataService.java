@@ -186,16 +186,19 @@ public class SeedDataService {
         ocrKeywordsRepository.save(new OcrKeywords("ro",
             "total|total de achitat|de achitat|suma de plată|total de plată|factură|sumă|valoare|plătit",
             "achitat|platit|plătit|factura|factură|număr|adresă|adresa|cont|client",
+            "document de plată|extras de cont|ordin de plată|transfer|virament|plătit|achitat| debit| credit",
             "RON"));
 
         ocrKeywordsRepository.save(new OcrKeywords("de",
             "total|amount|summe|betrag|gesamt|rechnungsbetrag|zahlbetrag|brutto|netto|jährlich zahlbar",
             "rechnung|betrag|summe|gesamt|datum|konto|vertrag|kunde|firma|adresse",
+            "zahlungsbeleg|überweisung|lastschrift|kontoauszug|belastung|gutschrift| bezahl| zahlung",
             "CHF"));
 
         ocrKeywordsRepository.save(new OcrKeywords("en",
             "total|amount|sum due|payment amount|balance due|invoice total|total due|grand total",
             "total|amount|invoice|payment|account|contract|customer|billing|address|date",
+            "debit note|payment|bank statement|transfer|wire|receipt|paid| credit| minus",
             "EUR"));
     }
 
