@@ -27,9 +27,9 @@ public class UserService {
     @PostConstruct
     public void init() {
         if (userRepository.count() == 0) {
-            userRepository.save(new User("owner", passwordEncoder.encode("owner"), Role.OWNER, "owner@example.com"));
-            userRepository.save(new User("admin", passwordEncoder.encode("admin"), Role.ADMIN, "admin@example.com"));
-            userRepository.save(new User("tenant", passwordEncoder.encode("tenant"), Role.TENANT, "tenant@example.com"));
+            userRepository.save(new User("owner", passwordEncoder.encode(System.getenv().getOrDefault("DEFAULT_PASSWORD", "admin")), Role.OWNER, "owner@example.com"));
+            userRepository.save(new User("admin", passwordEncoder.encode(System.getenv().getOrDefault("DEFAULT_PASSWORD", "admin")), Role.ADMIN, "admin@example.com"));
+            userRepository.save(new User("tenant", passwordEncoder.encode(System.getenv().getOrDefault("DEFAULT_PASSWORD", "admin")), Role.TENANT, "tenant@example.com"));
         }
     }
 

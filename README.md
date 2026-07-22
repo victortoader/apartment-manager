@@ -22,10 +22,10 @@ A full-stack apartment management portal with JWT-based role-based access contro
 
 | Username | Password | Role |
 |----------|----------|------|
-| owner | owner | OWNER |
-| admin | admin | ADMIN |
-| tenant | tenant | TENANT |
-| tenant2 | tenant2 | TENANT |
+| owner | from `DEFAULT_PASSWORD` env var | OWNER |
+| admin | from `DEFAULT_PASSWORD` env var | ADMIN |
+| tenant | from `DEFAULT_PASSWORD` env var | TENANT |
+| tenant2 | from `DEFAULT_PASSWORD` env var | TENANT |
 
 ## Prerequisites
 

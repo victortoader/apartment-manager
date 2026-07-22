@@ -78,12 +78,12 @@ public class SeedDataService {
             tenant.setApartment(ap1);
             userRepository.save(tenant);
         } else {
-            tenant = userRepository.save(new User("tenant", passwordEncoder.encode("tenant"), Role.TENANT, "tenant@example.com"));
+            tenant = userRepository.save(new User("tenant", passwordEncoder.encode(System.getenv().getOrDefault("DEFAULT_PASSWORD", "admin")), Role.TENANT, "tenant@example.com"));
             tenant.setApartment(ap1);
             userRepository.save(tenant);
         }
 
-        User tenant2 = userRepository.save(new User("tenant2", passwordEncoder.encode("tenant2"), Role.TENANT, "tenant2@example.com"));
+        User tenant2 = userRepository.save(new User("tenant2", passwordEncoder.encode(System.getenv().getOrDefault("DEFAULT_PASSWORD", "admin")), Role.TENANT, "tenant2@example.com"));
         tenant2.setApartment(ap2);
         userRepository.save(tenant2);
 
@@ -184,21 +184,21 @@ public class SeedDataService {
         if (ocrKeywordsRepository.count() > 0) return;
 
         ocrKeywordsRepository.save(new OcrKeywords("ro",
-            "total|total de achitat|de achitat|suma de plată|total de plată|factură|sumă|valoare|plătit",
-            "achitat|platit|plătit|factura|factură|număr|adresă|adresa|cont|client",
-            "document de plată|extras de cont|ordin de plată|transfer|virament|plătit|achitat| debit| credit",
+            "total de achitat|suma de plată|total de plată|factură|sumă|valoare|plătit|contravaloare|ultima zi de plată|perioada facturată|factura seria",
+            "factură|factura|factura seria|perioada facturată|ultima zi de plată|emitere|scadență|plată|cont|client|furnizor|servicii|utilități|număr|adresă|adresa|numar|data",
+            "extras de cont|ordin de plată|transfer|virament|chitanță|bon fiscal|op|mandat de plată|confirmare plată|debit|credit",
             "RON"));
 
         ocrKeywordsRepository.save(new OcrKeywords("de",
-            "total|amount|summe|betrag|gesamt|rechnungsbetrag|zahlbetrag|brutto|netto|jährlich zahlbar",
-            "rechnung|betrag|summe|gesamt|datum|konto|vertrag|kunde|firma|adresse",
-            "zahlungsbeleg|überweisung|lastschrift|kontoauszug|belastung|gutschrift| bezahl| zahlung",
+            "total|totalbetrag|betrag|gesamt|rechnungsbetrag|zahlbetrag|fälliger betrag|offener betrag|brutto|netto|jährlich zahlbar|monatlich zahlbar|totalbetrag|gesamtbetrag",
+            "rechnung|faktura|betrag fällig|zahlungsziel|lieferant|kunde|dienstleistung|verbrauch|gebühr|mahnung|kosten|preis|steuer|mwst|netto|brutto|datum|konto|vertrag|firma|adresse|referenz",
+            "zahlungsbeleg|überweisung|lastschrift|kontoauszug|belastung|gutschrift|quittung|beleg|mandat|bestätigung| debit| credit",
             "CHF"));
 
         ocrKeywordsRepository.save(new OcrKeywords("en",
-            "total|amount|sum due|payment amount|balance due|invoice total|total due|grand total",
-            "total|amount|invoice|payment|account|contract|customer|billing|address|date",
-            "debit note|payment|bank statement|transfer|wire|receipt|paid| credit| minus",
+            "total|total amount|amount|sum due|payment amount|balance due|invoice total|total due|grand total|amount due|payable|outstanding balance|total payable|charge|fee",
+            "invoice|bill|statement|due date|amount due|supplier|provider|utility|consumption|meter|account number|customer|billing|address|date|reference|charge|fee|service|tariff|rate",
+            "debit note|bank statement|transfer|wire|receipt|paid|confirmation|mandate|payment slip|proof| credit| minus",
             "EUR"));
     }
 
