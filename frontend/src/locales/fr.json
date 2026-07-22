@@ -215,6 +215,11 @@
       "notRecognized": "Montant non reconnu",
       "failed": "Échec de l'analyse",
       "processing": "Traitement..."
+    },
+    "summary": {
+      "totalBills": "Total Factures",
+      "totalPaid": "Total Payé",
+      "balance": "Solde"
     }
   }
 }

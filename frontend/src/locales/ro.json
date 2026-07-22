@@ -215,6 +215,11 @@
       "notRecognized": "Sumă nerecunoscută",
       "failed": "Analiza a eșuat",
       "processing": "Se procesează..."
+    },
+    "summary": {
+      "totalBills": "Total Facturi",
+      "totalPaid": "Total Plătit",
+      "balance": "Sold"
     }
   }
 }

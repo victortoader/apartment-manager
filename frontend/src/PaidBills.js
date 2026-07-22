@@ -25,9 +25,24 @@ function groupByMonth(bills, t) {
     const key = `${date.getFullYear()}-${date.getMonth()}`;
     const monthName = t(`paidBills.months.${date.getMonth()}`);
     const label = `${monthName} ${date.getFullYear()}`;
-    if (!groups[key]) groups[key] = { label, items: [] };
+    if (!groups[key]) groups[key] = { label, items: [], totalBills: 0, totalPaid: 0, balance: 0, currency: null };
     groups[key].items.push(bill);
+    
+    const amount = bill.extractedAmount || 0;
+    const curr = bill.extractedCurrency || 'EUR';
+    if (!groups[key].currency) groups[key].currency = curr;
+    
+    if (bill.documentType === 'proof') {
+      groups[key].totalPaid += Math.abs(amount);
+    } else {
+      groups[key].totalBills += amount;
+    }
   });
+  
+  Object.values(groups).forEach(group => {
+    group.balance = group.totalBills - group.totalPaid;
+  });
+  
   return Object.values(groups);
 }
 
@@ -126,6 +141,11 @@ function PaidBills({ apartmentId }) {
     return parts.length > 1 ? parts.pop().toUpperCase() : '';
   };
 
+  const totalBills = grouped.reduce((sum, g) => sum + g.totalBills, 0);
+  const totalPaid = grouped.reduce((sum, g) => sum + g.totalPaid, 0);
+  const grandBalance = totalBills - totalPaid;
+  const mainCurrency = grouped.find(g => g.currency)?.currency || 'EUR';
+
   return (
     <div className="paid-bills-section">
       <div className="paid-bills-header">
@@ -136,6 +156,25 @@ function PaidBills({ apartmentId }) {
           </button>
         )}
       </div>
+
+      {bills.length > 0 && (
+        <div className="paid-bills-summary">
+          <div className="summary-row">
+            <span className="summary-label">{t('paidBills.summary.totalBills')}</span>
+            <span className="summary-value positive">{totalBills.toFixed(2)} {mainCurrency}</span>
+          </div>
+          <div className="summary-row">
+            <span className="summary-label">{t('paidBills.summary.totalPaid')}</span>
+            <span className="summary-value negative">-{totalPaid.toFixed(2)} {mainCurrency}</span>
+          </div>
+          <div className="summary-row total">
+            <span className="summary-label">{t('paidBills.summary.balance')}</span>
+            <span className={`summary-value ${grandBalance > 0 ? 'positive' : grandBalance < 0 ? 'negative' : 'zero'}`}>
+              {grandBalance >= 0 ? '' : ''}{grandBalance.toFixed(2)} {mainCurrency}
+            </span>
+          </div>
+        </div>
+      )}
 
       {canUpload && showForm && (
         <div className="paid-bills-form">
@@ -183,7 +222,12 @@ function PaidBills({ apartmentId }) {
         <div className="paid-bills-groups">
           {grouped.map(group => (
             <div key={group.label} className="paid-bills-month">
-              <h4 className="paid-bills-month-label">{group.label}</h4>
+              <div className="paid-bills-month-header">
+                <h4 className="paid-bills-month-label">{group.label}</h4>
+                <span className={`paid-bills-month-balance ${group.balance > 0 ? 'positive' : group.balance < 0 ? 'negative' : 'zero'}`}>
+                  {group.balance >= 0 ? '+' : ''}{group.balance.toFixed(2)} {group.currency}
+                </span>
+              </div>
               <ul className="paid-bills-list">
                 {group.items.map(bill => (
                   <li key={bill.id} className="paid-bills-item">

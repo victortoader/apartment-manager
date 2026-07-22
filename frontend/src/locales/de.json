@@ -215,6 +215,11 @@
       "notRecognized": "Betrag nicht erkannt",
       "failed": "Analyse fehlgeschlagen",
       "processing": "Verarbeitung..."
+    },
+    "summary": {
+      "totalBills": "Gesamt Rechnungen",
+      "totalPaid": "Gesamt Bezahlt",
+      "balance": "Saldo"
     }
   }
 }

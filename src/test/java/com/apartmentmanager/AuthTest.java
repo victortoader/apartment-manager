@@ -10,11 +10,13 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 class AuthTest extends AbstractIntegrationTest {
 
+    private static final String TEST_PASSWORD = "admin";
+
     @Test
     void loginOwner_returnsTokenAndRole() throws Exception {
         mockMvc.perform(post("/api/auth/login")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content("{\"username\":\"owner\",\"password\":\"owner\"}"))
+                        .content("{\"username\":\"owner\",\"password\":\"" + TEST_PASSWORD + "\"}"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.token").isNotEmpty())
                 .andExpect(jsonPath("$.username").value("owner"))
@@ -25,7 +27,7 @@ class AuthTest extends AbstractIntegrationTest {
     void loginAdmin_returnsTokenAndRole() throws Exception {
         mockMvc.perform(post("/api/auth/login")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content("{\"username\":\"admin\",\"password\":\"admin\"}"))
+                        .content("{\"username\":\"admin\",\"password\":\"" + TEST_PASSWORD + "\"}"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.token").isNotEmpty())
                 .andExpect(jsonPath("$.role").value("ADMIN"));
@@ -40,7 +42,7 @@ class AuthTest extends AbstractIntegrationTest {
 
         mockMvc.perform(post("/api/auth/login")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content("{\"username\":\"tenant\",\"password\":\"tenant\"}"))
+                        .content("{\"username\":\"tenant\",\"password\":\"" + TEST_PASSWORD + "\"}"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.role").value("TENANT"))
                 .andExpect(jsonPath("$.apartmentId").value(apt.getId()));
@@ -50,7 +52,7 @@ class AuthTest extends AbstractIntegrationTest {
     void loginTenantWithoutApartment_noApartmentId() throws Exception {
         mockMvc.perform(post("/api/auth/login")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content("{\"username\":\"tenant\",\"password\":\"tenant\"}"))
+                        .content("{\"username\":\"tenant\",\"password\":\"" + TEST_PASSWORD + "\"}"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.apartmentId").doesNotExist());
     }

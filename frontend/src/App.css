@@ -490,8 +490,8 @@ h1 {
 /* Detail Page */
 .detail-layout {
   display: grid;
-  grid-template-columns: 1fr 400px;
-  gap: 24px;
+  grid-template-columns: 1fr 350px;
+  gap: 16px;
 }
 
 .detail-main {
@@ -563,7 +563,7 @@ h1 {
 .detail-protocols {
   background: white;
   border-radius: 12px;
-  padding: 20px;
+  padding: 16px;
   box-shadow: 0 2px 8px rgba(0,0,0,0.1);
   height: fit-content;
 }
@@ -1383,24 +1383,25 @@ h1 {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 10px;
+  padding: 6px 10px;
   border: 1px solid #f0f0f0;
-  border-radius: 8px;
+  border-radius: 6px;
+  font-size: 12px;
 }
 
 .contact-info {
   display: flex;
   flex-direction: column;
-  gap: 2px;
+  gap: 1px;
 }
 
 .contact-name {
   font-weight: 500;
-  font-size: 14px;
+  font-size: 12px;
 }
 
 .contact-value {
-  font-size: 13px;
+  font-size: 11px;
   color: #1a73e8;
 }
 
@@ -1814,6 +1815,12 @@ h1 {
 /* Paid Bills */
 .paid-bills-section {
   padding: 0 0 16px;
+  background: white;
+  border-radius: 12px;
+  padding: 20px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  max-height: 600px;
+  overflow-y: auto;
 }
 
 .paid-bills-header {
@@ -1827,6 +1834,81 @@ h1 {
   margin: 0;
   font-size: 16px;
   color: #333;
+}
+
+.paid-bills-summary {
+  background: #f8f9fa;
+  border-radius: 8px;
+  padding: 12px 16px;
+  margin-bottom: 16px;
+  border: 1px solid #e9ecef;
+}
+
+.summary-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 4px 0;
+}
+
+.summary-row.total {
+  border-top: 1px solid #dee2e6;
+  margin-top: 8px;
+  padding-top: 8px;
+  font-weight: 600;
+}
+
+.summary-label {
+  color: #666;
+  font-size: 13px;
+}
+
+.summary-value {
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.summary-value.positive {
+  color: #28a745;
+}
+
+.summary-value.negative {
+  color: #dc3545;
+}
+
+.summary-value.zero {
+  color: #6c757d;
+}
+
+.paid-bills-month-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 6px;
+  padding-bottom: 4px;
+  border-bottom: 1px solid #eee;
+}
+
+.paid-bills-month-balance {
+  font-size: 12px;
+  font-weight: 600;
+  padding: 2px 8px;
+  border-radius: 4px;
+}
+
+.paid-bills-month-balance.positive {
+  background: #d4edda;
+  color: #155724;
+}
+
+.paid-bills-month-balance.negative {
+  background: #f8d7da;
+  color: #721c24;
+}
+
+.paid-bills-month-balance.zero {
+  background: #e2e3e5;
+  color: #383d41;
 }
 
 .paid-bills-empty {

@@ -215,6 +215,11 @@
       "notRecognized": "Importo non riconosciuto",
       "failed": "Analisi fallita",
       "processing": "Elaborazione..."
+    },
+    "summary": {
+      "totalBills": "Totale Fatture",
+      "totalPaid": "Totale Pagato",
+      "balance": "Saldo"
     }
   }
 }

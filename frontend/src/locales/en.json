@@ -215,6 +215,11 @@
       "notRecognized": "Amount not recognized",
       "failed": "Analysis failed",
       "processing": "Processing..."
+    },
+    "summary": {
+      "totalBills": "Total Bills",
+      "totalPaid": "Total Paid",
+      "balance": "Balance"
     }
   }
 }
