@@ -21,6 +21,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api")
@@ -57,9 +58,10 @@ public class BillPaymentController {
 
     @PostMapping("/apartments/{id}/bills")
     public ResponseEntity<BillPayment> uploadBill(@PathVariable Long id,
-                                                   @RequestParam("file") MultipartFile file,
-                                                   @RequestParam(value = "billType", defaultValue = "Other Payments") String billType,
-                                                   Authentication auth) {
+                                                    @RequestParam("file") MultipartFile file,
+                                                    @RequestParam(value = "billType", defaultValue = "Other Payments") String billType,
+                                                    @RequestParam(value = "documentType", defaultValue = "bill") String documentType,
+                                                    Authentication auth) {
         User user = userRepository.findByUsername(auth.getName()).orElseThrow();
 
         if (user.getRole() == com.apartmentmanager.model.Role.TENANT) {
@@ -72,7 +74,7 @@ public class BillPaymentController {
 
         try {
             Apartment apartment = apartmentService.findById(id);
-            BillPayment bill = billPaymentService.upload(apartment, user, file, billType);
+            BillPayment bill = billPaymentService.upload(apartment, user, file, billType, documentType);
             auditService.log(user.getUsername(), user.getRole().name(), "BILL_UPLOADED",
                     "Uploaded bill for apartment #" + id + " (" + billType + "): " + file.getOriginalFilename(), null);
             return ResponseEntity.ok(bill);
@@ -111,5 +113,45 @@ public class BillPaymentController {
         auditService.log(user.getUsername(), user.getRole().name(), "BILL_DELETED",
                 "Deleted bill #" + id, null);
         return ResponseEntity.noContent().build();
+    }
+
+    @PostMapping("/bills/{id}/analyze")
+    @PreAuthorize("hasAnyRole('OWNER', 'ADMIN')")
+    public ResponseEntity<?> analyzeBill(@PathVariable Long id, Authentication auth) {
+        try {
+            BillPayment bill = billPaymentService.analyze(id);
+            User user = userRepository.findByUsername(auth.getName()).orElseThrow();
+            auditService.log(user.getUsername(), user.getRole().name(), "BILL_ANALYZED",
+                    "Analyzed bill #" + id + " - extracted: " + bill.getExtractedAmount(), null);
+            return ResponseEntity.ok(bill);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
+        }
+    }
+
+    @PutMapping("/bills/{id}/amount")
+    public ResponseEntity<?> updateBillAmount(@PathVariable Long id,
+                                              @RequestBody Map<String, Object> body,
+                                              Authentication auth) {
+        Double amount = null;
+        if (body.containsKey("amount")) {
+            Object val = body.get("amount");
+            if (val instanceof Number n) {
+                amount = n.doubleValue();
+            }
+        }
+        String currency = null;
+        if (body.containsKey("currency")) {
+            Object val = body.get("currency");
+            if (val instanceof String s) {
+                currency = s;
+            }
+        }
+
+        BillPayment bill = billPaymentService.updateAmount(id, amount, currency);
+        User user = userRepository.findByUsername(auth.getName()).orElseThrow();
+        auditService.log(user.getUsername(), user.getRole().name(), "BILL_AMOUNT_UPDATED",
+                "Updated bill #" + id + " amount to: " + amount + " " + currency, null);
+        return ResponseEntity.ok(bill);
     }
 }

@@ -47,6 +47,9 @@ function ApartmentList() {
   const [editingMetadata, setEditingMetadata] = useState(null);
   const [metadataDraft, setMetadataDraft] = useState([]);
   const [metadataInput, setMetadataInput] = useState('');
+  const [ocrKeywords, setOcrKeywords] = useState([]);
+  const [editingOcrKeyword, setEditingOcrKeyword] = useState(null);
+  const [ocrDraft, setOcrDraft] = useState({});
 
   const isOwner = user?.role === 'OWNER';
   const isAdmin = user?.role === 'ADMIN';
@@ -58,6 +61,7 @@ function ApartmentList() {
     fetchSummaries();
     fetchUnreadCount();
     if (canCreate) fetchUnreadTickets();
+    if (isOwner) fetchOcrKeywords();
   }, []);
 
   const fetchApartments = async () => {
@@ -80,6 +84,28 @@ function ApartmentList() {
       const data = await res.json();
       setUnreadList(data);
     }
+  };
+
+  const fetchOcrKeywords = async () => {
+    const res = await fetch(`${API}/api/ocr-keywords`, { headers: authHeader() });
+    if (res.ok) {
+      const data = await res.json();
+      setOcrKeywords(data);
+    }
+  };
+
+  const handleUpdateOcrKeyword = async (id) => {
+    const res = await fetch(`${API}/api/ocr-keywords/${id}`, {
+      method: 'PUT',
+      headers: { ...authHeader(), 'Content-Type': 'application/json' },
+      body: JSON.stringify(ocrDraft)
+    });
+    if (res.ok) {
+      const updated = await res.json();
+      setOcrKeywords(prev => prev.map(kw => kw.id === id ? updated : kw));
+    }
+    setEditingOcrKeyword(null);
+    setOcrDraft({});
   };
 
   const handleVerifyPassword = async () => {
@@ -398,6 +424,66 @@ function ApartmentList() {
           );
         })}
       </div>
+
+      {manageMode && isOwner && ocrKeywords.length > 0 && (
+        <div className="ocr-keywords-section">
+          <h3>{t('apartmentList.ocrKeywords')}</h3>
+          <p className="ocr-keywords-hint">{t('apartmentList.ocrKeywordsHint')}</p>
+          {ocrKeywords.map(kw => (
+            <div key={kw.id} className="ocr-keyword-card">
+              <div className="ocr-keyword-header">
+                <span className="ocr-keyword-lang">{kw.language.toUpperCase()}</span>
+                <span className="ocr-keyword-currency">{kw.defaultCurrency}</span>
+                {editingOcrKeyword === kw.id ? (
+                  <div className="ocr-keyword-actions">
+                    <button className="btn-primary small" onClick={() => handleUpdateOcrKeyword(kw.id)}>{t('save')}</button>
+                    <button className="btn-cancel small" onClick={() => { setEditingOcrKeyword(null); setOcrDraft({}); }}>{t('cancel')}</button>
+                  </div>
+                ) : (
+                  <button className="btn-edit small" onClick={() => { setEditingOcrKeyword(kw.id); setOcrDraft({ amountKeywords: kw.amountKeywords, languageKeywords: kw.languageKeywords, defaultCurrency: kw.defaultCurrency }); }}>{t('edit')}</button>
+                )}
+              </div>
+              {editingOcrKeyword === kw.id ? (
+                <div className="ocr-keyword-fields">
+                  <label>{t('apartmentList.ocrAmountKeywords')}</label>
+                  <textarea
+                    value={ocrDraft.amountKeywords || ''}
+                    onChange={e => setOcrDraft(prev => ({ ...prev, amountKeywords: e.target.value }))}
+                    placeholder="total|amount|summe|betrag"
+                  />
+                  <label>{t('apartmentList.ocrLanguageKeywords')}</label>
+                  <textarea
+                    value={ocrDraft.languageKeywords || ''}
+                    onChange={e => setOcrDraft(prev => ({ ...prev, languageKeywords: e.target.value }))}
+                    placeholder="rechnung|betrag|summe"
+                  />
+                  <label>{t('apartmentList.ocrDefaultCurrency')}</label>
+                  <select
+                    value={ocrDraft.defaultCurrency || 'EUR'}
+                    onChange={e => setOcrDraft(prev => ({ ...prev, defaultCurrency: e.target.value }))}
+                  >
+                    <option value="RON">RON</option>
+                    <option value="EUR">EUR</option>
+                    <option value="CHF">CHF</option>
+                    <option value="USD">USD</option>
+                  </select>
+                </div>
+              ) : (
+                <div className="ocr-keyword-view">
+                  <div className="ocr-keyword-row">
+                    <span className="ocr-kw-label">{t('apartmentList.ocrAmountKeywords')}:</span>
+                    <span className="ocr-kw-value">{kw.amountKeywords}</span>
+                  </div>
+                  <div className="ocr-keyword-row">
+                    <span className="ocr-kw-label">{t('apartmentList.ocrLanguageKeywords')}:</span>
+                    <span className="ocr-kw-value">{kw.languageKeywords}</span>
+                  </div>
+                </div>
+              )}
+            </div>
+          ))}
+        </div>
+      )}
     </div>
   );
 }

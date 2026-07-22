@@ -20,6 +20,16 @@ public class BillPayment {
 
     private String billType;
 
+    private String documentType;
+
+    private Double extractedAmount;
+
+    private String extractedCurrency;
+
+    private Double ocrConfidence;
+
+    private Boolean ocrFailed = false;
+
     private LocalDateTime uploadDate = LocalDateTime.now();
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -33,11 +43,12 @@ public class BillPayment {
 
     public BillPayment() {}
 
-    public BillPayment(String originalFileName, String storedFileName, String contentType, String billType, Apartment apartment, User uploadedBy) {
+    public BillPayment(String originalFileName, String storedFileName, String contentType, String billType, String documentType, Apartment apartment, User uploadedBy) {
         this.originalFileName = originalFileName;
         this.storedFileName = storedFileName;
         this.contentType = contentType;
         this.billType = billType;
+        this.documentType = documentType;
         this.apartment = apartment;
         this.uploadedBy = uploadedBy;
     }
@@ -56,6 +67,21 @@ public class BillPayment {
 
     public String getBillType() { return billType; }
     public void setBillType(String billType) { this.billType = billType; }
+
+    public String getDocumentType() { return documentType; }
+    public void setDocumentType(String documentType) { this.documentType = documentType; }
+
+    public Double getExtractedAmount() { return extractedAmount; }
+    public void setExtractedAmount(Double extractedAmount) { this.extractedAmount = extractedAmount; }
+
+    public String getExtractedCurrency() { return extractedCurrency; }
+    public void setExtractedCurrency(String extractedCurrency) { this.extractedCurrency = extractedCurrency; }
+
+    public Double getOcrConfidence() { return ocrConfidence; }
+    public void setOcrConfidence(Double ocrConfidence) { this.ocrConfidence = ocrConfidence; }
+
+    public Boolean getOcrFailed() { return ocrFailed; }
+    public void setOcrFailed(Boolean ocrFailed) { this.ocrFailed = ocrFailed; }
 
     public LocalDateTime getUploadDate() { return uploadDate; }
     public void setUploadDate(LocalDateTime uploadDate) { this.uploadDate = uploadDate; }

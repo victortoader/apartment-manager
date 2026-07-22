@@ -56,7 +56,12 @@
     "metadataHint": "Identificatori contract/facturare pentru atribuirea automată a facturilor",
     "addMetadataEntry": "+ Adaugă intrare",
     "noMetadata": "Încă nicio intrare de metadate.",
-    "metadataPlaceholder": "ex. nume chiriaș, număr contract, cod facturare..."
+    "metadataPlaceholder": "ex. nume chiriaș, număr contract, cod facturare...",
+    "ocrKeywords": "Cuvinte cheie OCR",
+    "ocrKeywordsHint": "Cuvinte cheie pentru recunoașterea sumelor și detectarea limbii în facturi. Separați cu | (pipe).",
+    "ocrAmountKeywords": "Cuvinte cheie Sumă",
+    "ocrLanguageKeywords": "Cuvinte cheie Limbă",
+    "ocrDefaultCurrency": "Monedă implicită"
   },
 
   "detail": {
@@ -171,8 +176,8 @@
   },
 
   "paidBills": {
-    "title": "Facturi plătite",
-    "uploadProof": "+ Încarcă dovadă",
+    "title": "Facturi / Dovadă de plată",
+    "uploadProof": "+ Încarcă",
     "uploading": "Se încarcă...",
     "chooseFile": "Alege fișier",
     "noPayments": "Încă nicio dovadă de plată încărcată.",
@@ -196,6 +201,20 @@
       "electricity": "Factură de electricitate",
       "internet": "Abonament Internet",
       "other": "Alte plăți"
+    },
+    "documentTypes": {
+      "bill": "Factură",
+      "proof": "Dovadă de plată"
+    },
+    "ocr": {
+      "analyze": "Analizează",
+      "analyzing": "Se analizează...",
+      "editAmount": "Editează suma",
+      "confidence": "Încredere OCR",
+      "noAmount": "Sumă negăsită",
+      "notRecognized": "Sumă nerecunoscută",
+      "failed": "Analiza a eșuat",
+      "processing": "Se procesează..."
     }
   }
 }

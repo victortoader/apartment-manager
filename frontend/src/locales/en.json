@@ -56,7 +56,12 @@
     "metadataHint": "Contract/billing identifiers for automated bill assignment",
     "addMetadataEntry": "+ Add Entry",
     "noMetadata": "No metadata entries yet.",
-    "metadataPlaceholder": "e.g. tenant name, contract number, billing code..."
+    "metadataPlaceholder": "e.g. tenant name, contract number, billing code...",
+    "ocrKeywords": "OCR Keywords",
+    "ocrKeywordsHint": "Keywords used to recognize amounts and detect language in bills. Separate with | (pipe).",
+    "ocrAmountKeywords": "Amount Keywords",
+    "ocrLanguageKeywords": "Language Keywords",
+    "ocrDefaultCurrency": "Default Currency"
   },
 
   "detail": {
@@ -171,8 +176,8 @@
   },
 
   "paidBills": {
-    "title": "Paid Bills",
-    "uploadProof": "+ Upload Proof",
+    "title": "Bills / Proof of Payment",
+    "uploadProof": "+ Upload",
     "uploading": "Uploading...",
     "chooseFile": "Choose File",
     "noPayments": "No payment proofs uploaded yet.",
@@ -196,6 +201,20 @@
       "electricity": "Electricity Bill",
       "internet": "Internet Subscription",
       "other": "Other Payments"
+    },
+    "documentTypes": {
+      "bill": "Bill",
+      "proof": "Proof of Payment"
+    },
+    "ocr": {
+      "analyze": "Analyze",
+      "analyzing": "Analyzing...",
+      "editAmount": "Edit amount",
+      "confidence": "OCR confidence",
+      "noAmount": "No amount found",
+      "notRecognized": "Amount not recognized",
+      "failed": "Analysis failed",
+      "processing": "Processing..."
     }
   }
 }

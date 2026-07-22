@@ -4,6 +4,7 @@ import com.apartmentmanager.model.*;
 import com.apartmentmanager.repository.ApartmentRepository;
 import com.apartmentmanager.repository.ContactRepository;
 import com.apartmentmanager.repository.NoteRepository;
+import com.apartmentmanager.repository.OcrKeywordsRepository;
 import com.apartmentmanager.repository.TicketRepository;
 import com.apartmentmanager.repository.UserRepository;
 import jakarta.annotation.PostConstruct;
@@ -27,6 +28,7 @@ public class SeedDataService {
     private final TicketRepository ticketRepository;
     private final ContactRepository contactRepository;
     private final NoteRepository noteRepository;
+    private final OcrKeywordsRepository ocrKeywordsRepository;
     private final PasswordEncoder passwordEncoder;
 
     @Value("${app.seed.enabled:false}")
@@ -38,6 +40,7 @@ public class SeedDataService {
                            TicketRepository ticketRepository,
                            ContactRepository contactRepository,
                            NoteRepository noteRepository,
+                           OcrKeywordsRepository ocrKeywordsRepository,
                            PasswordEncoder passwordEncoder,
                            UserService userService) {
         this.userRepository = userRepository;
@@ -46,6 +49,7 @@ public class SeedDataService {
         this.ticketRepository = ticketRepository;
         this.contactRepository = contactRepository;
         this.noteRepository = noteRepository;
+        this.ocrKeywordsRepository = ocrKeywordsRepository;
         this.passwordEncoder = passwordEncoder;
     }
 
@@ -172,6 +176,27 @@ public class SeedDataService {
 
         ap2.setPresentation("Charming garden apartment on the ground floor of a quiet residential building in Berlin-Charlottenburg. This 3-room apartment offers a private garden terrace, perfect for families or anyone who loves outdoor space.\n\nThe apartment has been tastefully renovated while preserving its original character. Features include a modern open kitchen, spacious living room with garden access, two bright bedrooms, and a separate dining area.\n\nThe building has a shared courtyard with children's play area and bike storage. Street parking is available with a resident permit.\n\nNearest transit: U3 Wilmersdorfer Straße (5 min walk), bus 109 direct to Kurfürstendamm. Close to Savignyplatz, Charlottenburg Palace, and KaDeWe.\n\nPets are welcome upon discussion.");
         ap2 = apartmentService.save(ap2);
+
+        seedOcrKeywords();
+    }
+
+    private void seedOcrKeywords() {
+        if (ocrKeywordsRepository.count() > 0) return;
+
+        ocrKeywordsRepository.save(new OcrKeywords("ro",
+            "total|total de achitat|de achitat|suma de plată|total de plată|factură|sumă|valoare|plătit",
+            "achitat|platit|plătit|factura|factură|număr|adresă|adresa|cont|client",
+            "RON"));
+
+        ocrKeywordsRepository.save(new OcrKeywords("de",
+            "total|amount|summe|betrag|gesamt|rechnungsbetrag|zahlbetrag|brutto|netto|jährlich zahlbar",
+            "rechnung|betrag|summe|gesamt|datum|konto|vertrag|kunde|firma|adresse",
+            "CHF"));
+
+        ocrKeywordsRepository.save(new OcrKeywords("en",
+            "total|amount|sum due|payment amount|balance due|invoice total|total due|grand total",
+            "total|amount|invoice|payment|account|contract|customer|billing|address|date",
+            "EUR"));
     }
 
     private byte[] createPlaceholderImage(String label) {

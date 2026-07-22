@@ -56,7 +56,12 @@
     "metadataHint": "Identificativi contratto/fatturazione per assegnazione automatica bollette",
     "addMetadataEntry": "+ Aggiungi voce",
     "noMetadata": "Nessun metadato ancora.",
-    "metadataPlaceholder": "es. nome inquilino, numero contratto, codice fatturazione..."
+    "metadataPlaceholder": "es. nome inquilino, numero contratto, codice fatturazione...",
+    "ocrKeywords": "Parole chiave OCR",
+    "ocrKeywordsHint": "Parole chiave per riconoscere importi e rilevare la lingua nelle bollette. Separare con | (pipe).",
+    "ocrAmountKeywords": "Parole chiave Importo",
+    "ocrLanguageKeywords": "Parole chiave Lingua",
+    "ocrDefaultCurrency": "Valuta predefinita"
   },
 
   "detail": {
@@ -171,8 +176,8 @@
   },
 
   "paidBills": {
-    "title": "Bollette pagate",
-    "uploadProof": "+ Carica prova",
+    "title": "Bollette / Prova di pagamento",
+    "uploadProof": "+ Carica",
     "uploading": "Caricamento...",
     "chooseFile": "Scegli file",
     "noPayments": "Nessuna prova di pagamento caricata ancora.",
@@ -196,6 +201,20 @@
       "electricity": "Bolletta elettricità",
       "internet": "Abbonamento Internet",
       "other": "Altri pagamenti"
+    },
+    "documentTypes": {
+      "bill": "Fattura",
+      "proof": "Prova di pagamento"
+    },
+    "ocr": {
+      "analyze": "Analizza",
+      "analyzing": "Analisi in corso...",
+      "editAmount": "Modifica importo",
+      "confidence": "Confidenza OCR",
+      "noAmount": "Nessun importo trovato",
+      "notRecognized": "Importo non riconosciuto",
+      "failed": "Analisi fallita",
+      "processing": "Elaborazione..."
     }
   }
 }

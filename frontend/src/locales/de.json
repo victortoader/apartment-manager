@@ -56,7 +56,12 @@
     "metadataHint": "Vertrags-/Abrechnungskennungen für automatische Rechnungszuordnung",
     "addMetadataEntry": "+ Eintrag hinzufügen",
     "noMetadata": "Noch keine Metadaten-Einträge.",
-    "metadataPlaceholder": "z.B. Mietername, Vertragsnummer, Abrechnungscode..."
+    "metadataPlaceholder": "z.B. Mietername, Vertragsnummer, Abrechnungscode...",
+    "ocrKeywords": "OCR-Schlüsselwörter",
+    "ocrKeywordsHint": "Schlüsselwörter zur Erkennung von Beträgen und Sprache in Rechnungen. Mit | (Pipe) trennen.",
+    "ocrAmountKeywords": "Betrag-Schlüsselwörter",
+    "ocrLanguageKeywords": "Sprach-Schlüsselwörter",
+    "ocrDefaultCurrency": "Standardwährung"
   },
 
   "detail": {
@@ -171,8 +176,8 @@
   },
 
   "paidBills": {
-    "title": "Bezahlte Rechnungen",
-    "uploadProof": "+ Nachweis hochladen",
+    "title": "Rechnungen / Zahlungsnachweis",
+    "uploadProof": "+ Hochladen",
     "uploading": "Hochladen...",
     "chooseFile": "Datei wählen",
     "noPayments": "Noch keine Zahlungsnachweise hochgeladen.",
@@ -196,6 +201,20 @@
       "electricity": "Stromrechnung",
       "internet": "Internet-Abonnement",
       "other": "Sonstige Zahlungen"
+    },
+    "documentTypes": {
+      "bill": "Rechnung",
+      "proof": "Zahlungsnachweis"
+    },
+    "ocr": {
+      "analyze": "Analysieren",
+      "analyzing": "Analysiere...",
+      "editAmount": "Betrag bearbeiten",
+      "confidence": "OCR-Konfidenz",
+      "noAmount": "Kein Betrag gefunden",
+      "notRecognized": "Betrag nicht erkannt",
+      "failed": "Analyse fehlgeschlagen",
+      "processing": "Verarbeitung..."
     }
   }
 }

@@ -56,7 +56,12 @@
     "metadataHint": "Identifiants contrat/facturation pour l'affectation automatique des factures",
     "addMetadataEntry": "+ Ajouter une entrée",
     "noMetadata": "Aucune métadonnée pour le moment.",
-    "metadataPlaceholder": "ex. nom du locataire, numéro de contrat, code de facturation..."
+    "metadataPlaceholder": "ex. nom du locataire, numéro de contrat, code de facturation...",
+    "ocrKeywords": "Mots-clés OCR",
+    "ocrKeywordsHint": "Mots-clés pour reconnaître les montants et détecter la langue dans les factures. Séparer avec | (pipe).",
+    "ocrAmountKeywords": "Mots-clés Montant",
+    "ocrLanguageKeywords": "Mots-clés Langue",
+    "ocrDefaultCurrency": "Devise par défaut"
   },
 
   "detail": {
@@ -171,8 +176,8 @@
   },
 
   "paidBills": {
-    "title": "Factures payées",
-    "uploadProof": "+ Télécharger une preuve",
+    "title": "Factures / Preuve de paiement",
+    "uploadProof": "+ Télécharger",
     "uploading": "Téléchargement...",
     "chooseFile": "Choisir un fichier",
     "noPayments": "Aucune preuve de paiement téléchargée pour le moment.",
@@ -196,6 +201,20 @@
       "electricity": "Facture d'électricité",
       "internet": "Abonnement Internet",
       "other": "Autres paiements"
+    },
+    "documentTypes": {
+      "bill": "Facture",
+      "proof": "Preuve de paiement"
+    },
+    "ocr": {
+      "analyze": "Analyser",
+      "analyzing": "Analyse en cours...",
+      "editAmount": "Modifier le montant",
+      "confidence": "Confiance OCR",
+      "noAmount": "Aucun montant trouvé",
+      "notRecognized": "Montant non reconnu",
+      "failed": "Échec de l'analyse",
+      "processing": "Traitement..."
     }
   }
 }
