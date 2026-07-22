@@ -31,6 +31,12 @@ chmod 600 .env
 echo "Rebuilding and restarting application..."
 docker compose up -d --build --remove-orphans
 
+echo "Resetting default users (truncating users table)..."
+docker compose exec -T db psql -U "$DB_USERNAME" -d apartment-management-db -c "TRUNCATE TABLE users CASCADE;" || echo "Warning: Could not truncate users table (DB may not be ready yet)"
+
+echo "Restarting backend to re-seed default users..."
+docker compose restart backend
+
 echo "Removing unused Docker images..."
 docker image prune -f
 
