@@ -1991,23 +1991,23 @@ h1 {
   white-space: nowrap;
 }
 
-.paid-bills-doc-icon {
+.paid-bills-doc-label {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 24px;
-  height: 24px;
+  padding: 2px 8px;
   border-radius: 4px;
-  font-size: 12px;
+  font-size: 11px;
+  font-weight: 600;
   flex-shrink: 0;
 }
 
-.paid-bills-doc-icon.bill {
+.paid-bills-doc-label.bill {
   background: #f8d7da;
   color: #dc3545;
 }
 
-.paid-bills-doc-icon.proof {
+.paid-bills-doc-label.proof {
   background: #d1ecf1;
   color: #0c5460;
 }

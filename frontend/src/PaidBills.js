@@ -187,8 +187,8 @@ function PaidBills({ apartmentId }) {
               <ul className="paid-bills-list">
                 {group.items.map(bill => (
                   <li key={bill.id} className="paid-bills-item">
-                    <span className={`paid-bills-doc-icon ${bill.documentType === 'proof' ? 'proof' : 'bill'}`}>
-                      {bill.documentType === 'proof' ? '✓' : '📄'}
+                    <span className={`paid-bills-doc-label ${bill.documentType === 'proof' ? 'proof' : 'bill'}`}>
+                      {bill.documentType === 'proof' ? t('paidBills.documentTypes.proof') : t('paidBills.documentTypes.bill')}
                     </span>
                     <span className="paid-bills-format">{getFileExtension(bill.originalFileName)}</span>
                     <span className="paid-bills-type">{t(`paidBills.billTypes.${BILL_TYPE_TO_KEY[bill.billType] || 'other'}`)}</span>
