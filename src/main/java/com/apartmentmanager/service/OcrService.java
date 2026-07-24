@@ -90,30 +90,7 @@ public class OcrService {
         }
     }
 
-    public String detectDocumentType(String text) {
-        if (text == null || text.isEmpty()) return "bill";
 
-        String lower = text.toLowerCase();
-
-        List<OcrKeywords> all = ocrKeywordsRepository.findAll();
-        for (OcrKeywords kw : all) {
-            if (kw.getPaymentKeywords() != null && !kw.getPaymentKeywords().isEmpty()) {
-                for (String keyword : kw.getPaymentKeywords().split("\\|")) {
-                    if (lower.contains(keyword.trim().toLowerCase())) {
-                        log.info("Payment keyword detected: '{}' -> document type: proof", keyword.trim());
-                        return "proof";
-                    }
-                }
-            }
-        }
-
-        if (lower.contains("-") && (lower.contains("amount") || lower.contains("total") || lower.contains("summe") || lower.contains("betrag"))) {
-            log.info("Negative amount detected -> document type: proof");
-            return "proof";
-        }
-
-        return "bill";
-    }
 
     private OcrResult analyzePdf(Path filePath) throws IOException {
         try (PDDocument document = Loader.loadPDF(filePath.toFile())) {
@@ -124,9 +101,8 @@ public class OcrService {
             }
 
             if (text != null && text.trim().length() > 10) {
-                String docType = detectDocumentType(text);
-                OcrResult result = parseAmountFromText(text, 0.95, docType);
-                log.info("Amount parsing result: amount={}, confidence={}, docType={}", result.getAmount(), result.getConfidence(), docType);
+                OcrResult result = parseAmountFromText(text, 0.95);
+                log.info("Amount parsing result: amount={}, confidence={}", result.getAmount(), result.getConfidence());
                 return result;
             }
 
@@ -135,8 +111,7 @@ public class OcrService {
                 String imageText = extractTextFromEmbeddedImages(page);
                 if (imageText != null && imageText.trim().length() > 10) {
                     log.info("Found text in embedded images: {} chars", imageText.length());
-                    String docType = detectDocumentType(imageText);
-                    return parseAmountFromText(imageText, 0.70, docType);
+                    return parseAmountFromText(imageText, 0.70);
                 }
             }
 
@@ -206,8 +181,7 @@ public class OcrService {
             return new OcrResult(null, null, 0.0);
         }
 
-        String docType = detectDocumentType(allText.toString());
-        return parseAmountFromText(allText.toString(), 0.60, docType);
+        return parseAmountFromText(allText.toString(), 0.60);
     }
 
     private OcrResult analyzeImage(Path filePath) throws IOException, TesseractException {
@@ -219,11 +193,10 @@ public class OcrService {
             return new OcrResult(null, null, 0.0);
         }
 
-        String docType = detectDocumentType(text);
-        return parseAmountFromText(text, 0.80, docType);
+        return parseAmountFromText(text, 0.80);
     }
 
-    private OcrResult parseAmountFromText(String text, double baseConfidence, String docType) {
+    private OcrResult parseAmountFromText(String text, double baseConfidence) {
         Pattern amountPattern = buildAmountPattern();
         Matcher matcher = amountPattern.matcher(text);
 
@@ -238,16 +211,9 @@ public class OcrService {
             Double amount = parseGermanNumber(amountStr);
 
             if (amount != null) {
-                boolean hasMinusSign = text.contains("- " + amountStr) || text.contains("-" + amountStr) ||
-                    (matcher.start() > 0 && text.charAt(matcher.start() - 1) == '-');
-                if (hasMinusSign && amount > 0) {
-                    amount = -amount;
-                    docType = "proof";
-                    log.info("Negative amount detected, setting docType to proof");
-                }
                 double confidence = Math.min(baseConfidence, 0.99);
-                log.info("Parsed amount: {} {} with confidence {} docType={}", amount, currency, confidence, docType);
-                return new OcrResult(amount, currency, confidence, docType);
+                log.info("Parsed amount: {} {} with confidence {}", amount, currency, confidence);
+                return new OcrResult(amount, currency, confidence);
             }
         }
 
@@ -258,11 +224,10 @@ public class OcrService {
             log.info("Negative amount pattern matched: '{}'", amountStr);
             Double amount = parseGermanNumber(amountStr);
             if (amount != null && amount > 0 && amount < 100000) {
-                amount = -amount;
                 String currency = detectCurrencyNearAmount(text, amountStr);
                 double confidence = Math.min(baseConfidence * 0.8, 0.70);
                 log.info("Parsed negative amount: {} {} with confidence {}", amount, currency, confidence);
-                return new OcrResult(amount, currency, confidence, "proof");
+                return new OcrResult(-amount, currency, confidence);
             }
         }
 
@@ -278,12 +243,12 @@ public class OcrService {
                 double confidence = Math.min(baseConfidence * 0.7, 0.60);
                 String currency = detectCurrencyNearAmount(text, amountStr);
                 log.info("Fallback amount: {} {} with confidence {}", amount, currency, confidence);
-                return new OcrResult(amount, currency, confidence, docType);
+                return new OcrResult(amount, currency, confidence);
             }
         }
 
         log.info("No amount found in text ({} chars)", text.length());
-        return new OcrResult(null, null, baseConfidence * 0.3, docType);
+        return new OcrResult(null, null, baseConfidence * 0.3);
     }
 
     private String detectCurrencyNearAmount(String text, String amountStr) {
@@ -384,22 +349,15 @@ public class OcrService {
         private final Double amount;
         private final String currency;
         private final double confidence;
-        private final String detectedDocumentType;
 
-        public OcrResult(Double amount, String currency, double confidence, String detectedDocumentType) {
+        public OcrResult(Double amount, String currency, double confidence) {
             this.amount = amount;
             this.currency = currency;
             this.confidence = confidence;
-            this.detectedDocumentType = detectedDocumentType;
-        }
-
-        public OcrResult(Double amount, String currency, double confidence) {
-            this(amount, currency, confidence, "bill");
         }
 
         public Double getAmount() { return amount; }
         public String getCurrency() { return currency; }
         public double getConfidence() { return confidence; }
-        public String getDetectedDocumentType() { return detectedDocumentType; }
     }
 }

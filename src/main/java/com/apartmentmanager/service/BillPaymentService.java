@@ -69,11 +69,8 @@ public class BillPaymentService {
                 billRef.setExtractedCurrency(result.getCurrency());
                 billRef.setOcrConfidence(result.getConfidence());
                 billRef.setOcrFailed(false);
-                if (result.getDetectedDocumentType() != null) {
-                    billRef.setDocumentType(result.getDetectedDocumentType());
-                }
                 billPaymentRepository.save(billRef);
-                log.info("Auto-OCR for bill #{}: amount={} {} confidence={} docType={}", billRef.getId(), result.getAmount(), result.getCurrency(), result.getConfidence(), billRef.getDocumentType());
+                log.info("Auto-OCR for bill #{}: amount={} {} confidence={}", billRef.getId(), result.getAmount(), result.getCurrency(), result.getConfidence());
             } catch (Exception e) {
                 log.warn("Auto-OCR failed for bill #{}: {}", billRef.getId(), e.getMessage());
                 billRef.setOcrFailed(true);
@@ -123,9 +120,6 @@ public class BillPaymentService {
         bill.setExtractedAmount(result.getAmount());
         bill.setExtractedCurrency(result.getCurrency());
         bill.setOcrConfidence(result.getConfidence());
-        if (result.getDetectedDocumentType() != null) {
-            bill.setDocumentType(result.getDetectedDocumentType());
-        }
 
         return billPaymentRepository.save(bill);
     }
