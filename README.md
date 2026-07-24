@@ -8,7 +8,9 @@ A full-stack apartment management portal with JWT-based role-based access contro
 - **Frontend:** React 18, React Router
 - **Database:** H2 (local dev) / PostgreSQL 16 (Docker/production)
 - **Auth:** JWT (jjwt 0.12.x), BCrypt, Spring Security 7.1
-- **Deployment:** Docker Compose, nginx reverse proxy
+- **OCR:** Tess4J 5.11.0 + PDFBox 3.0.3 (bill text extraction)
+- **Email:** Jakarta Mail IMAP (Gmail bill fetching)
+- **Deployment:** Docker Compose, nginx reverse proxy, GitHub Actions CI/CD
 
 ## Roles
 
@@ -108,6 +110,7 @@ Deployment is automated via GitHub Actions. Pushing to `main` triggers the CI/CD
 aws ssm put-parameter --name "/apartment-manager/DB_USERNAME" --type String --value "apartment_user"
 aws ssm put-parameter --name "/apartment-manager/DB_PASSWORD" --type SecureString --value "<your-strong-password>"
 aws ssm put-parameter --name "/apartment-manager/JWT_SECRET" --type SecureString --value "<your-base64-secret>"
+aws ssm put-parameter --name "/apartment-manager/DEFAULT_PASSWORD" --type SecureString --value "<your-chosen-password>"
 ```
 
 Generate a JWT secret: `openssl rand -base64 48`
@@ -141,6 +144,9 @@ Generate a JWT secret: `openssl rand -base64 48`
 2. SSHs into EC2 and runs `scripts/deploy.sh`
 3. `deploy.sh` pulls the latest code, fetches secrets from SSM Parameter Store, then runs `docker compose up -d --build`
 4. Docker Compose rebuilds and restarts all services
+5. The `users` table is truncated and default users are re-created with the current `DEFAULT_PASSWORD` from SSM
+
+**Note:** Every deployment resets all user passwords to the current `DEFAULT_PASSWORD` value. Any custom users created via the UI will be wiped on the next deploy.
 
 ## API Endpoints
 
@@ -233,16 +239,53 @@ Set these in a `.env` file in the project root (gitignored):
 | `DB_USERNAME` | `apartment_user` | PostgreSQL username |
 | `DB_PASSWORD` | `changeme` | PostgreSQL password |
 | `JWT_SECRET` | base64 string | JWT signing secret (min 32 bytes decoded) |
+| `DEFAULT_PASSWORD` | `admin` | Password for default users (owner, admin, tenant) |
+| `EMAIL_FETCH_ENABLED` | `false` | Enable Gmail IMAP bill fetching |
+| `EMAIL_FETCH_ADDRESS` | `your@gmail.com` | Gmail address to fetch from |
+| `EMAIL_FETCH_PASSWORD` | `abcdefghijklmnop` | Gmail App Password |
 
 ### Production (EC2)
 
 Secrets are stored in AWS SSM Parameter Store and fetched at deploy time by `deploy.sh`:
 
-| SSM Parameter | Description |
-|---------------|-------------|
-| `/apartment-manager/DB_USERNAME` | PostgreSQL username |
-| `/apartment-manager/DB_PASSWORD` | PostgreSQL password |
-| `/apartment-manager/JWT_SECRET` | JWT signing secret |
+| SSM Parameter | Required | Description |
+|---------------|----------|-------------|
+| `/apartment-manager/DB_USERNAME` | Yes | PostgreSQL username |
+| `/apartment-manager/DB_PASSWORD` | Yes | PostgreSQL password |
+| `/apartment-manager/JWT_SECRET` | Yes | JWT signing secret |
+| `/apartment-manager/DEFAULT_PASSWORD` | Yes | Password for all default users |
+| `/apartment-manager/EMAIL_FETCH_ENABLED` | No | Set to `true` to enable email bill fetching |
+| `/apartment-manager/EMAIL_FETCH_ADDRESS` | No | Gmail address to fetch from |
+| `/apartment-manager/EMAIL_FETCH_PASSWORD` | No | Gmail App Password (not your regular password) |
+
+## Email Bill Fetching (Optional)
+
+The app can automatically fetch bills from a Gmail account via IMAP and save them as bill payments.
+
+### Setup
+
+1. Enable IMAP in Gmail (Settings → Forwarding and POP/IMAP → Enable IMAP)
+2. Create a Gmail App Password (Google Account → Security → 2-Step Verification → App passwords → Mail)
+3. Create SSM parameters on EC2:
+
+```bash
+aws ssm put-parameter --name "/apartment-manager/EMAIL_FETCH_ENABLED" --type String --value "true"
+aws ssm put-parameter --name "/apartment-manager/EMAIL_FETCH_ADDRESS" --type String --value "your@gmail.com"
+aws ssm put-parameter --name "/apartment-manager/EMAIL_FETCH_PASSWORD" --type SecureString --value "abcdefghijklmnop"
+```
+
+4. Redeploy
+
+### How it works
+
+- Polls Gmail IMAP every 5 minutes
+- Downloads all attachments from unread emails
+- Saves them as bill payments under the first apartment in the database
+- Marks processed emails as read
+
+### Future: AI-Based Apartment Matching
+
+Planned: use Amazon Bedrock (Nova Micro) to match bills to apartments based on bill content (address, tenant name, etc.) instead of assigning to the first apartment.
 
 ## Project Structure
 

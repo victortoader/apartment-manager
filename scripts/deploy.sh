@@ -20,11 +20,18 @@ DB_PASSWORD=$(aws ssm get-parameter --name "$SSM_PREFIX/DB_PASSWORD" --with-decr
 JWT_SECRET=$(aws ssm get-parameter --name "$SSM_PREFIX/JWT_SECRET" --with-decryption --query "Parameter.Value" --output text)
 DEFAULT_PASSWORD=$(aws ssm get-parameter --name "$SSM_PREFIX/DEFAULT_PASSWORD" --with-decryption --query "Parameter.Value" --output text)
 
+EMAIL_FETCH_ENABLED=$(aws ssm get-parameter --name "$SSM_PREFIX/EMAIL_FETCH_ENABLED" --with-decryption --query "Parameter.Value" --output text 2>/dev/null || echo "false")
+EMAIL_FETCH_ADDRESS=$(aws ssm get-parameter --name "$SSM_PREFIX/EMAIL_FETCH_ADDRESS" --with-decryption --query "Parameter.Value" --output text 2>/dev/null || echo "")
+EMAIL_FETCH_PASSWORD=$(aws ssm get-parameter --name "$SSM_PREFIX/EMAIL_FETCH_PASSWORD" --with-decryption --query "Parameter.Value" --output text 2>/dev/null || echo "")
+
 cat > .env <<EOF
 DB_USERNAME=$DB_USERNAME
 DB_PASSWORD=$DB_PASSWORD
 JWT_SECRET=$JWT_SECRET
 DEFAULT_PASSWORD=$DEFAULT_PASSWORD
+EMAIL_FETCH_ENABLED=$EMAIL_FETCH_ENABLED
+EMAIL_FETCH_ADDRESS=$EMAIL_FETCH_ADDRESS
+EMAIL_FETCH_PASSWORD=$EMAIL_FETCH_PASSWORD
 EOF
 chmod 600 .env
 

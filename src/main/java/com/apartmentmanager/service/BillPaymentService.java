@@ -45,16 +45,19 @@ public class BillPaymentService {
     }
 
     public BillPayment upload(Apartment apartment, User user, MultipartFile file, String billType, String documentType) throws IOException {
-        String originalName = file.getOriginalFilename();
+        return uploadFromBytes(apartment, user, file.getBytes(), file.getOriginalFilename(), file.getContentType(), billType, documentType);
+    }
+
+    public BillPayment uploadFromBytes(Apartment apartment, User user, byte[] data, String originalName, String contentType, String billType, String documentType) throws IOException {
         String ext = "";
         if (originalName != null && originalName.contains(".")) {
             ext = originalName.substring(originalName.lastIndexOf("."));
         }
         String storedName = UUID.randomUUID() + ext;
         Path filePath = uploadPath.resolve(storedName);
-        Files.write(filePath, file.getBytes());
+        Files.write(filePath, data);
 
-        BillPayment bill = new BillPayment(originalName, storedName, file.getContentType(), billType, documentType, apartment, user);
+        BillPayment bill = new BillPayment(originalName, storedName, contentType, billType, documentType, apartment, user);
         bill = billPaymentRepository.save(bill);
 
         final BillPayment billRef = bill;
