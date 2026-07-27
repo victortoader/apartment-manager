@@ -1,11 +1,17 @@
 variable "aws_region" {
   description = "AWS region"
   type        = string
-  default     = "eu-central-1"
+  default     = "eu-north-1"
 }
 
 variable "project_name" {
-  description = "Project name used for resource naming and SSM prefix"
+  description = "Project name used for resource naming (tags, IAM, etc.)"
+  type        = string
+  default     = "TEST-apartment-manager"
+}
+
+variable "ssm_prefix" {
+  description = "SSM parameter prefix (matches the existing prod params)"
   type        = string
   default     = "apartment-manager"
 }

@@ -1,16 +1,12 @@
 # Copy this file to terraform.tfvars and fill in the values.
 # NEVER commit terraform.tfvars to git.
 
-aws_region       = "eu-central-1"
+aws_region       = "eu-north-1"
 environment      = "test"
-instance_type    = "t3.small"
-volume_size      = 30
+instance_type    = "t3.micro"
+volume_size      = 15
 branch           = "main"
 
 # SSH public key (optional - leave empty or omit for HTTP-only)
 # To generate: ssh-keygen -t ed25519 -C "apartment-manager"
 # ssh_public_key = "ssh-ed25519 AAAA..."
-
-# Optional: restrict SSH to your IP (default: 0.0.0.0/0)
-# Find your IP: https://whatismyipaddress.com
-# ssh_cidr       = "YOUR_IP/32"

@@ -25,5 +25,5 @@ output "ssh_command" {
 
 output "ssm_prefix" {
   description = "SSM parameter prefix"
-  value       = "/${var.project_name}"
+  value       = "/${var.ssm_prefix}"
 }

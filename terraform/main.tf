@@ -43,6 +43,14 @@ resource "aws_security_group" "app" {
   description = "Security group for apartment manager EC2"
   vpc_id      = data.aws_vpc.default.id
 
+  ingress {
+    from_port   = 22
+    to_port     = 22
+    protocol    = "tcp"
+    cidr_blocks = ["3.120.181.40/29"]
+    description = "EC2 Instance Connect"
+  }
+
   dynamic "ingress" {
     for_each = var.ssh_public_key != "" ? [1] : []
     content {
@@ -110,11 +118,11 @@ resource "aws_iam_role_policy" "ssm_read" {
     Statement = [{
       Effect   = "Allow"
       Action   = "ssm:GetParameter"
-      Resource = "arn:aws:ssm:*:*:parameter/${var.project_name}/*"
+      Resource = "arn:aws:ssm:*:*:parameter/${var.ssm_prefix}/*"
     }, {
       Effect   = "Allow"
       Action   = "ssm:GetParameter"
-      Resource = "arn:aws:ssm:*:*:parameter/${var.project_name}"
+      Resource = "arn:aws:ssm:*:*:parameter/${var.ssm_prefix}"
     }]
   })
 }
