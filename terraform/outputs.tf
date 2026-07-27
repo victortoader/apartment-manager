@@ -19,8 +19,8 @@ output "app_url" {
 }
 
 output "ssh_command" {
-  description = "SSH command to connect to the instance"
-  value       = "ssh -i <your-key>.pem ubuntu@${aws_eip.app.public_ip}"
+  description = "SSH command to connect to the instance (only available if ssh_public_key was provided)"
+  value       = var.ssh_public_key != "" ? "ssh -i <your-key>.pem ubuntu@${aws_eip.app.public_ip}" : "SSH not configured - use SSM Session Manager or AWS Console"
 }
 
 output "ssm_prefix" {

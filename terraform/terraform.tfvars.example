@@ -7,8 +7,9 @@ instance_type    = "t3.small"
 volume_size      = 30
 branch           = "main"
 
-# SSH public key - generate with: ssh-keygen -t ed25519 -C "apartment-manager"
-ssh_public_key   = "ssh-ed25519 AAAA..."
+# SSH public key (optional - leave empty or omit for HTTP-only)
+# To generate: ssh-keygen -t ed25519 -C "apartment-manager"
+# ssh_public_key = "ssh-ed25519 AAAA..."
 
 # Optional: restrict SSH to your IP (default: 0.0.0.0/0)
 # Find your IP: https://whatismyipaddress.com

@@ -33,6 +33,7 @@ data "aws_vpc" "default" {
 }
 
 resource "aws_key_pair" "deployer" {
+  count      = var.ssh_public_key != "" ? 1 : 0
   key_name   = "${var.project_name}-deployer-${var.environment}"
   public_key = var.ssh_public_key
 }
@@ -42,12 +43,15 @@ resource "aws_security_group" "app" {
   description = "Security group for apartment manager EC2"
   vpc_id      = data.aws_vpc.default.id
 
-  ingress {
-    from_port   = 22
-    to_port     = 22
-    protocol    = "tcp"
-    cidr_blocks = [var.ssh_cidr]
-    description = "SSH"
+  dynamic "ingress" {
+    for_each = var.ssh_public_key != "" ? [1] : []
+    content {
+      from_port   = 22
+      to_port     = 22
+      protocol    = "tcp"
+      cidr_blocks = [var.ssh_cidr]
+      description = "SSH"
+    }
   }
 
   ingress {
@@ -123,7 +127,7 @@ resource "aws_iam_instance_profile" "app" {
 resource "aws_instance" "app" {
   ami                    = data.aws_ami.ubuntu.id
   instance_type          = var.instance_type
-  key_name               = aws_key_pair.deployer.key_name
+  key_name               = var.ssh_public_key != "" ? aws_key_pair.deployer[0].key_name : null
   vpc_security_group_ids = [aws_security_group.app.id]
   iam_instance_profile   = aws_iam_instance_profile.app.name
 

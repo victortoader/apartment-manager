@@ -29,8 +29,9 @@ variable "volume_size" {
 }
 
 variable "ssh_public_key" {
-  description = "SSH public key for the deployer key pair"
+  description = "SSH public key for the deployer key pair (leave empty to skip)"
   type        = string
+  default     = ""
 }
 
 variable "ssh_cidr" {
