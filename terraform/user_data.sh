@@ -28,7 +28,7 @@ unzip -q /tmp/awscliv2.zip -d /tmp
 rm -rf /tmp/aws /tmp/awscliv2.zip
 
 echo "=== Cloning repository ==="
-su - ubuntu -c "git clone --branch ${branch} ${git_repo_url} ${APP_DIR:-/home/ubuntu/apartment-manager}"
+su - ubuntu -c "git clone --branch ${branch} ${git_repo_url} /home/ubuntu/apartment-manager"
 
 echo "=== Preparing for HTTP-only deployment (no SSL) ==="
 APP_DIR="/home/ubuntu/apartment-manager"
