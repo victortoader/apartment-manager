@@ -5,22 +5,22 @@ output "instance_id" {
 
 output "public_ip" {
   description = "Public IP address"
-  value       = aws_eip.app.public_ip
+  value       = aws_instance.app.public_ip
 }
 
 output "public_dns" {
   description = "Public DNS name"
-  value       = aws_eip.app.public_dns
+  value       = aws_instance.app.public_dns
 }
 
 output "app_url" {
   description = "Application URL"
-  value       = "http://${aws_eip.app.public_ip}"
+  value       = "http://${aws_instance.app.public_ip}"
 }
 
 output "ssh_command" {
   description = "SSH command to connect to the instance (only available if ssh_public_key was provided)"
-  value       = var.ssh_public_key != "" ? "ssh -i <your-key>.pem ubuntu@${aws_eip.app.public_ip}" : "SSH not configured - use SSM Session Manager or AWS Console"
+  value       = var.ssh_public_key != "" ? "ssh -i <your-key>.pem ubuntu@${aws_instance.app.public_ip}" : "SSH not configured - use SSM Session Manager or AWS Console"
 }
 
 output "ssm_prefix" {

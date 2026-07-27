@@ -19,13 +19,13 @@ variable "environment" {
 variable "instance_type" {
   description = "EC2 instance type"
   type        = string
-  default     = "t3.small"
+  default     = "t3.nano"
 }
 
 variable "volume_size" {
   description = "Root volume size in GB"
   type        = number
-  default     = 30
+  default     = 15
 }
 
 variable "ssh_public_key" {

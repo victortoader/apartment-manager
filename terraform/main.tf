@@ -125,11 +125,12 @@ resource "aws_iam_instance_profile" "app" {
 }
 
 resource "aws_instance" "app" {
-  ami                    = data.aws_ami.ubuntu.id
-  instance_type          = var.instance_type
-  key_name               = var.ssh_public_key != "" ? aws_key_pair.deployer[0].key_name : null
-  vpc_security_group_ids = [aws_security_group.app.id]
-  iam_instance_profile   = aws_iam_instance_profile.app.name
+  ami                         = data.aws_ami.ubuntu.id
+  instance_type               = var.instance_type
+  key_name                    = var.ssh_public_key != "" ? aws_key_pair.deployer[0].key_name : null
+  vpc_security_group_ids      = [aws_security_group.app.id]
+  iam_instance_profile        = aws_iam_instance_profile.app.name
+  associate_public_ip_address = true
 
   root_block_device {
     volume_size = var.volume_size
@@ -143,14 +144,5 @@ resource "aws_instance" "app" {
 
   tags = {
     Name = "${var.project_name}-${var.environment}"
-  }
-}
-
-resource "aws_eip" "app" {
-  instance = aws_instance.app.id
-  domain   = "vpc"
-
-  tags = {
-    Name = "${var.project_name}-eip-${var.environment}"
   }
 }
