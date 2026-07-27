@@ -20,12 +20,12 @@ uploads/
 !.env.example
 docker-compose.override.yml
 
-# Terraform, later
-infrastructure/terraform/.terraform/
-infrastructure/terraform/*.tfstate
-infrastructure/terraform/*.tfstate.*
-infrastructure/terraform/*.tfvars
-infrastructure/terraform/*.tfplan
+# Terraform
+terraform/.terraform/
+terraform/*.tfstate
+terraform/*.tfstate.*
+terraform/*.tfvars
+terraform/*.tfplan
 
 # Keys
 *.pem
