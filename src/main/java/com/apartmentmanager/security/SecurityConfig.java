@@ -44,6 +44,8 @@ public class SecurityConfig {
                 .requestMatchers("/api/tickets/photos/**").permitAll()
                 .requestMatchers("/api/bills/**").permitAll()
                 .requestMatchers(HttpMethod.GET, "/api/apartments/*/presentation").permitAll()
+                .requestMatchers(HttpMethod.GET, "/api/apartments/presentation-list").permitAll()
+                .requestMatchers(HttpMethod.POST, "/api/applications").permitAll()
                 .anyRequest().authenticated()
             )
             .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);

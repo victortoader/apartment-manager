@@ -1,10 +1,18 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from './AuthContext';
 
+const LANGUAGES = [
+  { code: 'en', label: 'EN' },
+  { code: 'de', label: 'DE' },
+  { code: 'it', label: 'IT' },
+  { code: 'fr', label: 'FR' },
+  { code: 'ro', label: 'RO' }
+];
+
 function Login() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
@@ -29,6 +37,17 @@ function Login() {
   return (
     <div className="login-page">
       <div className="login-card">
+        <div className="lang-switcher login-lang-switcher">
+          {LANGUAGES.map(l => (
+            <button
+              key={l.code}
+              className={`lang-btn${i18n.language === l.code ? ' active' : ''}`}
+              onClick={() => i18n.changeLanguage(l.code)}
+            >
+              {l.label}
+            </button>
+          ))}
+        </div>
         <h1>{t('appTitle')}</h1>
         <p className="login-subtitle">{t('login.subtitle')}</p>
         <form className="login-form" onSubmit={handleSubmit}>
@@ -52,6 +71,9 @@ function Login() {
             {loading ? t('login.signingIn') : t('login.signIn')}
           </button>
         </form>
+        <div className="login-guest-link">
+          <Link to="/presentations">{t('login.browseAsGuest')}</Link>
+        </div>
       </div>
     </div>
   );

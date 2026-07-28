@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -48,6 +49,11 @@ public class Apartment {
 
     @Column(columnDefinition = "TEXT")
     private String presentation;
+
+    @Enumerated(EnumType.STRING)
+    private ApartmentStatus status = ApartmentStatus.AVAILABLE_IMMEDIATELY;
+
+    private LocalDate availableFrom;
 
     @OneToMany(mappedBy = "apartment", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonIgnore
@@ -111,6 +117,12 @@ public class Apartment {
 
     public String getPresentation() { return presentation; }
     public void setPresentation(String presentation) { this.presentation = presentation; }
+
+    public ApartmentStatus getStatus() { return status; }
+    public void setStatus(ApartmentStatus status) { this.status = status; }
+
+    public LocalDate getAvailableFrom() { return availableFrom; }
+    public void setAvailableFrom(LocalDate availableFrom) { this.availableFrom = availableFrom; }
 
     public LocalDateTime getCreatedAt() { return createdAt; }
     public void setCreatedAt(LocalDateTime createdAt) { this.createdAt = createdAt; }

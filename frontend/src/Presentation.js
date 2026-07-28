@@ -15,6 +15,8 @@ function Presentation() {
   const [draft, setDraft] = useState('');
   const [draftPrice, setDraftPrice] = useState('');
   const [draftDescription, setDraftDescription] = useState('');
+  const [draftStatus, setDraftStatus] = useState('');
+  const [draftAvailableFrom, setDraftAvailableFrom] = useState('');
   const [saving, setSaving] = useState(false);
   const [loading, setLoading] = useState(true);
   const [activePhoto, setActivePhoto] = useState(0);
@@ -47,12 +49,14 @@ function Presentation() {
       headers: { 'Content-Type': 'application/json', ...headers },
       body: JSON.stringify({
         price: draftPrice !== '' ? parseFloat(draftPrice) : null,
-        description: draftDescription
+        description: draftDescription,
+        status: draftStatus,
+        availableFrom: draftAvailableFrom || null
       })
     });
 
     setContent(draft);
-    setApt({ ...apt, presentation: draft, price: draftPrice !== '' ? parseFloat(draftPrice) : apt.price, description: draftDescription });
+    setApt({ ...apt, presentation: draft, price: draftPrice !== '' ? parseFloat(draftPrice) : apt.price, description: draftDescription, status: draftStatus, availableFrom: draftAvailableFrom || null });
     setEditing(false);
     setSaving(false);
   };
@@ -65,9 +69,10 @@ function Presentation() {
   return (
     <div className="pres">
       <header className="pres-header">
-        <Link to="/" className="pres-logo">{t('presentation.brand')}</Link>
+        <Link to="/presentations" className="pres-logo">{t('presentation.brand')}</Link>
         <nav className="pres-nav">
-          <Link to="/" className="pres-nav-link">{t('presentation.dashboard')}</Link>
+          <Link to="/presentations" className="pres-nav-link">{t('presentationList.title')}</Link>
+          {user && <Link to="/" className="pres-nav-link">{t('presentation.dashboard')}</Link>}
           {isOwner && <Link to={`/apartments/${id}`} className="pres-nav-link">{t('presentation.management')}</Link>}
         </nav>
       </header>
@@ -75,7 +80,9 @@ function Presentation() {
       <main className="pres-main">
         <section className="pres-hero">
           <div className="pres-hero-inner">
-            <span className="pres-badge">{t('presentation.forRent')}</span>
+            <span className={`pl-status ${apt.status === 'RENTED' ? 'status-rented' : apt.status === 'AVAILABLE_FROM' ? 'status-available-from' : 'status-available'}`}>
+              {apt.status === 'RENTED' ? t('presentationList.rented') : apt.status === 'AVAILABLE_FROM' ? t('presentationList.availableFrom') + (apt.availableFrom ? ' ' + apt.availableFrom : '') : t('presentationList.availableNow')}
+            </span>
             <h1>{apt.title}</h1>
             <p className="pres-location">{apt.location}</p>
             <div className="pres-stats">
@@ -118,6 +125,18 @@ function Presentation() {
               <textarea value={draftDescription} onChange={e => setDraftDescription(e.target.value)} rows={4} disabled={saving} placeholder={t('presentation.descriptionPlaceholder')} />
               <label className="pres-field-label">{t('presentation.priceLabel')}</label>
               <input type="number" step="0.01" value={draftPrice} onChange={e => setDraftPrice(e.target.value)} disabled={saving} placeholder={t('presentation.pricePlaceholder')} className="pres-price-input" />
+              <label className="pres-field-label">{t('presentationList.status')}</label>
+              <select value={draftStatus} onChange={e => setDraftStatus(e.target.value)} className="pres-select" disabled={saving}>
+                <option value="AVAILABLE_IMMEDIATELY">{t('presentationList.availableNow')}</option>
+                <option value="AVAILABLE_FROM">{t('presentationList.availableFromDate')}</option>
+                <option value="RENTED">{t('presentationList.rented')}</option>
+              </select>
+              {draftStatus === 'AVAILABLE_FROM' && (
+                <>
+                  <label className="pres-field-label">{t('presentationList.availableFromDate')}</label>
+                  <input type="date" value={draftAvailableFrom} onChange={e => setDraftAvailableFrom(e.target.value)} className="pres-price-input" disabled={saving} />
+                </>
+              )}
             </div>
           ) : (
             <>
@@ -144,7 +163,7 @@ function Presentation() {
             <p className="pres-empty">{t('presentation.noDetails')}</p>
           )}
           {isOwner && !editing && (
-            <button className="pres-btn outline" onClick={() => { setDraft(content); setDraftPrice(apt.price || ''); setDraftDescription(apt.description || ''); setEditing(true); }}>{t('presentation.editPresentation')}</button>
+            <button className="pres-btn outline" onClick={() => { setDraft(content); setDraftPrice(apt.price || ''); setDraftDescription(apt.description || ''); setDraftStatus(apt.status || 'AVAILABLE_IMMEDIATELY'); setDraftAvailableFrom(apt.availableFrom || ''); setEditing(true); }}>{t('presentation.editPresentation')}</button>
           )}
           {editing && (
             <div className="pres-editor-btns">

@@ -7,6 +7,8 @@ import ApartmentDetail from './ApartmentDetail';
 import UserManagement from './UserManagement';
 import Tickets from './Tickets';
 import Presentation from './Presentation';
+import PresentationList from './PresentationList';
+import ApartmentApplications from './ApartmentApplications';
 import AuditLog from './AuditLog';
 import Login from './Login';
 import './App.css';
@@ -24,12 +26,14 @@ function App() {
       <BrowserRouter>
         <Routes>
           <Route path="/login" element={<Login />} />
+          <Route path="/presentations" element={<PresentationList />} />
           <Route path="/presentations/apartments/:id" element={<Presentation />} />
           <Route path="/" element={<ProtectedRoute><ApartmentList /></ProtectedRoute>} />
           <Route path="/apartments/:id" element={<ProtectedRoute><ApartmentDetail /></ProtectedRoute>} />
           <Route path="/users" element={<ProtectedRoute><UserManagement /></ProtectedRoute>} />
           <Route path="/tickets" element={<ProtectedRoute><Tickets /></ProtectedRoute>} />
           <Route path="/audit" element={<ProtectedRoute><AuditLog /></ProtectedRoute>} />
+          <Route path="/applications/:id" element={<ProtectedRoute><ApartmentApplications /></ProtectedRoute>} />
         </Routes>
       </BrowserRouter>
     </AuthProvider>

@@ -1,5 +1,8 @@
 package com.apartmentmanager.controller;
 
+import com.apartmentmanager.model.ApartmentStatus;
+
+import java.time.LocalDate;
 import java.util.List;
 
 public record PresentationDto(
@@ -11,5 +14,7 @@ public record PresentationDto(
     Double area,
     String description,
     String presentation,
-    List<String> photoPaths
+    List<String> photoPaths,
+    ApartmentStatus status,
+    LocalDate availableFrom
 ) {}

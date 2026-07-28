@@ -72,6 +72,14 @@ public class SeedDataService {
                 new Apartment("Sunny Studio", "Bright and cozy studio apartment in the city center", "123 Main St, Berlin", 850.0, 1, 35.0));
         Apartment ap2 = apartmentRepository.save(
                 new Apartment("Garden Flat", "Spacious flat with a private garden", "456 Park Ave, Berlin", 1200.0, 3, 75.0));
+        ap2.setStatus(ApartmentStatus.AVAILABLE_IMMEDIATELY);
+        apartmentRepository.save(ap2);
+
+        Apartment ap3 = apartmentRepository.save(
+                new Apartment("City Loft", "Modern loft in a renovated factory building", "789 Industrial Way, Berlin", 1500.0, 2, 65.0));
+        ap3.setStatus(ApartmentStatus.AVAILABLE_FROM);
+        ap3.setAvailableFrom(java.time.LocalDate.now().plusDays(14));
+        apartmentRepository.save(ap3);
 
         User tenant = userRepository.findByUsername("tenant").orElse(null);
         if (tenant != null) {
@@ -84,7 +92,7 @@ public class SeedDataService {
         }
 
         User tenant2 = userRepository.save(new User("tenant2", passwordEncoder.encode(System.getenv().getOrDefault("DEFAULT_PASSWORD", "admin")), Role.TENANT, "tenant2@example.com"));
-        tenant2.setApartment(ap2);
+        tenant2.setApartment(null);
         userRepository.save(tenant2);
 
         User owner = userRepository.findByUsername("owner").orElseThrow();
@@ -176,6 +184,26 @@ public class SeedDataService {
 
         ap2.setPresentation("Charming garden apartment on the ground floor of a quiet residential building in Berlin-Charlottenburg. This 3-room apartment offers a private garden terrace, perfect for families or anyone who loves outdoor space.\n\nThe apartment has been tastefully renovated while preserving its original character. Features include a modern open kitchen, spacious living room with garden access, two bright bedrooms, and a separate dining area.\n\nThe building has a shared courtyard with children's play area and bike storage. Street parking is available with a resident permit.\n\nNearest transit: U3 Wilmersdorfer Straße (5 min walk), bus 109 direct to Kurfürstendamm. Close to Savignyplatz, Charlottenburg Palace, and KaDeWe.\n\nPets are welcome upon discussion.");
         ap2 = apartmentService.save(ap2);
+
+        int[][] ap3Colors = {
+            {0xFF, 0x70, 0x92}, {0x53, 0xBA, 0xED}, {0x6B, 0x4C, 0x9A},
+            {0x1C, 0xA3, 0xEC}, {0x2E, 0x7D, 0x32}, {0xD8, 0x1B, 0x60},
+            {0x00, 0x96, 0xD6}, {0x9E, 0x9E, 0x9E}, {0x7B, 0x1F, 0xA2},
+            {0xE6, 0x5C, 0x00}
+        };
+        for (int i = 0; i < 10; i++) {
+            String fileName = UUID.randomUUID() + ".jpg";
+            Path filePath = uploadPath.resolve(fileName);
+            try {
+                byte[] placeholder = createSolidImage(ap3Colors[i][0], ap3Colors[i][1], ap3Colors[i][2], "Apt 3 - Photo " + (i + 1));
+                Files.write(filePath, placeholder);
+            } catch (IOException e) { continue; }
+            ap3.getPhotoPaths().add(fileName);
+        }
+        ap3.setPresentation("Stunning industrial loft in the heart of Berlin-Friedrichshain, converted from a historic factory building. The apartment features exposed brick walls, polished concrete floors, floor-to-ceiling windows, and 4-meter ceilings creating an incredible sense of space.\n\nThe open-plan living area includes a state-of-the-art kitchen with island, a dining area for 8, and a spacious lounge. The master bedroom features a walk-in closet and en-suite bathroom with rainfall shower. A second bedroom/office provides flexibility.\n\nBuilding amenities include a rooftop terrace with panoramic views, fitness room, bicycle storage, and secure underground parking (available for rent).\n\nWalking distance to Boxhagener Platz, East Side Gallery, and Warschauer Straße. S-Bahn Warschauer Straße (2 min), U5 Frankfurter Tor (5 min).\n\nAvailable from 14 days. Ideal for professionals or couples.");
+        apartmentService.save(ap3);
+
+        contactRepository.save(new Contact("Building Management", "loft@city-management.de", ap3));
 
         seedOcrKeywords();
     }

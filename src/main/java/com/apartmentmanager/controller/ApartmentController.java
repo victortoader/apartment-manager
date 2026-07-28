@@ -244,9 +244,30 @@ public class ApartmentController {
             apartment.getArea(),
             apartment.getDescription(),
             apartment.getPresentation() != null ? apartment.getPresentation() : "",
-            apartment.getPhotoPaths() != null ? apartment.getPhotoPaths() : List.of()
+            apartment.getPhotoPaths() != null ? apartment.getPhotoPaths() : List.of(),
+            apartment.getStatus(),
+            apartment.getAvailableFrom()
         );
         return ResponseEntity.ok(dto);
+    }
+
+    @GetMapping("/presentation-list")
+    public ResponseEntity<List<PresentationDto>> getPresentationList() {
+        List<Apartment> apartments = apartmentService.findAll();
+        List<PresentationDto> dtos = apartments.stream().map(apt -> new PresentationDto(
+            apt.getId(),
+            apt.getTitle(),
+            apt.getLocation(),
+            apt.getPrice(),
+            apt.getRooms(),
+            apt.getArea(),
+            apt.getDescription(),
+            apt.getPresentation() != null ? apt.getPresentation() : "",
+            apt.getPhotoPaths() != null ? apt.getPhotoPaths() : List.of(),
+            apt.getStatus(),
+            apt.getAvailableFrom()
+        )).toList();
+        return ResponseEntity.ok(dtos);
     }
 
     @PutMapping("/{id}/presentation")
@@ -270,6 +291,13 @@ public class ApartmentController {
         }
         if (body.containsKey("description")) {
             apartment.setDescription((String) body.get("description"));
+        }
+        if (body.containsKey("status")) {
+            apartment.setStatus(com.apartmentmanager.model.ApartmentStatus.valueOf((String) body.get("status")));
+        }
+        if (body.containsKey("availableFrom")) {
+            String val = (String) body.get("availableFrom");
+            apartment.setAvailableFrom(val != null && !val.isEmpty() ? java.time.LocalDate.parse(val) : null);
         }
         apartmentService.save(apartment);
         User user = userRepository.findByUsername(auth.getName()).orElseThrow();

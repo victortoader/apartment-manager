@@ -29,13 +29,24 @@ function ApartmentDetail() {
   const canDelete = user?.role === 'OWNER';
   const canUpload = user?.role === 'OWNER' || user?.role === 'ADMIN';
   const canSeeNotes = user?.role === 'OWNER' || user?.role === 'ADMIN';
+  const canSeeApplications = user?.role === 'OWNER' || user?.role === 'ADMIN';
+
+  const [applications, setApplications] = useState([]);
 
   useEffect(() => {
     fetchApartment();
     fetchProtocols();
     fetchContacts();
     if (canSeeNotes) fetchNotes();
+    if (canSeeApplications) fetchApplications();
   }, [id]);
+
+  const fetchApplications = async () => {
+    const res = await fetch(`${API}/api/applications?apartmentId=${id}`, { headers: authHeader() });
+    if (res.ok) {
+      setApplications(await res.json());
+    }
+  };
 
   const fetchApartment = async () => {
     const res = await fetch(`${API}/api/apartments/${id}`, { headers: authHeader() });
@@ -362,6 +373,36 @@ function ApartmentDetail() {
             </div>
           )}
         </div>
+
+        {canSeeApplications && applications.length > 0 && (
+          <div className="detail-protocols">
+            <div className="protocols-header">
+              <h2>{t('detail.applications')}</h2>
+            </div>
+            <div className="application-list">
+              {applications.map(app => (
+                <div key={app.id} className="application-item">
+                  <div className="application-info">
+                    <span className="application-name">{app.applicantName}</span>
+                    <span className="application-email">{app.applicantEmail}</span>
+                    {app.applicantPhone && <span className="application-phone">{app.applicantPhone}</span>
+}
+                    <span className="application-date">{new Date(app.submittedAt).toLocaleDateString()
+}</span>
+                  </div>
+                  <a
+                    href={`${API}/api/applications/files/${app.storedFileName}`}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="btn-sm"
+                  >
+                    {app.originalFileName}
+                  </a>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
 
         {canSeeNotes && (
           <div className="detail-protocols">

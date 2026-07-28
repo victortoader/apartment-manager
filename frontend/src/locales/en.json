@@ -19,7 +19,8 @@
     "passwordPlaceholder": "Password",
     "signIn": "Sign In",
     "signingIn": "Signing in...",
-    "failed": "Login failed"
+    "failed": "Login failed",
+    "browseAsGuest": "Browse apartments as guest"
   },
 
   "header": {
@@ -58,6 +59,9 @@
     "noMetadata": "No metadata entries yet.",
     "metadataPlaceholder": "e.g. tenant name, contract number, billing code...",
     "ocrKeywords": "OCR Keywords",
+    "seeApplications": "See Applications",
+    "applicationsFor": "Applications for",
+    "noApplications": "No applications yet.",
     "ocrKeywordsHint": "Keywords used to recognize amounts and detect language in bills. Separate with | (pipe).",
     "ocrAmountKeywords": "Amount Keywords",
     "ocrLanguageKeywords": "Language Keywords",
@@ -94,6 +98,7 @@
     "ticketTitle": "Ticket title",
     "describeIssue": "Describe the issue...",
     "submitTicket": "Submit Ticket",
+    "applications": "Applications",
     "deleteContactConfirm": "Delete this contact?",
     "deleteNoteConfirm": "Delete this note?",
     "deleteProtocolConfirm": "Delete this protocol?"
@@ -155,6 +160,30 @@
     "saving": "Saving...",
     "notFound": "Apartment not found.",
     "footerText": "Quality apartments for discerning tenants"
+  },
+
+  "presentationList": {
+    "title": "Our Apartments",
+    "subtitle": "Find your perfect home",
+    "rented": "Rented",
+    "availableNow": "Available Immediately",
+    "availableFrom": "Available from",
+    "availableFromDate": "Available From Date",
+    "status": "Status",
+    "viewDetails": "View Details",
+    "apply": "Apply",
+    "noApartments": "No apartments available at the moment.",
+    "applyFor": "Apply for",
+    "applicantName": "Full Name",
+    "applicantEmail": "Email",
+    "applicantPhone": "Phone (optional)",
+    "chooseFile": "Choose a document",
+    "submit": "Submit Application",
+    "submitting": "Submitting...",
+    "applyError": "Failed to submit application. Please try again.",
+    "applyErrorRequired": "Please fill all required fields and select a file.",
+    "applySuccess": "Application Submitted!",
+    "applySuccessMsg": "Thank you for your application. We will review it and get back to you shortly."
   },
 
   "auditLog": {

@@ -50,6 +50,7 @@ function ApartmentList() {
   const [ocrKeywords, setOcrKeywords] = useState([]);
   const [editingOcrKeyword, setEditingOcrKeyword] = useState(null);
   const [ocrDraft, setOcrDraft] = useState({});
+  const [applicationCounts, setApplicationCounts] = useState({});
 
   const isOwner = user?.role === 'OWNER';
   const isAdmin = user?.role === 'ADMIN';
@@ -61,7 +62,7 @@ function ApartmentList() {
     fetchSummaries();
     fetchUnreadCount();
     if (canCreate) fetchUnreadTickets();
-    if (isOwner) fetchOcrKeywords();
+    if (isOwner) { fetchOcrKeywords(); fetchApplicationCounts(); }
   }, []);
 
   const fetchApartments = async () => {
@@ -128,6 +129,16 @@ function ApartmentList() {
       setPasswordError(t('apartmentList.verificationFailed'));
     }
     setVerifying(false);
+  };
+
+  const fetchApplicationCounts = async () => {
+    try {
+      const res = await fetch(`${API}/api/applications/counts`, { headers: authHeader() });
+      if (res.ok) {
+        const data = await res.json();
+        setApplicationCounts(data);
+      }
+    } catch (e) {}
   };
 
   const handleChange = (e) => {
@@ -410,6 +421,11 @@ function ApartmentList() {
 
               <div className="row-actions">
                 <button className="btn-presentation" onClick={(e) => { e.stopPropagation(); e.preventDefault(); window.open(`/presentations/apartments/${apt.id}`, '_blank'); }}>{t('apartmentList.presentation')}</button>
+                {isOwner && applicationCounts[apt.id] > 0 && (
+                  <button className="btn-application" onClick={(e) => { e.stopPropagation(); e.preventDefault(); window.location.href = `/applications/${apt.id}`; }}>
+                    {t('apartmentList.seeApplications')} ({applicationCounts[apt.id]})
+                  </button>
+                )}
                 {manageMode && canCreate && (
                   <label className="btn-upload small" onClick={e => e.stopPropagation()}>
                     {t('apartmentList.addPhoto')}
