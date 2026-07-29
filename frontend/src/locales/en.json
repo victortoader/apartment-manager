@@ -177,13 +177,133 @@
     "applicantName": "Full Name",
     "applicantEmail": "Email",
     "applicantPhone": "Phone (optional)",
-    "chooseFile": "Choose a document",
+    "chooseFile": "Choose documents",
+    "addMoreFiles": "Add more documents",
     "submit": "Submit Application",
     "submitting": "Submitting...",
     "applyError": "Failed to submit application. Please try again.",
     "applyErrorRequired": "Please fill all required fields and select a file.",
     "applySuccess": "Application Submitted!",
     "applySuccessMsg": "Thank you for your application. We will review it and get back to you shortly."
+  },
+
+  "application": {
+    "yes": "Yes",
+    "requiredFile": "Please upload a document",
+    "noFormData": "No form data available",
+    "section": {
+      "property": "Property Details",
+      "mainApplicant": "Main Applicant",
+      "coApplicant": "Co-Applicant",
+      "employmentMain": "Employment — Main Applicant",
+      "employmentCo": "Employment — Co-Applicant",
+      "housingMain": "Current Housing — Main Applicant",
+      "housingCo": "Current Housing — Co-Applicant",
+      "referencesMain": "References — Main Applicant",
+      "referencesCo": "References — Co-Applicant",
+      "additional": "Additional Details",
+      "documents": "Documents & Confirmation"
+    },
+    "property": {
+      "location": "Property / Location",
+      "abaRef": "abaRef No.",
+      "apartment": "Apartment",
+      "rent": "Rent incl. utilities",
+      "indoorParking": "Indoor parking spaces",
+      "outdoorParking": "Outdoor parking spaces",
+      "desiredStart": "Desired move-in date",
+      "licensePlate": "License plate no.",
+      "prevTenant": "Previous tenant",
+      "usage": "Usage (family / secondary / unmarried / shared)"
+    },
+    "main": {
+      "salutation": "Salutation (Mr / Mrs)",
+      "role": "Role (Applicant / Spouse / Partner / Joint guarantor)",
+      "lastName": "Last name",
+      "firstName": "First name",
+      "street": "Street / No.",
+      "city": "ZIP / City",
+      "phonePrivate": "Phone (private)",
+      "phoneBusiness": "Phone (work)",
+      "phoneMobile": "Mobile phone",
+      "email": "Email",
+      "birthDate": "Date of birth",
+      "maritalStatus": "Marital status",
+      "hometown": "Hometown / Country",
+      "residencePermit": "Residence permit (A / B / C / F)"
+    },
+    "co": {
+      "salutation": "Salutation (Mr / Mrs)",
+      "role": "Role (Spouse / Partner / Joint guarantor)",
+      "lastName": "Last name",
+      "firstName": "First name",
+      "street": "Street / No.",
+      "city": "ZIP / City",
+      "phonePrivate": "Phone (private)",
+      "phoneBusiness": "Phone (work)",
+      "phoneMobile": "Mobile phone",
+      "email": "Email",
+      "birthDate": "Date of birth",
+      "maritalStatus": "Marital status",
+      "hometown": "Hometown / Country",
+      "residencePermit": "Residence permit (A / B / C / F)"
+    },
+    "empMain": {
+      "occupation": "Occupation",
+      "employer": "Employer",
+      "employedSince": "Employed since",
+      "income": "Monthly income"
+    },
+    "empCo": {
+      "occupation": "Occupation",
+      "employer": "Employer",
+      "employedSince": "Employed since",
+      "income": "Monthly income"
+    },
+    "housingMain": {
+      "currentLandlord": "Current landlord",
+      "livingSince": "Living there since",
+      "prevRent": "Previous rent",
+      "moveReason": "Reason for moving"
+    },
+    "housingCo": {
+      "currentLandlord": "Current landlord",
+      "livingSince": "Living there since",
+      "prevRent": "Previous rent",
+      "moveReason": "Reason for moving"
+    },
+    "refMain": {
+      "employerName": "Employer reference name",
+      "employerPhone": "Employer reference phone",
+      "employerEmail": "Employer reference email",
+      "landlordName": "Landlord reference name",
+      "landlordPhone": "Landlord reference phone"
+    },
+    "refCo": {
+      "employerName": "Employer reference name",
+      "employerPhone": "Employer reference phone",
+      "employerEmail": "Employer reference email",
+      "landlordName": "Landlord reference name",
+      "landlordPhone": "Landlord reference phone"
+    },
+    "add": {
+      "pets": "Pets (type and number)",
+      "instruments": "Musical instruments (type)",
+      "bankAccount": "Bank account in the name of",
+      "iban": "IBAN no.",
+      "remarks": "Remarks",
+      "nameplate": "Desired nameplate inscription",
+      "adultCount": "Number of adults",
+      "childCount": "Number of children",
+      "childYears": "Birth years of children"
+    },
+    "doc": {
+      "idCopy": "Copy of ID / residence permit",
+      "debtExtract": "Debt enforcement extract (max 3 months old)",
+      "date": "Date",
+      "signatureMain": "Signature — Main applicant",
+      "signatureCo": "Signature — Co-applicant"
+    }
   },
 
   "auditLog": {

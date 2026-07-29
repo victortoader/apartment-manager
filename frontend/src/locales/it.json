@@ -221,5 +221,149 @@
       "totalPaid": "Totale Pagato",
       "balance": "Saldo"
     }
+  },
+
+  "presentationList": {
+    "title": "I Nostri Appartamenti",
+    "subtitle": "Trova la tua casa perfetta",
+    "rented": "Affittato",
+    "availableNow": "Disponibile subito",
+    "availableFrom": "Disponibile dal",
+    "availableFromDate": "Disponibile dal",
+    "status": "Stato",
+    "viewDetails": "Vedi dettagli",
+    "apply": "Candidati",
+    "noApartments": "Nessun appartamento disponibile al momento.",
+    "applyFor": "Candidati per",
+    "applicantName": "Nome completo",
+    "applicantEmail": "Email",
+    "applicantPhone": "Telefono (opzionale)",
+    "chooseFile": "Scegli documenti",
+    "addMoreFiles": "Aggiungi altri documenti",
+    "submit": "Invia candidatura",
+    "submitting": "Invio in corso...",
+    "applyError": "Invio candidatura fallito. Riprova.",
+    "applyErrorRequired": "Compila tutti i campi obbligatori e seleziona un file.",
+    "applySuccess": "Candidatura inviata!",
+    "applySuccessMsg": "Grazie per la tua candidatura. La esamineremo e ti risponderemo a breve."
+  },
+
+  "application": {
+    "yes": "Sì",
+    "requiredFile": "Carica un documento",
+    "noFormData": "Nessun dato del modulo disponibile",
+    "section": {
+      "property": "Dettagli della proprietà",
+      "mainApplicant": "Richiedente principale",
+      "coApplicant": "Co-richiedente",
+      "employmentMain": "Occupazione — Richiedente principale",
+      "employmentCo": "Occupazione — Co-richiedente",
+      "housingMain": "Abitazione attuale — Richiedente principale",
+      "housingCo": "Abitazione attuale — Co-richiedente",
+      "referencesMain": "Referenze — Richiedente principale",
+      "referencesCo": "Referenze — Co-richiedente",
+      "additional": "Dettagli aggiuntivi",
+      "documents": "Documenti & Conferma"
+    },
+    "property": {
+      "location": "Proprietà / Luogo",
+      "abaRef": "N. abaRef",
+      "apartment": "Appartamento",
+      "rent": "Affitto spese incluse",
+      "indoorParking": "Posti auto coperti",
+      "outdoorParking": "Posti auto scoperti",
+      "desiredStart": "Data di inizio desiderata",
+      "licensePlate": "N. targa",
+      "prevTenant": "Ex inquilino",
+      "usage": "Uso (familiare / secondario / non coniugati / cohousing)"
+    },
+    "main": {
+      "salutation": "Titolo (Sig. / Sig.ra)",
+      "role": "Ruolo (Richiedente / Coniuge / Partner / Garante solidale)",
+      "lastName": "Cognome",
+      "firstName": "Nome",
+      "street": "Via / N.",
+      "city": "CAP / Località",
+      "phonePrivate": "Telefono privato",
+      "phoneBusiness": "Telefono lavoro",
+      "phoneMobile": "Cellulare",
+      "email": "Email",
+      "birthDate": "Data di nascita",
+      "maritalStatus": "Stato civile",
+      "hometown": "Luogo d'origine / Paese",
+      "residencePermit": "Permesso di soggiorno (A / B / C / F)"
+    },
+    "co": {
+      "salutation": "Titolo (Sig. / Sig.ra)",
+      "role": "Ruolo (Coniuge / Partner / Garante solidale)",
+      "lastName": "Cognome",
+      "firstName": "Nome",
+      "street": "Via / N.",
+      "city": "CAP / Località",
+      "phonePrivate": "Telefono privato",
+      "phoneBusiness": "Telefono lavoro",
+      "phoneMobile": "Cellulare",
+      "email": "Email",
+      "birthDate": "Data di nascita",
+      "maritalStatus": "Stato civile",
+      "hometown": "Luogo d'origine / Paese",
+      "residencePermit": "Permesso di soggiorno (A / B / C / F)"
+    },
+    "empMain": {
+      "occupation": "Professione",
+      "employer": "Datore di lavoro",
+      "employedSince": "Impiegato dal",
+      "income": "Reddito mensile"
+    },
+    "empCo": {
+      "occupation": "Professione",
+      "employer": "Datore di lavoro",
+      "employedSince": "Impiegato dal",
+      "income": "Reddito mensile"
+    },
+    "housingMain": {
+      "currentLandlord": "Proprietario attuale",
+      "livingSince": "Vi abita dal",
+      "prevRent": "Affitto precedente",
+      "moveReason": "Motivo del cambio"
+    },
+    "housingCo": {
+      "currentLandlord": "Proprietario attuale",
+      "livingSince": "Vi abita dal",
+      "prevRent": "Affitto precedente",
+      "moveReason": "Motivo del cambio"
+    },
+    "refMain": {
+      "employerName": "Referenza datore di lavoro nome",
+      "employerPhone": "Referenza datore di lavoro telefono",
+      "employerEmail": "Referenza datore di lavoro email",
+      "landlordName": "Referenza proprietario nome",
+      "landlordPhone": "Referenza proprietario telefono"
+    },
+    "refCo": {
+      "employerName": "Referenza datore di lavoro nome",
+      "employerPhone": "Referenza datore di lavoro telefono",
+      "employerEmail": "Referenza datore di lavoro email",
+      "landlordName": "Referenza proprietario nome",
+      "landlordPhone": "Referenza proprietario telefono"
+    },
+    "add": {
+      "pets": "Animali domestici (tipo e numero)",
+      "instruments": "Strumenti musicali (tipo)",
+      "bankAccount": "Conto corrente intestato a",
+      "iban": "N. IBAN",
+      "remarks": "Osservazioni",
+      "nameplate": "Scritta desiderata sulla targhetta",
+      "adultCount": "Numero di adulti",
+      "childCount": "Numero di bambini",
+      "childYears": "Anni di nascita dei bambini"
+    },
+    "doc": {
+      "idCopy": "Copia del documento d'identità / permesso di soggiorno",
+      "debtExtract": "Estratto esecutivo (max 3 mesi)",
+      "date": "Data",
+      "signatureMain": "Firma — Richiedente principale",
+      "signatureCo": "Firma — Co-richiedente"
+    }
   }
 }

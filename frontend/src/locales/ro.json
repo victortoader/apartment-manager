@@ -221,5 +221,149 @@
       "totalPaid": "Total Plătit",
       "balance": "Sold"
     }
+  },
+
+  "presentationList": {
+    "title": "Apartamentele Noastre",
+    "subtitle": "Găsește-ți casa perfectă",
+    "rented": "Închiriat",
+    "availableNow": "Disponibil imediat",
+    "availableFrom": "Disponibil din",
+    "availableFromDate": "Disponibil din data de",
+    "status": "Stare",
+    "viewDetails": "Vezi detalii",
+    "apply": "Aplică",
+    "noApartments": "Momentan nu sunt apartamente disponibile.",
+    "applyFor": "Aplică pentru",
+    "applicantName": "Nume complet",
+    "applicantEmail": "Email",
+    "applicantPhone": "Telefon (opțional)",
+    "chooseFile": "Alege documente",
+    "addMoreFiles": "Adaugă mai multe documente",
+    "submit": "Trimite cererea",
+    "submitting": "Se trimite...",
+    "applyError": "Eroare la trimiterea cererii. Încercați din nou.",
+    "applyErrorRequired": "Vă rugăm să completați toate câmpurile obligatorii și să selectați un fișier.",
+    "applySuccess": "Cerere trimisă!",
+    "applySuccessMsg": "Vă mulțumim pentru cerere. O vom analiza și vă vom răspunde în scurt timp."
+  },
+
+  "application": {
+    "yes": "Da",
+    "requiredFile": "Vă rugăm să încărcați un document",
+    "noFormData": "Nu există date de formular disponibile",
+    "section": {
+      "property": "Detalii proprietate",
+      "mainApplicant": "Solicitant principal",
+      "coApplicant": "Co-solicitant",
+      "employmentMain": "Ocupație — Solicitant principal",
+      "employmentCo": "Ocupație — Co-solicitant",
+      "housingMain": "Locuință actuală — Solicitant principal",
+      "housingCo": "Locuință actuală — Co-solicitant",
+      "referencesMain": "Referințe — Solicitant principal",
+      "referencesCo": "Referințe — Co-solicitant",
+      "additional": "Detalii suplimentare",
+      "documents": "Documente & Confirmare"
+    },
+    "property": {
+      "location": "Proprietate / Locație",
+      "abaRef": "Nr. abaRef",
+      "apartment": "Apartament",
+      "rent": "Chirie incl. utilități",
+      "indoorParking": "Locuri parcare interioare",
+      "outdoorParking": "Locuri parcare exterioare",
+      "desiredStart": "Data de începere dorită",
+      "licensePlate": "Nr. de înmatriculare",
+      "prevTenant": "Fost chiriaș",
+      "usage": "Utilizare (familial / secundar / necăsătoriți / locuință comună)"
+    },
+    "main": {
+      "salutation": "Domnul / Doamna",
+      "role": "Rol (Solicitant / Soț/Soție / Partener / Garant solidar)",
+      "lastName": "Nume de familie",
+      "firstName": "Prenume",
+      "street": "Strada / Nr.",
+      "city": "CP / Localitate",
+      "phonePrivate": "Telefon privat",
+      "phoneBusiness": "Telefon serviciu",
+      "phoneMobile": "Telefon mobil",
+      "email": "Email",
+      "birthDate": "Data nașterii",
+      "maritalStatus": "Stare civilă",
+      "hometown": "Localitatea de origine / Țara",
+      "residencePermit": "Permis de ședere (A / B / C / F)"
+    },
+    "co": {
+      "salutation": "Domnul / Doamna",
+      "role": "Rol (Soț/Soție / Partener / Garant solidar)",
+      "lastName": "Nume de familie",
+      "firstName": "Prenume",
+      "street": "Strada / Nr.",
+      "city": "CP / Localitate",
+      "phonePrivate": "Telefon privat",
+      "phoneBusiness": "Telefon serviciu",
+      "phoneMobile": "Telefon mobil",
+      "email": "Email",
+      "birthDate": "Data nașterii",
+      "maritalStatus": "Stare civilă",
+      "hometown": "Localitatea de origine / Țara",
+      "residencePermit": "Permis de ședere (A / B / C / F)"
+    },
+    "empMain": {
+      "occupation": "Ocupație",
+      "employer": "Angajator",
+      "employedSince": "Angajat din",
+      "income": "Venit lunar"
+    },
+    "empCo": {
+      "occupation": "Ocupație",
+      "employer": "Angajator",
+      "employedSince": "Angajat din",
+      "income": "Venit lunar"
+    },
+    "housingMain": {
+      "currentLandlord": "Proprietar actual",
+      "livingSince": "Locuiește acolo din",
+      "prevRent": "Chiria anterioară",
+      "moveReason": "Motivul mutării"
+    },
+    "housingCo": {
+      "currentLandlord": "Proprietar actual",
+      "livingSince": "Locuiește acolo din",
+      "prevRent": "Chiria anterioară",
+      "moveReason": "Motivul mutării"
+    },
+    "refMain": {
+      "employerName": "Referință angajator nume",
+      "employerPhone": "Referință angajator telefon",
+      "employerEmail": "Referință angajator email",
+      "landlordName": "Referință proprietar nume",
+      "landlordPhone": "Referință proprietar telefon"
+    },
+    "refCo": {
+      "employerName": "Referință angajator nume",
+      "employerPhone": "Referință angajator telefon",
+      "employerEmail": "Referință angajator email",
+      "landlordName": "Referință proprietar nume",
+      "landlordPhone": "Referință proprietar telefon"
+    },
+    "add": {
+      "pets": "Animale de companie (tip și număr)",
+      "instruments": "Instrumente muzicale (tip)",
+      "bankAccount": "Cont bancar pe numele",
+      "iban": "IBAN",
+      "remarks": "Observații",
+      "nameplate": "Inscripția dorită pe plăcuța nominală",
+      "adultCount": "Număr de adulți",
+      "childCount": "Număr de copii",
+      "childYears": "Anii de naștere ai copiilor"
+    },
+    "doc": {
+      "idCopy": "Copie act de identitate / permis de ședere",
+      "debtExtract": "Extras de executare silită (max 3 luni)",
+      "date": "Data",
+      "signatureMain": "Semnătură — Solicitant principal",
+      "signatureCo": "Semnătură — Co-solicitant"
+    }
   }
 }

@@ -27,16 +27,21 @@ public class Application {
 
     private LocalDateTime submittedAt = LocalDateTime.now();
 
+    @Column(columnDefinition = "TEXT")
+    private String formData;
+
     public Application() {}
 
     public Application(Apartment apartment, String applicantName, String applicantEmail,
-                       String applicantPhone, String storedFileName, String originalFileName) {
+                       String applicantPhone, String storedFileName, String originalFileName,
+                       String formData) {
         this.apartment = apartment;
         this.applicantName = applicantName;
         this.applicantEmail = applicantEmail;
         this.applicantPhone = applicantPhone;
         this.storedFileName = storedFileName;
         this.originalFileName = originalFileName;
+        this.formData = formData;
     }
 
     public Long getId() { return id; }
@@ -62,4 +67,7 @@ public class Application {
 
     public LocalDateTime getSubmittedAt() { return submittedAt; }
     public void setSubmittedAt(LocalDateTime submittedAt) { this.submittedAt = submittedAt; }
+
+    public String getFormData() { return formData; }
+    public void setFormData(String formData) { this.formData = formData; }
 }

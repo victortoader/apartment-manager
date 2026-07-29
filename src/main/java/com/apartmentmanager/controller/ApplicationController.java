@@ -41,12 +41,18 @@ public class ApplicationController {
             @RequestParam("applicantName") String applicantName,
             @RequestParam("applicantEmail") String applicantEmail,
             @RequestParam(value = "applicantPhone", required = false) String applicantPhone,
-            @RequestParam("file") MultipartFile file) {
+            @RequestParam(value = "formData", required = false) String formData,
+            @RequestParam("files") MultipartFile[] files) {
         try {
             Apartment apartment = apartmentService.findById(apartmentId);
-            String storedFileName = photoStorageService.store(file);
+            String[] storedNames = new String[files.length];
+            String[] originalNames = new String[files.length];
+            for (int i = 0; i < files.length; i++) {
+                storedNames[i] = photoStorageService.store(files[i]);
+                originalNames[i] = files[i].getOriginalFilename();
+            }
             Application application = new Application(apartment, applicantName, applicantEmail,
-                    applicantPhone, storedFileName, file.getOriginalFilename());
+                    applicantPhone, String.join(", ", storedNames), String.join(", ", originalNames), formData);
             applicationRepository.save(application);
             return ResponseEntity.ok(Map.of("success", true, "id", application.getId()));
         } catch (IOException e) {

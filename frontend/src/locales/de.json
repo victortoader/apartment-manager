@@ -221,5 +221,149 @@
       "totalPaid": "Gesamt Bezahlt",
       "balance": "Saldo"
     }
+  },
+
+  "presentationList": {
+    "title": "Unsere Wohnungen",
+    "subtitle": "Finden Sie Ihr perfektes Zuhause",
+    "rented": "Vermietet",
+    "availableNow": "Sofort frei",
+    "availableFrom": "Verfügbar ab",
+    "availableFromDate": "Verfügbar ab Datum",
+    "status": "Status",
+    "viewDetails": "Details anzeigen",
+    "apply": "Bewerben",
+    "noApartments": "Derzeit keine Wohnungen verfügbar.",
+    "applyFor": "Bewerben für",
+    "applicantName": "Vollständiger Name",
+    "applicantEmail": "E-Mail",
+    "applicantPhone": "Telefon (optional)",
+    "chooseFile": "Dokumente auswählen",
+    "addMoreFiles": "Weitere Dokumente hinzufügen",
+    "submit": "Bewerbung einreichen",
+    "submitting": "Wird eingereicht...",
+    "applyError": "Bewerbung fehlgeschlagen. Bitte versuchen Sie es erneut.",
+    "applyErrorRequired": "Bitte füllen Sie alle Pflichtfelder aus und wählen Sie eine Datei.",
+    "applySuccess": "Bewerbung eingereicht!",
+    "applySuccessMsg": "Vielen Dank für Ihre Bewerbung. Wir werden sie prüfen und uns in Kürze bei Ihnen melden."
+  },
+
+  "application": {
+    "yes": "Ja",
+    "requiredFile": "Bitte laden Sie ein Dokument hoch",
+    "noFormData": "Keine Formulardaten verfügbar",
+    "section": {
+      "property": "Angaben zur Liegenschaft",
+      "mainApplicant": "Mietinteressent/in",
+      "coApplicant": "Co-Mietinteressent/in",
+      "employmentMain": "Arbeitsverhältnis — Mietinteressent/in",
+      "employmentCo": "Arbeitsverhältnis — Co-Mietinteressent/in",
+      "housingMain": "Derzeitige Wohnsituation — Mietinteressent/in",
+      "housingCo": "Derzeitige Wohnsituation — Co-Mietinteressent/in",
+      "referencesMain": "Referenzen — Mietinteressent/in",
+      "referencesCo": "Referenzen — Co-Mietinteressent/in",
+      "additional": "Zusätzliche Angaben",
+      "documents": "Dokumente & Bestätigung"
+    },
+    "property": {
+      "location": "Liegenschaft/Ort",
+      "abaRef": "abaRef.-Nr.",
+      "apartment": "Wohnung",
+      "rent": "MZ Wohnung inkl. NK",
+      "indoorParking": "Anz. Einstellplätze",
+      "outdoorParking": "Anz. Aussen-Parkplätze",
+      "desiredStart": "Gewünschter Mietbeginn",
+      "licensePlate": "Kontrollschild-Nr.",
+      "prevTenant": "Ex-Mieter",
+      "usage": "Nutzung als (Familienwohnung / Neben-/Zweitwohnung / Wohnung von Unverheirateten / Wohngemeinschaft)"
+    },
+    "main": {
+      "salutation": "Anrede (Herr / Frau)",
+      "role": "Rolle (Mietinteressent/in / Ehepartner/in / Partner/in / Solidarhafter/in)",
+      "lastName": "Familienname",
+      "firstName": "Vorname",
+      "street": "Strasse / Nr.",
+      "city": "PLZ/Ort",
+      "phonePrivate": "Telefon Privat",
+      "phoneBusiness": "Telefon Geschäft",
+      "phoneMobile": "Mobiltelefon",
+      "email": "E-Mail",
+      "birthDate": "Geburtsdatum",
+      "maritalStatus": "Zivilstand",
+      "hometown": "Heimatort/Land",
+      "residencePermit": "Aufenthaltsbewilligung (A / B / C / F)"
+    },
+    "co": {
+      "salutation": "Anrede (Herr / Frau)",
+      "role": "Rolle (Ehepartner/in / Partner/in / Solidarhafter/in)",
+      "lastName": "Familienname",
+      "firstName": "Vorname",
+      "street": "Strasse / Nr.",
+      "city": "PLZ/Ort",
+      "phonePrivate": "Telefon Privat",
+      "phoneBusiness": "Telefon Geschäft",
+      "phoneMobile": "Mobiltelefon",
+      "email": "E-Mail",
+      "birthDate": "Geburtsdatum",
+      "maritalStatus": "Zivilstand",
+      "hometown": "Heimatort/Land",
+      "residencePermit": "Aufenthaltsbewilligung (A / B / C / F)"
+    },
+    "empMain": {
+      "occupation": "Beruf",
+      "employer": "Arbeitgeber",
+      "employedSince": "Dort beschäftigt seit",
+      "income": "Einkommen pro Monat"
+    },
+    "empCo": {
+      "occupation": "Beruf",
+      "employer": "Arbeitgeber",
+      "employedSince": "Dort beschäftigt seit",
+      "income": "Einkommen pro Monat"
+    },
+    "housingMain": {
+      "currentLandlord": "Heutiger Vermieter",
+      "livingSince": "Dort wohnhaft seit",
+      "prevRent": "Bisheriger Mietzins",
+      "moveReason": "Grund für Wechsel"
+    },
+    "housingCo": {
+      "currentLandlord": "Heutiger Vermieter",
+      "livingSince": "Dort wohnhaft seit",
+      "prevRent": "Bisheriger Mietzins",
+      "moveReason": "Grund für Wechsel"
+    },
+    "refMain": {
+      "employerName": "Referenz Name Arbeitgeber",
+      "employerPhone": "Referenz Arbeitgeber Telefon",
+      "employerEmail": "Referenz Arbeitgeber E-Mail",
+      "landlordName": "Referenz Name Vermieter",
+      "landlordPhone": "Referenz Vermieter Telefon"
+    },
+    "refCo": {
+      "employerName": "Referenz Name Arbeitgeber",
+      "employerPhone": "Referenz Arbeitgeber Telefon",
+      "employerEmail": "Referenz Arbeitgeber E-Mail",
+      "landlordName": "Referenz Name Vermieter",
+      "landlordPhone": "Referenz Vermieter Telefon"
+    },
+    "add": {
+      "pets": "Haustiere (Art und Anzahl)",
+      "instruments": "Musikinstrumente (Art)",
+      "bankAccount": "Bankverbindung lautend auf",
+      "iban": "IBAN-Nr.",
+      "remarks": "Bemerkungen",
+      "nameplate": "Gewünschte Beschriftung der Namensschilder",
+      "adultCount": "Personenzahl Erwachsene",
+      "childCount": "Personenzahl Kinder",
+      "childYears": "Geburtsjahre der Kinder"
+    },
+    "doc": {
+      "idCopy": "Kopie des Ausländerausweises / ID",
+      "debtExtract": "Betreibungsauszug (max. 3 Monate alt)",
+      "date": "Datum",
+      "signatureMain": "Unterschrift Mietinteressent/in",
+      "signatureCo": "Unterschrift Co-Mietinteressent/in"
+    }
   }
 }

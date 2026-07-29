@@ -2975,12 +2975,249 @@ h1 {
   gap: 8px;
 }
 
+/* Apply Modal — Wide */
+.apply-modal-wide {
+  width: 720px;
+  max-height: 90vh;
+  overflow-y: auto;
+}
+
+.apply-form-full {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin-top: 8px;
+}
+
+.apply-sections {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.apply-section {
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.apply-section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 14px;
+  background: #f7f8fa;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 14px;
+  color: #333;
+  user-select: none;
+}
+
+.apply-section-header:hover {
+  background: #eef0f4;
+}
+
+.apply-section-arrow {
+  font-size: 12px;
+  color: #999;
+}
+
+.apply-section-body {
+  padding: 12px 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.apply-field {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.apply-field label {
+  font-size: 12px;
+  color: #666;
+  font-weight: 500;
+}
+
+.apply-field input[type="text"],
+.apply-field input[type="email"],
+.apply-field input[type="tel"],
+.apply-field input[type="number"],
+.apply-field input[type="date"],
+.apply-field textarea {
+  width: 100%;
+  padding: 8px 10px;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  font-size: 13px;
+  box-sizing: border-box;
+}
+
+.apply-field input:focus,
+.apply-field textarea:focus {
+  outline: none;
+  border-color: #667eea;
+}
+
+.apply-checkbox-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.apply-checkbox-row input[type="checkbox"] {
+  width: 18px;
+  height: 18px;
+  cursor: pointer;
+}
+
+.apply-file-section {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 8px;
+}
+
+.apply-file-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  font-size: 13px;
+  color: #555;
+}
+
+.apply-file-list li::before {
+  content: "• ";
+  color: #1a73e8;
+}
+
+.btn-upload.large {
+  font-size: 14px;
+  padding: 10px 20px;
+  cursor: pointer;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  max-width: 100%;
+  display: inline-block;
+}
+
+/* Application Page */
+.application-page-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.application-page-card {
+  background: white;
+  border-radius: 10px;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+  overflow: hidden;
+}
+
+.application-page-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 14px 18px;
+  cursor: pointer;
+  gap: 12px;
+}
+
+.application-page-header:hover {
+  background: #fafbfc;
+}
+
+.application-page-summary {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.application-page-name {
+  font-weight: 600;
+  font-size: 15px;
+  color: #333;
+}
+
+.application-page-date {
+  font-size: 12px;
+  color: #999;
+}
+
+.application-page-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.application-page-actions .btn-sm {
+  font-size: 12px;
+  padding: 5px 12px;
+  background: #e8f0fe;
+  color: #1a73e8;
+  border: none;
+  border-radius: 6px;
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.application-page-body {
+  padding: 0 18px 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.application-page-section h4 {
+  font-size: 13px;
+  color: #1a73e8;
+  margin-bottom: 8px;
+  padding-bottom: 4px;
+  border-bottom: 1px solid #eee;
+}
+
+.application-page-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.application-page-table tr {
+  border-bottom: 1px solid #f5f5f5;
+}
+
+.application-page-table td {
+  padding: 6px 8px;
+  font-size: 13px;
+  vertical-align: top;
+}
+
+.app-table-label {
+  color: #888;
+  width: 40%;
+  font-weight: 500;
+}
+
+.app-table-value {
+  color: #333;
+}
+
 @media (max-width: 600px) {
   .pl-grid {
     grid-template-columns: 1fr;
   }
 
-  .apply-modal {
+  .apply-modal,
+  .apply-modal-wide {
     width: calc(100% - 32px);
+  }
+
+  .application-page-header {
+    flex-direction: column;
+    align-items: flex-start;
   }
 }

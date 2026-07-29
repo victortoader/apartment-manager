@@ -221,5 +221,149 @@
       "totalPaid": "Total Payé",
       "balance": "Solde"
     }
+  },
+
+  "presentationList": {
+    "title": "Nos Appartements",
+    "subtitle": "Trouvez votre maison idéale",
+    "rented": "Loué",
+    "availableNow": "Disponible immédiatement",
+    "availableFrom": "Disponible à partir du",
+    "availableFromDate": "Disponible à partir du",
+    "status": "Statut",
+    "viewDetails": "Voir les détails",
+    "apply": "Postuler",
+    "noApartments": "Aucun appartement disponible pour le moment.",
+    "applyFor": "Postuler pour",
+    "applicantName": "Nom complet",
+    "applicantEmail": "Email",
+    "applicantPhone": "Téléphone (optionnel)",
+    "chooseFile": "Choisir des documents",
+    "addMoreFiles": "Ajouter d'autres documents",
+    "submit": "Soumettre la candidature",
+    "submitting": "Soumission en cours...",
+    "applyError": "Échec de la candidature. Veuillez réessayer.",
+    "applyErrorRequired": "Veuillez remplir tous les champs obligatoires et sélectionner un fichier.",
+    "applySuccess": "Candidature soumise !",
+    "applySuccessMsg": "Merci pour votre candidature. Nous l'examinerons et vous répondrons sous peu."
+  },
+
+  "application": {
+    "yes": "Oui",
+    "requiredFile": "Veuillez télécharger un document",
+    "noFormData": "Aucune donnée de formulaire disponible",
+    "section": {
+      "property": "Détails de la propriété",
+      "mainApplicant": "Candidat principal",
+      "coApplicant": "Co-candidat",
+      "employmentMain": "Emploi — Candidat principal",
+      "employmentCo": "Emploi — Co-candidat",
+      "housingMain": "Logement actuel — Candidat principal",
+      "housingCo": "Logement actuel — Co-candidat",
+      "referencesMain": "Références — Candidat principal",
+      "referencesCo": "Références — Co-candidat",
+      "additional": "Détails supplémentaires",
+      "documents": "Documents & Confirmation"
+    },
+    "property": {
+      "location": "Propriété / Lieu",
+      "abaRef": "N° abaRef",
+      "apartment": "Appartement",
+      "rent": "Loyer charges comprises",
+      "indoorParking": "Places de parking intérieur",
+      "outdoorParking": "Places de parking extérieur",
+      "desiredStart": "Date d'entrée souhaitée",
+      "licensePlate": "N° de plaque d'immatriculation",
+      "prevTenant": "Ancien locataire",
+      "usage": "Usage (familial / secondaire / non-mariés / colocation)"
+    },
+    "main": {
+      "salutation": "Civilité (M. / Mme)",
+      "role": "Rôle (Candidat / Conjoint / Partenaire / Cautions solidaire)",
+      "lastName": "Nom de famille",
+      "firstName": "Prénom",
+      "street": "Rue / N°",
+      "city": "NPA / Ville",
+      "phonePrivate": "Téléphone privé",
+      "phoneBusiness": "Téléphone professionnel",
+      "phoneMobile": "Téléphone mobile",
+      "email": "Email",
+      "birthDate": "Date de naissance",
+      "maritalStatus": "État civil",
+      "hometown": "Lieu d'origine / Pays",
+      "residencePermit": "Permis de séjour (A / B / C / F)"
+    },
+    "co": {
+      "salutation": "Civilité (M. / Mme)",
+      "role": "Rôle (Conjoint / Partenaire / Cautions solidaire)",
+      "lastName": "Nom de famille",
+      "firstName": "Prénom",
+      "street": "Rue / N°",
+      "city": "NPA / Ville",
+      "phonePrivate": "Téléphone privé",
+      "phoneBusiness": "Téléphone professionnel",
+      "phoneMobile": "Téléphone mobile",
+      "email": "Email",
+      "birthDate": "Date de naissance",
+      "maritalStatus": "État civil",
+      "hometown": "Lieu d'origine / Pays",
+      "residencePermit": "Permis de séjour (A / B / C / F)"
+    },
+    "empMain": {
+      "occupation": "Profession",
+      "employer": "Employeur",
+      "employedSince": "Employé depuis",
+      "income": "Revenu mensuel"
+    },
+    "empCo": {
+      "occupation": "Profession",
+      "employer": "Employeur",
+      "employedSince": "Employé depuis",
+      "income": "Revenu mensuel"
+    },
+    "housingMain": {
+      "currentLandlord": "Propriétaire actuel",
+      "livingSince": "Y habite depuis",
+      "prevRent": "Loyer précédent",
+      "moveReason": "Motif du déménagement"
+    },
+    "housingCo": {
+      "currentLandlord": "Propriétaire actuel",
+      "livingSince": "Y habite depuis",
+      "prevRent": "Loyer précédent",
+      "moveReason": "Motif du déménagement"
+    },
+    "refMain": {
+      "employerName": "Référence employeur nom",
+      "employerPhone": "Référence employeur téléphone",
+      "employerEmail": "Référence employeur email",
+      "landlordName": "Référence propriétaire nom",
+      "landlordPhone": "Référence propriétaire téléphone"
+    },
+    "refCo": {
+      "employerName": "Référence employeur nom",
+      "employerPhone": "Référence employeur téléphone",
+      "employerEmail": "Référence employeur email",
+      "landlordName": "Référence propriétaire nom",
+      "landlordPhone": "Référence propriétaire téléphone"
+    },
+    "add": {
+      "pets": "Animaux (type et nombre)",
+      "instruments": "Instruments de musique (type)",
+      "bankAccount": "Compte bancaire au nom de",
+      "iban": "N° IBAN",
+      "remarks": "Remarques",
+      "nameplate": "Inscription souhaitée sur la plaque nominative",
+      "adultCount": "Nombre d'adultes",
+      "childCount": "Nombre d'enfants",
+      "childYears": "Années de naissance des enfants"
+    },
+    "doc": {
+      "idCopy": "Copie de la pièce d'identité / permis de séjour",
+      "debtExtract": "Extrait de poursuite (max 3 mois)",
+      "date": "Date",
+      "signatureMain": "Signature — Candidat principal",
+      "signatureCo": "Signature — Co-candidat"
+    }
   }
 }
