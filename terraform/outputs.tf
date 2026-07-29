@@ -27,3 +27,13 @@ output "ssm_prefix" {
   description = "SSM parameter prefix"
   value       = "/${var.ssm_prefix}"
 }
+
+output "uploads_backup_bucket" {
+  description = "S3 bucket for daily uploads backups"
+  value       = aws_s3_bucket.uploads_backup.id
+}
+
+output "db_backup_bucket" {
+  description = "S3 bucket for daily DB backups"
+  value       = aws_s3_bucket.db_backup.id
+}

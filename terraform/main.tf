@@ -119,7 +119,7 @@ resource "aws_iam_role_policy" "ssm_read" {
       Effect   = "Allow"
       Action   = "ssm:GetParameter"
       Resource = "arn:aws:ssm:*:*:parameter/${var.ssm_prefix}/*"
-    }, {
+      }, {
       Effect   = "Allow"
       Action   = "ssm:GetParameter"
       Resource = "arn:aws:ssm:*:*:parameter/${var.ssm_prefix}"
@@ -130,6 +130,45 @@ resource "aws_iam_role_policy" "ssm_read" {
 resource "aws_iam_instance_profile" "app" {
   name = "${var.project_name}-profile-${var.environment}"
   role = aws_iam_role.ec2_role.name
+}
+
+resource "aws_s3_bucket" "uploads_backup" {
+  bucket = var.uploads_backup_bucket
+}
+
+resource "aws_s3_bucket" "db_backup" {
+  bucket = var.db_backup_bucket
+}
+
+resource "aws_s3_bucket_versioning" "uploads_backup" {
+  bucket = aws_s3_bucket.uploads_backup.id
+  versioning_configuration {
+    status = "Enabled"
+  }
+}
+
+resource "aws_s3_bucket_versioning" "db_backup" {
+  bucket = aws_s3_bucket.db_backup.id
+  versioning_configuration {
+    status = "Enabled"
+  }
+}
+
+resource "aws_iam_role_policy" "backup_s3" {
+  name = "${var.project_name}-backup-s3-${var.environment}"
+  role = aws_iam_role.ec2_role.id
+
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [{
+      Effect = "Allow"
+      Action = "s3:PutObject"
+      Resource = [
+        "${aws_s3_bucket.uploads_backup.arn}/*",
+        "${aws_s3_bucket.db_backup.arn}/*"
+      ]
+    }]
+  })
 }
 
 resource "aws_instance" "app" {

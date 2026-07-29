@@ -57,3 +57,15 @@ variable "branch" {
   type        = string
   default     = "main"
 }
+
+variable "uploads_backup_bucket" {
+  description = "S3 bucket name for uploads backups"
+  type        = string
+  default     = "apartment-manager-uploads-backups"
+}
+
+variable "db_backup_bucket" {
+  description = "S3 bucket name for DB backups"
+  type        = string
+  default     = "apartment-manager-db-backups"
+}

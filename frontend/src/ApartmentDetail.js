@@ -146,6 +146,20 @@ function ApartmentDetail() {
     }
   };
 
+  const downloadFile = async (fileName, originalName) => {
+    const res = await fetch(`${API}/api/applications/files/${fileName}`, { headers: authHeader() });
+    if (!res.ok) return;
+    const blob = await res.blob();
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = originalName;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  };
+
   const handlePhotoUpload = async (file) => {
     const formData = new FormData();
     formData.append('file', file);
@@ -390,14 +404,12 @@ function ApartmentDetail() {
                     <span className="application-date">{new Date(app.submittedAt).toLocaleDateString()
 }</span>
                   </div>
-                  <a
-                    href={`${API}/api/applications/files/${app.storedFileName}`}
-                    target="_blank"
-                    rel="noreferrer"
+                  <button
                     className="btn-sm"
+                    onClick={() => downloadFile(app.storedFileName.split(', ')[0], app.originalFileName.split(', ')[0])}
                   >
-                    {app.originalFileName}
-                  </a>
+                    {app.originalFileName.split(', ')[0]}
+                  </button>
                 </div>
               ))}
             </div>
