@@ -45,4 +45,11 @@ sed -i '/\/etc\/letsencrypt/d' "$APP_DIR/docker-compose.yml"
 echo "=== Running deployment ==="
 su - ubuntu -c "cd $APP_DIR && bash scripts/deploy-test.sh"
 
+echo "=== Setting up cron jobs for backups ==="
+cat > /etc/cron.d/apartment-manager-backups << 'CRONEOF'
+0 2 * * * ubuntu cd /home/ubuntu/apartment-manager && bash scripts/backup-db.sh >> /var/log/db-backup.log 2>&1
+0 3 * * * ubuntu cd /home/ubuntu/apartment-manager && bash scripts/backup-uploads.sh >> /var/log/uploads-backup.log 2>&1
+CRONEOF
+chmod 644 /etc/cron.d/apartment-manager-backups
+
 echo "=== Setup complete ==="
