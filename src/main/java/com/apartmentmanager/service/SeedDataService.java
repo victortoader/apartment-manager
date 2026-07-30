@@ -81,17 +81,19 @@ public class SeedDataService {
         ap3.setAvailableFrom(java.time.LocalDate.now().plusDays(14));
         apartmentRepository.save(ap3);
 
+        String defaultPassword = requireDefaultPassword();
+
         User tenant = userRepository.findByUsername("tenant").orElse(null);
         if (tenant != null) {
             tenant.setApartment(ap1);
             userRepository.save(tenant);
         } else {
-            tenant = userRepository.save(new User("tenant", passwordEncoder.encode(System.getenv().getOrDefault("DEFAULT_PASSWORD", "admin")), Role.TENANT, "tenant@example.com"));
+            tenant = userRepository.save(new User("tenant", passwordEncoder.encode(defaultPassword), Role.TENANT, "tenant@example.com"));
             tenant.setApartment(ap1);
             userRepository.save(tenant);
         }
 
-        User tenant2 = userRepository.save(new User("tenant2", passwordEncoder.encode(System.getenv().getOrDefault("DEFAULT_PASSWORD", "admin")), Role.TENANT, "tenant2@example.com"));
+        User tenant2 = userRepository.save(new User("tenant2", passwordEncoder.encode(defaultPassword), Role.TENANT, "tenant2@example.com"));
         tenant2.setApartment(null);
         userRepository.save(tenant2);
 
@@ -206,6 +208,10 @@ public class SeedDataService {
         contactRepository.save(new Contact("Building Management", "loft@city-management.de", ap3));
 
         seedOcrKeywords();
+    }
+
+    private static String requireDefaultPassword() {
+        return com.apartmentmanager.util.DefaultPassword.require();
     }
 
     private void seedOcrKeywords() {

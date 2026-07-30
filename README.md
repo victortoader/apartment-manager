@@ -134,6 +134,7 @@ Generate a JWT secret: `openssl rand -base64 48`
 
 | Secret | Description |
 |--------|-------------|
+| `DEFAULT_PASSWORD` | Password for default users (used by e2e tests on CI) |
 | `EC2_SSH_KEY` | Private SSH key for the EC2 instance |
 | `EC2_HOST` | EC2 public IP or hostname |
 | `EC2_USER` | SSH username (e.g. `ubuntu`) |
@@ -239,7 +240,7 @@ Set these in a `.env` file in the project root (gitignored):
 | `DB_USERNAME` | `apartment_user` | PostgreSQL username |
 | `DB_PASSWORD` | `changeme` | PostgreSQL password |
 | `JWT_SECRET` | base64 string | JWT signing secret (min 32 bytes decoded) |
-| `DEFAULT_PASSWORD` | `admin` | Password for default users (owner, admin, tenant) |
+| `DEFAULT_PASSWORD` | *(required)* | Password for default users (owner, admin, tenant); app fails fast if unset |
 | `EMAIL_FETCH_ENABLED` | `false` | Enable Gmail IMAP bill fetching |
 | `EMAIL_FETCH_ADDRESS` | `your@gmail.com` | Gmail address to fetch from |
 | `EMAIL_FETCH_PASSWORD` | `abcdefghijklmnop` | Gmail App Password |

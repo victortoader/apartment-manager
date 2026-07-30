@@ -31,7 +31,7 @@ Full-stack apartment management portal with JWT-based role-based access control.
 | tenant | from `DEFAULT_PASSWORD` env var | TENANT |
 | tenant2 | from `DEFAULT_PASSWORD` env var | TENANT |
 
-**IMPORTANT:** Passwords are NOT hardcoded in source. They come from the `DEFAULT_PASSWORD` environment variable (defaults to "admin" when unset). Never commit hardcoded passwords.
+**IMPORTANT:** Passwords are NOT hardcoded in source. They come from the `DEFAULT_PASSWORD` environment variable (with a local-dev fallback to the root `.env` file). The application fails fast at startup if neither is set. Never commit hardcoded passwords.
 
 ## Key Backend Files
 
@@ -118,8 +118,10 @@ Full-stack apartment management portal with JWT-based role-based access control.
 ## Testing
 
 - Tests use H2 in-memory database (no external dependencies)
-- Test password constant: `TEST_PASSWORD = "admin"` (matches DEFAULT_PASSWORD fallback)
+- Test password constant: `TEST_PASSWORD` comes from the `DEFAULT_PASSWORD` env var; the Gradle `test` task sets it to a random value
 - Run: `./gradlew test`
+- E2E tests (`frontend/`) never hardcode the password; they require `DEFAULT_PASSWORD` env var and fail fast if unset. Run: `DEFAULT_PASSWORD=... npm run test:e2e` (from `frontend/`)
+- E2E tests run on CI via `.github/workflows/deploy.yaml` (needs the `DEFAULT_PASSWORD` repository secret)
 
 ## Important Notes
 

@@ -214,9 +214,11 @@ public class ApartmentController {
             Resource resource = new UrlResource(filePath.toUri());
             if (resource.exists()) {
                 String contentType = determineContentType(fileName);
+                HandoverProtocol protocol = protocolService.findByFileName(fileName);
+                String originalName = (protocol != null ? protocol.getOriginalName() : fileName);
                 return ResponseEntity.ok()
                         .contentType(MediaType.parseMediaType(contentType))
-                        .header(HttpHeaders.CONTENT_DISPOSITION, "inline")
+                        .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + originalName + "\"")
                         .body(resource);
             }
             return ResponseEntity.notFound().build();

@@ -51,6 +51,8 @@ function ApartmentList() {
   const [editingOcrKeyword, setEditingOcrKeyword] = useState(null);
   const [ocrDraft, setOcrDraft] = useState({});
   const [applicationCounts, setApplicationCounts] = useState({});
+  const [editingStatus, setEditingStatus] = useState(null);
+  const [statusDraft, setStatusDraft] = useState({});
 
   const isOwner = user?.role === 'OWNER';
   const isAdmin = user?.role === 'ADMIN';
@@ -218,6 +220,19 @@ function ApartmentList() {
     }
   };
 
+  const handleUpdateStatus = async (aptId) => {
+    const res = await fetch(`${API}/api/apartments/${aptId}/details`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json', ...authHeader() },
+      body: JSON.stringify(statusDraft)
+    });
+    if (res.ok) {
+      fetchApartments();
+    }
+    setEditingStatus(null);
+    setStatusDraft({});
+  };
+
   if (user?.role === 'TENANT' && apartments.length === 0) {
     return (
       <div className="app">
@@ -349,6 +364,37 @@ function ApartmentList() {
                   <p className="row-location">{apt.location}</p>
                   <p className="row-price">{apt.rooms} {t('detail.rooms')} &middot; {apt.area} m&sup2;</p>
                   {apt.tenant && <p className="row-tenant">{t('apartmentList.tenant')} {apt.tenant}</p>}
+                  {canCreate && (
+                    <div className="row-status" onClick={e => e.stopPropagation()}>
+                      <span className={`status-badge status-${apt.status}`}>
+                        {t(`apartmentList.status.${apt.status}`)}
+                        {apt.status === 'AVAILABLE_FROM' && apt.availableFrom && ` (${new Date(apt.availableFrom + 'T00:00:00').toLocaleDateString()})`}
+                      </span>
+                      {manageMode && editingStatus === apt.id ? (
+                        <div className="status-editor">
+                          <select
+                            value={statusDraft.status || apt.status}
+                            onChange={e => setStatusDraft({ ...statusDraft, status: e.target.value })}
+                          >
+                            <option value="RENTED">{t('apartmentList.status.RENTED')}</option>
+                            <option value="AVAILABLE_IMMEDIATELY">{t('apartmentList.status.AVAILABLE_IMMEDIATELY')}</option>
+                            <option value="AVAILABLE_FROM">{t('apartmentList.status.AVAILABLE_FROM')}</option>
+                          </select>
+                          {(statusDraft.status || apt.status) === 'AVAILABLE_FROM' && (
+                            <input
+                              type="date"
+                              value={statusDraft.availableFrom ?? apt.availableFrom ?? ''}
+                              onChange={e => setStatusDraft({ ...statusDraft, availableFrom: e.target.value })}
+                            />
+                          )}
+                          <button className="btn-primary small" onClick={() => handleUpdateStatus(apt.id)}>{t('save')}</button>
+                          <button className="btn-cancel small" onClick={() => { setEditingStatus(null); setStatusDraft({}); }}>{t('cancel')}</button>
+                        </div>
+                      ) : manageMode && (
+                        <button className="btn-edit small" onClick={() => { setEditingStatus(apt.id); setStatusDraft({ status: apt.status, availableFrom: apt.availableFrom }); }}>{t('edit')}</button>
+                      )}
+                    </div>
+                  )}
                 </div>
 
                 <div className="row-bills">

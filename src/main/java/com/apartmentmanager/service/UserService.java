@@ -27,10 +27,15 @@ public class UserService {
     @PostConstruct
     public void init() {
         if (userRepository.count() == 0) {
-            userRepository.save(new User("owner", passwordEncoder.encode(System.getenv().getOrDefault("DEFAULT_PASSWORD", "admin")), Role.OWNER, "owner@example.com"));
-            userRepository.save(new User("admin", passwordEncoder.encode(System.getenv().getOrDefault("DEFAULT_PASSWORD", "admin")), Role.ADMIN, "admin@example.com"));
-            userRepository.save(new User("tenant", passwordEncoder.encode(System.getenv().getOrDefault("DEFAULT_PASSWORD", "admin")), Role.TENANT, "tenant@example.com"));
+            String defaultPassword = requireDefaultPassword();
+            userRepository.save(new User("owner", passwordEncoder.encode(defaultPassword), Role.OWNER, "owner@example.com"));
+            userRepository.save(new User("admin", passwordEncoder.encode(defaultPassword), Role.ADMIN, "admin@example.com"));
+            userRepository.save(new User("tenant", passwordEncoder.encode(defaultPassword), Role.TENANT, "tenant@example.com"));
         }
+    }
+
+    private static String requireDefaultPassword() {
+        return com.apartmentmanager.util.DefaultPassword.require();
     }
 
     public List<User> findAll() {

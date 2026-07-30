@@ -36,6 +36,10 @@ public class HandoverProtocolService {
         return photoStorage.load(fileName);
     }
 
+    public HandoverProtocol findByFileName(String fileName) {
+        return repository.findByFileName(fileName).orElse(null);
+    }
+
     public void delete(Long id) {
         repository.deleteById(id);
     }

@@ -18,6 +18,8 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.context.WebApplicationContext;
 
 import jakarta.persistence.EntityManager;
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 
 import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
@@ -26,6 +28,16 @@ import static org.springframework.test.web.servlet.setup.MockMvcBuilders.webAppC
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.MOCK)
 @Transactional
 abstract class AbstractIntegrationTest {
+
+    protected static final String TEST_PASSWORD;
+
+    static {
+        String password = System.getenv("DEFAULT_PASSWORD");
+        if (password == null || password.isBlank()) {
+            throw new IllegalStateException("DEFAULT_PASSWORD environment variable is required to run tests");
+        }
+        TEST_PASSWORD = password;
+    }
 
     @Autowired protected WebApplicationContext context;
     @Autowired protected JwtUtil jwtUtil;
@@ -55,6 +67,12 @@ abstract class AbstractIntegrationTest {
     protected String bearer(String username) {
         User user = userRepository.findByUsername(username).orElseThrow();
         return "Bearer " + jwtUtil.generateToken(username, user.getRole());
+    }
+
+    protected static String jsonResource(String name) throws IOException {
+        try (var in = AbstractIntegrationTest.class.getResourceAsStream("/" + name)) {
+            return new String(in.readAllBytes(), StandardCharsets.UTF_8);
+        }
     }
 
     protected Apartment createApartment(String title) {
