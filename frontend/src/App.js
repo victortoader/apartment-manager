@@ -10,6 +10,7 @@ import Presentation from './Presentation';
 import PresentationList from './PresentationList';
 import ApartmentApplications from './ApartmentApplications';
 import AuditLog from './AuditLog';
+import InspectionForm from './InspectionForm';
 import Login from './Login';
 import './App.css';
 
@@ -34,6 +35,8 @@ function App() {
           <Route path="/tickets" element={<ProtectedRoute><Tickets /></ProtectedRoute>} />
           <Route path="/audit" element={<ProtectedRoute><AuditLog /></ProtectedRoute>} />
           <Route path="/applications/:id" element={<ProtectedRoute><ApartmentApplications /></ProtectedRoute>} />
+          <Route path="/apartments/:id/inspections/new" element={<ProtectedRoute><InspectionForm /></ProtectedRoute>} />
+          <Route path="/apartments/:id/inspections/:inspectionId" element={<ProtectedRoute><InspectionForm /></ProtectedRoute>} />
         </Routes>
       </BrowserRouter>
     </AuthProvider>

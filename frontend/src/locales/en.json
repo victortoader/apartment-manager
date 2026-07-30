@@ -65,7 +65,14 @@
     "ocrKeywordsHint": "Keywords used to recognize amounts and detect language in bills. Separate with | (pipe).",
     "ocrAmountKeywords": "Amount Keywords",
     "ocrLanguageKeywords": "Language Keywords",
-    "ocrDefaultCurrency": "Default Currency"
+    "ocrDefaultCurrency": "Default Currency",
+    "statusLabel": "Status",
+    "status": {
+      "RENTED": "Rented",
+      "AVAILABLE_IMMEDIATELY": "Available Now",
+      "AVAILABLE_FROM": "Available from"
+    },
+    "availableFromDate": "Available From Date"
   },
 
   "detail": {
@@ -304,6 +311,58 @@
       "signatureMain": "Signature — Main applicant",
       "signatureCo": "Signature — Co-applicant"
     }
+  },
+
+  "inspection": {
+    "title": "Handover Inspection",
+    "companyInfo": "Company Information",
+    "companyName": "Company Name",
+    "companyAddress": "Address",
+    "postalCode": "Postal Code",
+    "city": "City",
+    "phone": "Phone",
+    "email": "Email",
+    "propertyInfo": "Property Information",
+    "property": "Property",
+    "objectNumber": "Object Number",
+    "rentalObject": "Rental Object",
+    "incomingParty": "Incoming Party",
+    "documentType": "Document Type",
+    "date": "Date",
+    "sections": "Inspection Sections",
+    "addSection": "+ Add Section",
+    "sectionPlaceholder": "Section title (e.g. Kitchen, Bathroom)",
+    "detailPlaceholder": "Detail (e.g. Wall, Floor, Window)",
+    "textPlaceholder": "Condition / Notes",
+    "costShare": "Cost share",
+    "photo": "Photo",
+    "addRow": "+ Add Row",
+    "status": "Status",
+    "new": "New",
+    "normal": "Normal",
+    "defect": "Defect",
+    "missing": "Missing",
+    "confirmations": "Confirmations",
+    "confirmationsPlaceholder": "One confirmation per line",
+    "signatures": "Signatures",
+    "signatureRole": "Role (e.g. Landlord, Tenant)",
+    "printedName": "Printed name",
+    "addSignature": "+ Add Signature",
+    "save": "Save",
+    "saving": "Saving...",
+    "saved": "Saved successfully",
+    "saveFailed": "Save failed",
+    "saveFirst": "Save the inspection first",
+    "saveAndGenerate": "Save & Generate PDF",
+    "generatePdf": "Generate PDF",
+    "generating": "Generating...",
+    "generated": "PDF generated successfully!",
+    "generateFailed": "PDF generation failed",
+    "downloadPdf": "Download PDF",
+    "downloadPhotos": "Download Photos",
+    "downloadingPhotos": "Downloading...",
+    "downloadPhotosFailed": "Photo download failed",
+    "createNew": "New Inspection"
   },
 
   "auditLog": {

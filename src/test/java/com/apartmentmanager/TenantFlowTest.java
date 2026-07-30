@@ -12,8 +12,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 class TenantFlowTest extends AbstractIntegrationTest {
 
-    private static final String TEST_PASSWORD = "admin";
-
     @Test
     void fullTenantWorkflow() throws Exception {
         Apartment apt = createApartment("Tenant Workflow Apt");

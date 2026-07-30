@@ -14,6 +14,9 @@ frontend/build/
 # Runtime uploads
 uploads/
 
+# Logs
+*.log
+
 # Environment and secrets
 .env
 .env.*

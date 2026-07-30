@@ -1,0 +1,30 @@
+{
+    "documentType": "Uebergabeprotokoll",
+    "date": "2026-07-30",
+    "time": "10:00:00",
+    "companyName": "Test GmbH",
+    "companyAddress": "Musterstr. 1",
+    "companyPostalCode": "12345",
+    "companyCity": "Berlin",
+    "property": "Musterhaus",
+    "objectNumber": "OBJ-001",
+    "rentalObject": "Whg 3 OG",
+    "incomingParty": "Max Mustermann",
+    "confirmationsJson": "%s",
+    "signaturesJson": "%s",
+    "sections": [
+        {
+            "title": "Wohnzimmer",
+            "rows": [
+                {"detail": "Boden", "text": "Laminat, Kratzer im Eingangsbereich", "status": "defect", "costShare": "50%%"},
+                {"detail": "Heizung", "text": "Funktioniert einwandfrei", "status": "normal"}
+            ]
+        },
+        {
+            "title": "Kueche",
+            "rows": [
+                {"detail": "Spuele", "text": "Wasserhahn tropft leicht", "status": "defect", "costShare": "100%%"}
+            ]
+        }
+    ]
+}

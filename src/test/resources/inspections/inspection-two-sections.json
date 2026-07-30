@@ -1,0 +1,20 @@
+{
+    "documentType": "Uebergabeprotokoll",
+    "date": "2026-07-30",
+    "companyName": "Test GmbH",
+    "property": "Testhaus",
+    "sections": [
+        {
+            "title": "Wohnzimmer",
+            "rows": [
+                {"detail": "Boden", "text": "Laminat", "status": "normal"}
+            ]
+        },
+        {
+            "title": "Kueche",
+            "rows": [
+                {"detail": "Spuele", "text": "Wasserhahn tropft", "status": "defect"}
+            ]
+        }
+    ]
+}

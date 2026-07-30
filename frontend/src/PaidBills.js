@@ -128,6 +128,19 @@ function PaidBills({ apartmentId }) {
     setEditCurrency(bill.extractedCurrency || 'EUR');
   };
 
+  const openBillFile = async (storedFileName) => {
+    try {
+      const res = await fetch(`${API}/api/bills/${storedFileName}`, { headers: authHeader() });
+      if (!res.ok) return;
+      const blob = await res.blob();
+      const url = URL.createObjectURL(blob);
+      window.open(url, '_blank', 'noopener,noreferrer');
+      setTimeout(() => URL.revokeObjectURL(url), 60000);
+    } catch (err) {
+      console.error('Open bill file failed:', err);
+    }
+  };
+
   const getConfidenceColor = (confidence) => {
     if (confidence >= 0.85) return 'confidence-high';
     if (confidence >= 0.60) return 'confidence-medium';
@@ -218,9 +231,8 @@ function PaidBills({ apartmentId }) {
                     <span className="paid-bills-format">{getFileExtension(bill.originalFileName)}</span>
                     <span className="paid-bills-type">{t(`paidBills.billTypes.${BILL_TYPE_TO_KEY[bill.billType] || 'other'}`)}</span>
                     <a
-                      href={`${API}/api/bills/${bill.storedFileName}`}
-                      target="_blank"
-                      rel="noreferrer"
+                      href="#"
+                      onClick={(e) => { e.preventDefault(); openBillFile(bill.storedFileName); }}
                       className="paid-bills-link"
                     >
                       {bill.originalFileName}

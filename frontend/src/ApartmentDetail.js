@@ -233,6 +233,9 @@ function ApartmentDetail() {
         {canDelete && (
           <a href={`/presentations/apartments/${apartment.id}`} className="btn-back" target="_blank" rel="noreferrer">{t('apartmentList.presentation')}</a>
         )}
+        {canUpload && (
+          <a href={`/apartments/${id}/inspections/new`} className="btn-primary">{t('inspection.createNew')}</a>
+        )}
       </header>
 
       <div className="detail-layout">

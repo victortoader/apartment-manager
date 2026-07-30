@@ -68,4 +68,18 @@ class SecurityTest extends AbstractIntegrationTest {
         mockMvc.perform(get("/api/apartments/protocols/somefile.pdf"))
                 .andExpect(status().isNotFound());
     }
+
+    @Test
+    void billFileEndpoint_requiresAuth() throws Exception {
+        mockMvc.perform(get("/api/bills/somefile.pdf"))
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
+    void updateBillAmount_requiresAuth() throws Exception {
+        mockMvc.perform(put("/api/bills/1/amount")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"amount\": 100.0}"))
+                .andExpect(status().isForbidden());
+    }
 }

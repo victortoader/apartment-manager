@@ -1,0 +1,18 @@
+{
+    "documentType": "Uebergabeprotokoll",
+    "date": "2026-07-30",
+    "companyName": "Test GmbH",
+    "sections": [
+        {
+            "title": "Wohnzimmer",
+            "rows": [
+                {
+                    "detail": "Boden",
+                    "text": "Laminat",
+                    "status": "defect",
+                    "photos": [ {"id": %d, "storedFileName": "%s", "originalFileName": "%s", "sortOrder": 0} ]
+                }
+            ]
+        }
+    ]
+}

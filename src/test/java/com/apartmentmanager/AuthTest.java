@@ -10,8 +10,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 class AuthTest extends AbstractIntegrationTest {
 
-    private static final String TEST_PASSWORD = "admin";
-
     @Test
     void loginOwner_returnsTokenAndRole() throws Exception {
         mockMvc.perform(post("/api/auth/login")
