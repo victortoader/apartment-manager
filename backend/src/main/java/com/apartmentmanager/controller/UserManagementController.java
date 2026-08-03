@@ -1,14 +1,12 @@
 package com.apartmentmanager.controller;
 
+import com.apartmentmanager.audit.Audited;
 import com.apartmentmanager.model.Role;
 import com.apartmentmanager.model.User;
-import com.apartmentmanager.repository.UserRepository;
-import com.apartmentmanager.service.AuditService;
 import com.apartmentmanager.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -20,8 +18,6 @@ import java.util.Map;
 public class UserManagementController {
 
     private final UserService userService;
-    private final UserRepository userRepository;
-    private final AuditService auditService;
 
     @GetMapping
     @PreAuthorize("hasRole('OWNER')")
@@ -29,49 +25,39 @@ public class UserManagementController {
         return userService.findAll();
     }
 
+    @Audited(action = "USER_CREATED", message = "Created user '{body['username']}' with role {body['role']}")
     @PostMapping
     @PreAuthorize("hasRole('OWNER')")
-    public ResponseEntity<?> create(@RequestBody Map<String, String> body, Authentication auth) {
+    public ResponseEntity<?> create(@RequestBody Map<String, String> body) {
         try {
             String username = body.get("username");
             String password = body.get("password");
             String email = body.get("email");
             Role role = Role.valueOf(body.get("role"));
             User user = userService.createUser(username, password, role, email);
-            User actor = userRepository.findByUsername(auth.getName()).orElseThrow();
-            auditService.log(actor.getUsername(), actor.getRole().name(), "USER_CREATED",
-                    "Created user '" + username + "' with role " + role, null);
             return ResponseEntity.ok(user);
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
         }
     }
 
+    @Audited(action = "APARTMENT_ASSIGNED", message = "Assigned apartment #{body['apartmentId']} to user #{id} '{result.username}'")
     @PutMapping("/{id}/apartment")
     @PreAuthorize("hasRole('OWNER')")
-    public ResponseEntity<?> assignApartment(@PathVariable Long id, @RequestBody Map<String, Long> body, Authentication auth) {
+    public ResponseEntity<?> assignApartment(@PathVariable Long id, @RequestBody Map<String, Long> body) {
         try {
             User user = userService.assignApartment(id, body.get("apartmentId"));
-            User actor = userRepository.findByUsername(auth.getName()).orElseThrow();
-            auditService.log(actor.getUsername(), actor.getRole().name(), "APARTMENT_ASSIGNED",
-                    "Assigned apartment #" + body.get("apartmentId") + " to user #" + id + " '" + user.getUsername() + "'", null);
             return ResponseEntity.ok(user);
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
         }
     }
 
+    @Audited(action = "USER_DELETED", message = "Deleted user #{id}")
     @DeleteMapping("/{id}")
     @PreAuthorize("hasRole('OWNER')")
-    public ResponseEntity<Void> delete(@PathVariable Long id, Authentication auth) {
-        User target = userService.findById(id);
-        String actorUsername = auth.getName();
-        User actor = userRepository.findByUsername(actorUsername).orElseThrow();
-        String actorRole = actor.getRole().name();
-        String targetUsername = target.getUsername();
+    public ResponseEntity<Void> delete(@PathVariable Long id) {
         userService.deleteUser(id);
-        auditService.log(actorUsername, actorRole, "USER_DELETED",
-                "Deleted user #" + id + " '" + targetUsername + "'", null);
         return ResponseEntity.noContent().build();
     }
 }
