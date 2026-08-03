@@ -13,7 +13,7 @@ test.describe('Audit log', () => {
 
     const filter = page.locator('.audit-filter select');
     await filter.selectOption('owner');
-    await expect(page.locator('.audit-table tbody tr')).not.toHaveCount(0);
+    await expect(page.locator('.audit-username').filter({ hasNotText: 'owner' })).toHaveCount(0, { timeout: 20000 });
     const usernames = await page.locator('.audit-username').allInnerTexts();
     for (const username of usernames) {
       expect(username.trim()).toBe('owner');
