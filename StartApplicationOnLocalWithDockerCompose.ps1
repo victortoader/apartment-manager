@@ -8,10 +8,10 @@ Write-Host "Waiting for PostgreSQL to be ready..."
 Start-Sleep -Seconds 3
 
 Write-Host "Ensuring uploads directory exists..."
-if (-not (Test-Path "uploads")) { New-Item -ItemType Directory -Path "uploads" | Out-Null }
+if (-not (Test-Path "backend\uploads")) { New-Item -ItemType Directory -Path "backend\uploads" | Out-Null }
 
 Write-Host "Starting backend..."
-$backend = Start-Process -NoNewWindow -PassThru -FilePath "cmd" -ArgumentList "/c .\gradlew.bat bootRun --args='--spring.profiles.active=postgres'"
+$backend = Start-Process -NoNewWindow -PassThru -FilePath "cmd" -ArgumentList "/c .\gradlew.bat bootRun --args='--spring.profiles.active=postgres'" -WorkingDirectory "backend"
 
 Write-Host "Waiting for backend to be ready..."
 $maxWait = 60

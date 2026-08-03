@@ -45,6 +45,7 @@ No database setup needed. H2 runs in-memory.
 cd frontend && npm install && cd ..
 
 # Run backend (terminal 1)
+cd backend
 ./gradlew bootRun
 
 # Run frontend (terminal 2)
@@ -63,6 +64,7 @@ npm start
 docker compose up -d db
 
 # 3. Start the backend with PostgreSQL profile
+cd backend
 ./gradlew bootRun --args='--spring.profiles.active=postgres'
 
 # 4. Run frontend (separate terminal)
@@ -93,6 +95,7 @@ A `docker-compose.override.yml` is automatically loaded locally to use `nginx/de
 ## Run Tests
 
 ```bash
+cd backend
 ./gradlew test
 ```
 
@@ -292,13 +295,17 @@ Planned: use Amazon Bedrock (Nova Micro) to match bills to apartments based on b
 
 ```
 demo/
-├── src/main/java/com/apartmentmanager/
-│   ├── model/          # JPA entities (Apartment, User, Ticket, etc.)
-│   ├── controller/     # REST controllers
-│   ├── service/        # Business logic + seed data
-│   ├── repository/     # Spring Data JPA repositories
-│   └── security/       # JWT filter, SecurityConfig
-├── src/test/           # Integration tests (H2)
+├── backend/
+│   ├── src/main/java/com/apartmentmanager/
+│   │   ├── model/          # JPA entities (Apartment, User, Ticket, etc.)
+│   │   ├── controller/     # REST controllers
+│   │   ├── service/        # Business logic + seed data
+│   │   ├── repository/     # Spring Data JPA repositories
+│   │   └── security/       # JWT filter, SecurityConfig
+│   ├── src/test/           # Integration tests (H2)
+│   ├── gradlew             # Gradle wrapper
+│   ├── build.gradle
+│   └── Dockerfile
 ├── frontend/
 │   ├── src/
 │   │   ├── App.js              # Routes
@@ -316,8 +323,6 @@ demo/
 ├── nginx/
 │   └── default.conf    # Production nginx config
 ├── docker-compose.yml
-├── Dockerfile.backend
 ├── .env                # Local dev secrets (gitignored)
-├── .env.example        # Template for .env
-└── build.gradle
+└── .env.example        # Template for .env
 ```

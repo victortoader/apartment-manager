@@ -36,27 +36,27 @@ Full-stack apartment management portal with JWT-based role-based access control.
 ## Key Backend Files
 
 ### Models
-- `src/main/java/com/apartmentmanager/model/Apartment.java` - Apartment entity with title, description, location, price, rooms, area, photoPaths, metadata, presentation
-- `src/main/java/com/apartmentmanager/model/BillPayment.java` - Bill entity with originalFileName, storedFileName, contentType, billType, documentType, extractedAmount, extractedCurrency, ocrConfidence, ocrFailed
-- `src/main/java/com/apartmentmanager/model/OcrKeywords.java` - OCR keywords entity with language, amountKeywords, languageKeywords, paymentKeywords, defaultCurrency
-- `src/main/java/com/apartmentmanager/model/User.java` - User entity with username, password, role, email, apartment reference
+- `backend/src/main/java/com/apartmentmanager/model/Apartment.java` - Apartment entity with title, description, location, price, rooms, area, photoPaths, metadata, presentation
+- `backend/src/main/java/com/apartmentmanager/model/BillPayment.java` - Bill entity with originalFileName, storedFileName, contentType, billType, documentType, extractedAmount, extractedCurrency, ocrConfidence, ocrFailed
+- `backend/src/main/java/com/apartmentmanager/model/OcrKeywords.java` - OCR keywords entity with language, amountKeywords, languageKeywords, paymentKeywords, defaultCurrency
+- `backend/src/main/java/com/apartmentmanager/model/User.java` - User entity with username, password, role, email, apartment reference
 
 ### Services
-- `src/main/java/com/apartmentmanager/service/BillPaymentService.java` - Bill upload, OCR analysis, amount extraction. Has `upload()` (MultipartFile) and `uploadFromBytes()` (byte[]) methods
-- `src/main/java/com/apartmentmanager/service/OcrService.java` - Dual-path OCR: PDF text extraction via PDFBox → regex, fallback to Tesseract. Detects currency from symbols/language keywords. Detects document type (bill vs proof) from payment keywords and negative amounts
-- `src/main/java/com/apartmentmanager/service/EmailFetchService.java` - IMAP polling for Gmail, downloads attachments, saves as bills to first apartment
-- `src/main/java/com/apartmentmanager/service/UserService.java` - User CRUD, `@PostConstruct` creates default users only when DB is empty
-- `src/main/java/com/apartmentmanager/service/SeedDataService.java` - Seeds OCR keywords (amount, language, payment) for RO/DE/EN
-- `src/main/java/com/apartmentmanager/service/AuditService.java` - Audit logging
+- `backend/src/main/java/com/apartmentmanager/service/BillPaymentService.java` - Bill upload, OCR analysis, amount extraction. Has `upload()` (MultipartFile) and `uploadFromBytes()` (byte[]) methods
+- `backend/src/main/java/com/apartmentmanager/service/OcrService.java` - Dual-path OCR: PDF text extraction via PDFBox → regex, fallback to Tesseract. Detects currency from symbols/language keywords. Detects document type (bill vs proof) from payment keywords and negative amounts
+- `backend/src/main/java/com/apartmentmanager/service/EmailFetchService.java` - IMAP polling for Gmail, downloads attachments, saves as bills to first apartment
+- `backend/src/main/java/com/apartmentmanager/service/UserService.java` - User CRUD, `@PostConstruct` creates default users only when DB is empty
+- `backend/src/main/java/com/apartmentmanager/service/SeedDataService.java` - Seeds OCR keywords (amount, language, payment) for RO/DE/EN
+- `backend/src/main/java/com/apartmentmanager/service/AuditService.java` - Audit logging
 
 ### Controllers
-- `src/main/java/com/apartmentmanager/controller/BillPaymentController.java` - Bill CRUD, upload with documentType param, OCR analyze, update amount
-- `src/main/java/com/apartmentmanager/controller/OcrKeywordsController.java` - GET/PUT/POST OCR keywords
-- `src/main/java/com/apartmentmanager/controller/AuthController.java` - Login, /me, verify-password
+- `backend/src/main/java/com/apartmentmanager/controller/BillPaymentController.java` - Bill CRUD, upload with documentType param, OCR analyze, update amount
+- `backend/src/main/java/com/apartmentmanager/controller/OcrKeywordsController.java` - GET/PUT/POST OCR keywords
+- `backend/src/main/java/com/apartmentmanager/controller/AuthController.java` - Login, /me, verify-password
 
 ### Security
-- `src/main/java/com/apartmentmanager/security/JwtAuthFilter.java` - JWT token validation
-- `src/main/java/com/apartmentmanager/security/SecurityConfig.java` - Spring Security config
+- `backend/src/main/java/com/apartmentmanager/security/JwtAuthFilter.java` - JWT token validation
+- `backend/src/main/java/com/apartmentmanager/security/SecurityConfig.java` - Spring Security config
 
 ## Key Frontend Files
 
@@ -98,7 +98,7 @@ Full-stack apartment management portal with JWT-based role-based access control.
 - **CI/CD:** GitHub Actions on push to `main`
 - **deploy.sh:** Fetches secrets from SSM, writes `.env`, runs `docker compose up -d --build`, truncates `users` table, restarts backend
 - **User reset:** Every deployment truncates the users table and re-creates default users with current `DEFAULT_PASSWORD`
-- **Docker:** `Dockerfile.backend` installs tesseract-ocr + lang packs (deu, eng)
+- **Docker:** `backend/Dockerfile` installs tesseract-ocr + lang packs (deu, eng)
 
 ## API Endpoints (Key)
 
@@ -119,7 +119,7 @@ Full-stack apartment management portal with JWT-based role-based access control.
 
 - Tests use H2 in-memory database (no external dependencies)
 - Test password constant: `TEST_PASSWORD` comes from the `DEFAULT_PASSWORD` env var; the Gradle `test` task sets it to a random value
-- Run: `./gradlew test`
+- Run: `./gradlew test` (from `backend/`)
 - E2E tests (`frontend/`) never hardcode the password; they require `DEFAULT_PASSWORD` env var and fail fast if unset. Run: `DEFAULT_PASSWORD=... npm run test:e2e` (from `frontend/`)
 - E2E tests run on CI via `.github/workflows/deploy.yaml` (needs the `DEFAULT_PASSWORD` repository secret)
 

@@ -28,9 +28,11 @@ jobs:
           cache: gradle
 
       - name: Grant execution permission to Gradle
+        working-directory: backend
         run: chmod +x gradlew
 
       - name: Run backend tests
+        working-directory: backend
         run: ./gradlew test --no-daemon
 
   build-frontend:
@@ -73,6 +75,7 @@ jobs:
           cache: gradle
 
       - name: Grant execution permission to Gradle
+        working-directory: backend
         run: chmod +x gradlew
 
       - name: Set up Node.js
@@ -91,6 +94,7 @@ jobs:
         run: npx playwright install --with-deps chromium
 
       - name: Start backend
+        working-directory: backend
         env:
           DEFAULT_PASSWORD: ${{ secrets.DEFAULT_PASSWORD }}
         run: |

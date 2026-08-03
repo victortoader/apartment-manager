@@ -9,7 +9,7 @@
 
 ## Project Structure
 ```
-src/main/java/com/apartmentmanager/
+backend/src/main/java/com/apartmentmanager/
 ├── DemoApplication.java
 ├── controller/
 │   ├── AuthController.java              # POST /api/auth/login, GET /api/auth/me, POST /api/auth/verify-password
@@ -149,7 +149,7 @@ IP address is always `null` except in `AuthController` (login/logout). Action na
 
 ## File Storage
 
-- All files stored in `uploads/` directory (configurable via `app.upload.dir`)
+- All files stored in `uploads/` directory relative to the backend run dir (configurable via `app.upload.dir`; when run from `backend/` that's `backend/uploads`)
 - Naming: `UUID + originalExtension`
 - Photos: `PhotoStorageService` (used by `HandoverProtocolService` too)
 - Bills: `BillPaymentService` (manages its own path via `System.getProperty`)
@@ -167,6 +167,7 @@ No custom exceptions defined. Everything uses `RuntimeException`. No handler for
 ## Running Locally
 
 ```bash
+cd backend
 ./gradlew bootRun                                    # H2 in-memory
 ./gradlew bootRun --args='--spring.profiles.active=postgres'  # PostgreSQL
 docker compose up db                                 # Start just the database
@@ -176,6 +177,7 @@ docker compose up --build                            # Full stack (nginx :80/:44
 ## Testing
 
 ```bash
+cd backend
 ./gradlew test
 ```
 
