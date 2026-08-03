@@ -26,6 +26,7 @@ backend/src/main/java/com/apartmentmanager/
 ├── model/                               # JPA entities, Lombok @Getter/@Setter/@NoArgsConstructor
 ├── repository/                          # JpaRepository interfaces + custom @Query for N+1 fixes
 ├── service/                             # @Service classes, constructor injection
+├── audit/                               # @Audited annotation + AuditAspect (AOP audit logging)
 └── security/                            # JWT filter chain, BCrypt, CORS
 ```
 

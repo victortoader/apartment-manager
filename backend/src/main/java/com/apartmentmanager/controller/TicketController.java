@@ -1,5 +1,6 @@
 package com.apartmentmanager.controller;
 
+import com.apartmentmanager.audit.Audited;
 import com.apartmentmanager.model.Role;
 import com.apartmentmanager.model.Ticket;
 import com.apartmentmanager.model.TicketStatus;
@@ -7,7 +8,6 @@ import com.apartmentmanager.model.User;
 import com.apartmentmanager.repository.UserRepository;
 import com.apartmentmanager.service.PhotoStorageService;
 import com.apartmentmanager.service.TicketService;
-import com.apartmentmanager.service.AuditService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
@@ -33,8 +33,8 @@ public class TicketController {
     private final TicketService ticketService;
     private final UserRepository userRepository;
     private final PhotoStorageService photoStorageService;
-    private final AuditService auditService;
 
+    @Audited(action = "TICKET_CREATED", message = "Created ticket #{result.id} in apartment #{apartmentId}: {body['title']}")
     @PostMapping("/apartments/{apartmentId}/tickets")
     public ResponseEntity<?> createTicket(@PathVariable Long apartmentId,
                                           @RequestBody Map<String, String> body,
@@ -57,8 +57,6 @@ public class TicketController {
                 body.get("description"),
                 apartmentId,
                 user.getId());
-        auditService.log(user.getUsername(), user.getRole().name(), "TICKET_CREATED",
-                "Created ticket #" + ticket.getId() + " in apartment #" + apartmentId + ": " + title, null);
         return ResponseEntity.ok(ticket);
     }
 
@@ -124,19 +122,17 @@ public class TicketController {
         return ResponseEntity.ok(ticket);
     }
 
+    @Audited(action = "TICKET_STATUS_UPDATED", message = "Updated ticket #{id} status to {body['status']}")
     @PatchMapping("/tickets/{id}")
     @PreAuthorize("hasAnyRole('OWNER', 'ADMIN')")
     public ResponseEntity<?> updateTicketStatus(@PathVariable Long id,
-                                                @RequestBody Map<String, String> body,
-                                                Authentication auth) {
+                                                @RequestBody Map<String, String> body) {
         TicketStatus status = TicketStatus.valueOf(body.get("status"));
         Ticket ticket = ticketService.updateStatus(id, status);
-        User user = userRepository.findByUsername(auth.getName()).orElseThrow();
-        auditService.log(user.getUsername(), user.getRole().name(), "TICKET_STATUS_UPDATED",
-                "Updated ticket #" + id + " status to " + status, null);
         return ResponseEntity.ok(ticket);
     }
 
+    @Audited(action = "TICKET_PHOTO_UPLOADED", message = "Uploaded photo to ticket #{id}")
     @PostMapping("/tickets/{id}/photos")
     public ResponseEntity<?> uploadPhoto(@PathVariable Long id,
                                          @RequestParam("file") MultipartFile file,
@@ -157,8 +153,6 @@ public class TicketController {
             String fileName = photoStorageService.store(file);
             ticket.getPhotoPaths().add(fileName);
             ticketService.save(ticket);
-            auditService.log(user.getUsername(), user.getRole().name(), "TICKET_PHOTO_UPLOADED",
-                    "Uploaded photo to ticket #" + id, null);
             return ResponseEntity.ok(ticket);
         } catch (IOException e) {
             return ResponseEntity.badRequest().build();

@@ -1,5 +1,6 @@
 package com.apartmentmanager.controller;
 
+import com.apartmentmanager.audit.Audited;
 import com.apartmentmanager.model.Apartment;
 import com.apartmentmanager.model.BillPayment;
 import com.apartmentmanager.model.DocumentType;
@@ -11,7 +12,6 @@ import com.apartmentmanager.repository.UserRepository;
 import com.apartmentmanager.service.ApartmentService;
 import com.apartmentmanager.service.HandoverProtocolService;
 import com.apartmentmanager.service.PhotoStorageService;
-import com.apartmentmanager.service.AuditService;
 import lombok.RequiredArgsConstructor;
 import com.apartmentmanager.model.TicketStatus;
 import org.springframework.core.io.Resource;
@@ -41,7 +41,6 @@ public class ApartmentController {
     private final UserRepository userRepository;
     private final BillPaymentRepository billPaymentRepository;
     private final TicketRepository ticketRepository;
-    private final AuditService auditService;
 
     @GetMapping
     public List<Apartment> getAll(Authentication auth) {
@@ -96,28 +95,23 @@ public class ApartmentController {
         return apartment;
     }
 
+    @Audited(action = "APARTMENT_CREATED", message = "Created apartment #{result.id}: {result.title}")
     @PostMapping
     @PreAuthorize("hasAnyRole('OWNER', 'ADMIN')")
-    public Apartment create(@Valid @RequestBody Apartment apartment, Authentication auth) {
-        User user = userRepository.findByUsername(auth.getName()).orElseThrow();
+    public Apartment create(@Valid @RequestBody Apartment apartment) {
         Apartment saved = apartmentService.save(apartment);
-        auditService.log(user.getUsername(), user.getRole().name(), "APARTMENT_CREATED",
-                "Created apartment #" + saved.getId() + ": " + saved.getTitle(), null);
         return saved;
     }
 
+    @Audited(action = "APARTMENT_DELETED", message = "Deleted apartment #{id}")
     @DeleteMapping("/{id}")
     @PreAuthorize("hasRole('OWNER')")
-    public ResponseEntity<Void> delete(@PathVariable Long id, Authentication auth) {
-        String actorName = auth.getName();
-        User actor = userRepository.findByUsername(actorName).orElseThrow();
-        String actorRole = actor.getRole().name();
+    public ResponseEntity<Void> delete(@PathVariable Long id) {
         apartmentService.delete(id);
-        auditService.log(actorName, actorRole, "APARTMENT_DELETED",
-                "Deleted apartment #" + id, null);
         return ResponseEntity.noContent().build();
     }
 
+    @Audited(action = "APARTMENT_PHOTO_UPLOADED", message = "Uploaded photo to apartment #{id}")
     @PostMapping("/{id}/photos")
     public ResponseEntity<Apartment> uploadPhoto(@PathVariable Long id,
                                                   @RequestParam("file") MultipartFile file,
@@ -134,8 +128,6 @@ public class ApartmentController {
             Apartment apartment = apartmentService.findById(id);
             apartment.getPhotoPaths().add(fileName);
             apartmentService.save(apartment);
-            auditService.log(user.getUsername(), user.getRole().name(), "APARTMENT_PHOTO_UPLOADED",
-                    "Uploaded photo to apartment #" + id, null);
             return ResponseEntity.ok(apartment);
         } catch (IOException e) {
             return ResponseEntity.badRequest().build();
@@ -170,6 +162,7 @@ public class ApartmentController {
         return protocolService.findByApartmentId(id);
     }
 
+    @Audited(action = "PROTOCOL_UPLOADED", message = "Uploaded protocol ({documentType}) to apartment #{id}")
     @PostMapping("/{id}/protocols")
     public ResponseEntity<HandoverProtocol> uploadProtocol(@PathVariable Long id,
                                                            @RequestParam("file") MultipartFile file,
@@ -185,8 +178,6 @@ public class ApartmentController {
         try {
             Apartment apartment = apartmentService.findById(id);
             HandoverProtocol protocol = protocolService.upload(id, file, documentType, apartment);
-            auditService.log(user.getUsername(), user.getRole().name(), "PROTOCOL_UPLOADED",
-                    "Uploaded protocol (" + documentType + ") to apartment #" + id, null);
             return ResponseEntity.ok(protocol);
         } catch (IOException e) {
             return ResponseEntity.badRequest().build();
@@ -258,21 +249,20 @@ public class ApartmentController {
         return ResponseEntity.ok(dtos);
     }
 
+    @Audited(action = "PRESENTATION_UPDATED", message = "Updated presentation for apartment #{id}")
     @PutMapping("/{id}/presentation")
     @PreAuthorize("hasRole('OWNER')")
-    public ResponseEntity<String> updatePresentation(@PathVariable Long id, @RequestBody String content, Authentication auth) {
+    public ResponseEntity<String> updatePresentation(@PathVariable Long id, @RequestBody String content) {
         Apartment apartment = apartmentService.findById(id);
         apartment.setPresentation(content);
         apartmentService.save(apartment);
-        User user = userRepository.findByUsername(auth.getName()).orElseThrow();
-        auditService.log(user.getUsername(), user.getRole().name(), "PRESENTATION_UPDATED",
-                "Updated presentation for apartment #" + id, null);
         return ResponseEntity.ok(content);
     }
 
+    @Audited(action = "APARTMENT_DETAILS_UPDATED", message = "Updated details for apartment #{id}")
     @PutMapping("/{id}/details")
     @PreAuthorize("hasRole('OWNER')")
-    public ResponseEntity<Apartment> updateDetails(@PathVariable Long id, @RequestBody java.util.Map<String, Object> body, Authentication auth) {
+    public ResponseEntity<Apartment> updateDetails(@PathVariable Long id, @RequestBody java.util.Map<String, Object> body) {
         Apartment apartment = apartmentService.findById(id);
         if (body.containsKey("price")) {
             apartment.setPrice(body.get("price") != null ? Double.parseDouble(body.get("price").toString()) : null);
@@ -288,22 +278,17 @@ public class ApartmentController {
             apartment.setAvailableFrom(val != null && !val.isEmpty() ? java.time.LocalDate.parse(val) : null);
         }
         apartmentService.save(apartment);
-        User user = userRepository.findByUsername(auth.getName()).orElseThrow();
-        auditService.log(user.getUsername(), user.getRole().name(), "APARTMENT_DETAILS_UPDATED",
-                "Updated details for apartment #" + id, null);
         return ResponseEntity.ok(apartment);
     }
 
+    @Audited(action = "APARTMENT_METADATA_UPDATED", message = "Updated metadata for apartment #{id}")
     @PutMapping("/{id}/metadata")
     @PreAuthorize("hasRole('OWNER')")
     public ResponseEntity<Apartment> updateMetadata(@PathVariable Long id,
-            @RequestBody List<String> metadata, Authentication auth) {
+            @RequestBody List<String> metadata) {
         Apartment apartment = apartmentService.findById(id);
         apartment.setMetadata(new java.util.ArrayList<>(metadata));
         apartmentService.save(apartment);
-        User user = userRepository.findByUsername(auth.getName()).orElseThrow();
-        auditService.log(user.getUsername(), user.getRole().name(), "APARTMENT_METADATA_UPDATED",
-                "Updated metadata for apartment #" + id, null);
         return ResponseEntity.ok(apartment);
     }
 

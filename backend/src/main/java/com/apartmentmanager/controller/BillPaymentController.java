@@ -1,12 +1,12 @@
 package com.apartmentmanager.controller;
 
+import com.apartmentmanager.audit.Audited;
 import com.apartmentmanager.model.Apartment;
 import com.apartmentmanager.model.BillPayment;
 import com.apartmentmanager.model.User;
 import com.apartmentmanager.repository.UserRepository;
 import com.apartmentmanager.service.ApartmentService;
 import com.apartmentmanager.service.BillPaymentService;
-import com.apartmentmanager.service.AuditService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
@@ -32,7 +32,6 @@ public class BillPaymentController {
     private final BillPaymentService billPaymentService;
     private final ApartmentService apartmentService;
     private final UserRepository userRepository;
-    private final AuditService auditService;
 
     @GetMapping("/apartments/{id}/bills")
     public ResponseEntity<List<BillPayment>> getBills(@PathVariable Long id, Authentication auth) {
@@ -48,6 +47,7 @@ public class BillPaymentController {
         return ResponseEntity.ok(billPaymentService.findByApartmentId(id));
     }
 
+    @Audited(action = "BILL_UPLOADED", message = "Uploaded bill for apartment #{id} ({billType}): {file.originalFilename}")
     @PostMapping("/apartments/{id}/bills")
     public ResponseEntity<BillPayment> uploadBill(@PathVariable Long id,
                                                     @RequestParam("file") MultipartFile file,
@@ -67,8 +67,6 @@ public class BillPaymentController {
         try {
             Apartment apartment = apartmentService.findById(id);
             BillPayment bill = billPaymentService.upload(apartment, user, file, billType, documentType);
-            auditService.log(user.getUsername(), user.getRole().name(), "BILL_UPLOADED",
-                    "Uploaded bill for apartment #" + id + " (" + billType + "): " + file.getOriginalFilename(), null);
             return ResponseEntity.ok(bill);
         } catch (IOException e) {
             return ResponseEntity.badRequest().build();
@@ -97,34 +95,30 @@ public class BillPaymentController {
         }
     }
 
+    @Audited(action = "BILL_DELETED", message = "Deleted bill #{id}")
     @DeleteMapping("/bills/{id}")
     @PreAuthorize("hasRole('OWNER')")
-    public ResponseEntity<Void> deleteBill(@PathVariable Long id, Authentication auth) {
+    public ResponseEntity<Void> deleteBill(@PathVariable Long id) {
         billPaymentService.delete(id);
-        User user = userRepository.findByUsername(auth.getName()).orElseThrow();
-        auditService.log(user.getUsername(), user.getRole().name(), "BILL_DELETED",
-                "Deleted bill #" + id, null);
         return ResponseEntity.noContent().build();
     }
 
+    @Audited(action = "BILL_ANALYZED", message = "Analyzed bill #{id} - extracted: {result.extractedAmount}")
     @PostMapping("/bills/{id}/analyze")
     @PreAuthorize("hasAnyRole('OWNER', 'ADMIN')")
-    public ResponseEntity<?> analyzeBill(@PathVariable Long id, Authentication auth) {
+    public ResponseEntity<?> analyzeBill(@PathVariable Long id) {
         try {
             BillPayment bill = billPaymentService.analyze(id);
-            User user = userRepository.findByUsername(auth.getName()).orElseThrow();
-            auditService.log(user.getUsername(), user.getRole().name(), "BILL_ANALYZED",
-                    "Analyzed bill #" + id + " - extracted: " + bill.getExtractedAmount(), null);
             return ResponseEntity.ok(bill);
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
         }
     }
 
+    @Audited(action = "BILL_AMOUNT_UPDATED", message = "Updated bill #{id} amount to: {body['amount']} {body['currency']}")
     @PutMapping("/bills/{id}/amount")
     public ResponseEntity<?> updateBillAmount(@PathVariable Long id,
-                                              @RequestBody Map<String, Object> body,
-                                              Authentication auth) {
+                                              @RequestBody Map<String, Object> body) {
         Double amount = null;
         if (body.containsKey("amount")) {
             Object val = body.get("amount");
@@ -141,9 +135,6 @@ public class BillPaymentController {
         }
 
         BillPayment bill = billPaymentService.updateAmount(id, amount, currency);
-        User user = userRepository.findByUsername(auth.getName()).orElseThrow();
-        auditService.log(user.getUsername(), user.getRole().name(), "BILL_AMOUNT_UPDATED",
-                "Updated bill #" + id + " amount to: " + amount + " " + currency, null);
         return ResponseEntity.ok(bill);
     }
 }
