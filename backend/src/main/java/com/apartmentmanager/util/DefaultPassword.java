@@ -25,7 +25,7 @@ public final class DefaultPassword {
 
     private static String fromDotEnv() {
         try {
-            Path envFile = Path.of(".env");
+            Path envFile = Path.of("../.env");
             if (!Files.exists(envFile)) {
                 return null;
             }

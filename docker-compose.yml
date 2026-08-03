@@ -13,8 +13,8 @@ services:
 
   backend:
     build:
-      context: .
-      dockerfile: Dockerfile.backend
+      context: ./backend
+      dockerfile: Dockerfile
     container_name: apartment-manager
     environment:
       - SPRING_PROFILES_ACTIVE=postgres

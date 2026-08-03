@@ -1,5 +1,5 @@
 Write-Host "Starting backend..."
-$backend = Start-Process -NoNewWindow -PassThru -FilePath "cmd" -ArgumentList "/c .\gradlew.bat bootRun"
+$backend = Start-Process -NoNewWindow -PassThru -FilePath "cmd" -ArgumentList "/c .\gradlew.bat bootRun" -WorkingDirectory "backend"
 
 Write-Host "Starting frontend..."
 $frontend = Start-Process -NoNewWindow -PassThru -FilePath "cmd" -ArgumentList "/c npm start" -WorkingDirectory "frontend"
