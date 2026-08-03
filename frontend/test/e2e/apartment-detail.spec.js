@@ -33,7 +33,7 @@ test.describe('Apartment detail', () => {
 
     await item.locator('.btn-sm').click();
     await page.locator('.contact-form input').nth(1).fill(updatedValue);
-    await page.locator('.contact-form').getByRole('button', { name: /save/i }).click();
+    await page.locator('.contact-form').getByRole('button', { name: /update/i }).click();
     await expect(item.locator('.contact-value')).toHaveText(updatedValue);
 
     page.once('dialog', (dialog) => dialog.accept());

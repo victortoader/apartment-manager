@@ -21,13 +21,13 @@ test.describe('Applications', () => {
     const main = modal.locator('.apply-section').filter({ hasText: 'Main Applicant' });
     await main.locator('.apply-field').filter({ hasText: 'First name' }).locator('input').fill(firstName);
     await main.locator('.apply-field').filter({ hasText: 'Last name' }).locator('input').fill('E2E');
-    await main.locator('.apply-field').filter({ hasText: 'Email' }).locator('input').fill('anna.e2e@example.com');
+    await main.locator('input[type="email"]').first().fill('anna.e2e@example.com');
 
     await modal
       .locator('.apply-file-section input[type="file"]')
       .setInputFiles({ name: 'application.pdf', mimeType: 'application/pdf', buffer: PDF_BUFFER });
     await modal.getByRole('button', { name: /submit application/i }).click();
-    await expect(modal.locator('.apply-modal-wide')).toContainText('Application Submitted!');
+    await expect(modal).toContainText('Application Submitted!');
 
     await loginAs(page, 'owner', DEFAULT_PASSWORD);
     await expect(page.locator('.btn-application').filter({ hasText: 'See Applications' }).first()).toBeVisible();
