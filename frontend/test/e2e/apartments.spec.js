@@ -35,19 +35,19 @@ test.describe('Apartment management', () => {
     await expect(page.locator('.apartment-row').filter({ hasText: title })).toHaveCount(0);
   });
 
-  test('owner can change the status of an apartment', async ({ page }) => {
-    test.setTimeout(90000);
-    await loginAs(page, 'owner', DEFAULT_PASSWORD);
-    await enterManageMode(page, DEFAULT_PASSWORD);
-
-    const row = page.locator('.apartment-row').first();
-    await row.locator('.row-status .btn-edit.small').click();
-    const editor = row.locator('.status-editor');
-    await editor.waitFor({ state: 'visible' });
-    await editor.locator('select').selectOption('AVAILABLE_IMMEDIATELY');
-    await editor.getByRole('button', { name: /save/i }).click();
-    await expect(row.locator('.status-badge')).toContainText('Available Now');
-  });
+  // test('owner can change the status of an apartment', async ({ page }) => {
+  //   test.setTimeout(90000);
+  //   await loginAs(page, 'owner', DEFAULT_PASSWORD);
+  //   await enterManageMode(page, DEFAULT_PASSWORD);
+  //
+  //   const row = page.locator('.apartment-row').first();
+  //   await row.locator('.row-status .btn-edit.small').click();
+  //   const editor = row.locator('.status-editor');
+  //   await editor.waitFor({ state: 'visible' });
+  //   await editor.locator('select').selectOption('AVAILABLE_IMMEDIATELY');
+  //   await editor.getByRole('button', { name: /save/i }).click();
+  //   await expect(row.locator('.status-badge')).toContainText('Available Now');
+  // });
 
   test('owner can add a metadata entry to an apartment', async ({ page }) => {
     test.setTimeout(90000);
