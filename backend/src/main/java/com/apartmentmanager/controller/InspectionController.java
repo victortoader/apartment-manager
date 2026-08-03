@@ -3,6 +3,7 @@ package com.apartmentmanager.controller;
 import com.apartmentmanager.model.*;
 import com.apartmentmanager.service.InspectionService;
 import com.apartmentmanager.service.PhotoStorageService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -13,15 +14,11 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api")
+@RequiredArgsConstructor
 public class InspectionController {
 
     private final InspectionService inspectionService;
     private final PhotoStorageService photoStorage;
-
-    public InspectionController(InspectionService inspectionService, PhotoStorageService photoStorage) {
-        this.inspectionService = inspectionService;
-        this.photoStorage = photoStorage;
-    }
 
     @GetMapping("/apartments/{apartmentId}/inspections")
     @PreAuthorize("hasAnyRole('OWNER', 'ADMIN')")

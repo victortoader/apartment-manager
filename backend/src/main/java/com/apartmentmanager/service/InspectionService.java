@@ -8,6 +8,7 @@ import org.apache.pdfbox.pdmodel.common.PDRectangle;
 import org.apache.pdfbox.pdmodel.font.*;
 import org.apache.pdfbox.pdmodel.graphics.image.PDImageXObject;
 import org.springframework.beans.factory.annotation.Value;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -25,6 +26,7 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
 @Service
+@RequiredArgsConstructor
 public class InspectionService {
 
     private final InspectionRepository inspectionRepository;
@@ -45,22 +47,6 @@ public class InspectionService {
 
     private static final PDFont FONT = new PDType1Font(Standard14Fonts.FontName.HELVETICA);
     private static final PDFont FONT_BOLD = new PDType1Font(Standard14Fonts.FontName.HELVETICA_BOLD);
-
-    public InspectionService(InspectionRepository inspectionRepository,
-                             InspectionSectionRepository sectionRepository,
-                             InspectionRowRepository rowRepository,
-                             InspectionRowPhotoRepository photoRepository,
-                             HandoverProtocolRepository protocolRepository,
-                             PhotoStorageService photoStorage,
-                             ApartmentService apartmentService) {
-        this.inspectionRepository = inspectionRepository;
-        this.sectionRepository = sectionRepository;
-        this.rowRepository = rowRepository;
-        this.photoRepository = photoRepository;
-        this.protocolRepository = protocolRepository;
-        this.photoStorage = photoStorage;
-        this.apartmentService = apartmentService;
-    }
 
     @Transactional
     public Inspection create(Long apartmentId, Inspection inspection) {

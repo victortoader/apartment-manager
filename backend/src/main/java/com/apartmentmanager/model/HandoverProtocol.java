@@ -2,8 +2,14 @@ package com.apartmentmanager.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import java.time.LocalDateTime;
 
+@Getter
+@Setter
+@NoArgsConstructor
 @Entity
 @Table(name = "handover_protocols")
 public class HandoverProtocol {
@@ -28,8 +34,6 @@ public class HandoverProtocol {
     @JsonIgnore
     private Apartment apartment;
 
-    public HandoverProtocol() {}
-
     public HandoverProtocol(String fileName, String originalName, String contentType, DocumentType documentType, Apartment apartment) {
         this.fileName = fileName;
         this.originalName = originalName;
@@ -37,25 +41,4 @@ public class HandoverProtocol {
         this.documentType = documentType;
         this.apartment = apartment;
     }
-
-    public Long getId() { return id; }
-    public void setId(Long id) { this.id = id; }
-
-    public String getFileName() { return fileName; }
-    public void setFileName(String fileName) { this.fileName = fileName; }
-
-    public String getOriginalName() { return originalName; }
-    public void setOriginalName(String originalName) { this.originalName = originalName; }
-
-    public String getContentType() { return contentType; }
-    public void setContentType(String contentType) { this.contentType = contentType; }
-
-    public DocumentType getDocumentType() { return documentType; }
-    public void setDocumentType(DocumentType documentType) { this.documentType = documentType; }
-
-    public LocalDateTime getCreatedAt() { return createdAt; }
-    public void setCreatedAt(LocalDateTime createdAt) { this.createdAt = createdAt; }
-
-    public Apartment getApartment() { return apartment; }
-    public void setApartment(Apartment apartment) { this.apartment = apartment; }
 }

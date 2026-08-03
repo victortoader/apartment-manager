@@ -1,8 +1,14 @@
 package com.apartmentmanager.model;
 
 import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import java.time.LocalDateTime;
 
+@Getter
+@Setter
+@NoArgsConstructor
 @Entity
 @Table(name = "audit_logs")
 public class AuditLog {
@@ -24,8 +30,6 @@ public class AuditLog {
 
     private LocalDateTime timestamp = LocalDateTime.now();
 
-    public AuditLog() {}
-
     public AuditLog(String username, String role, String action, String details, String ipAddress) {
         this.username = username;
         this.role = role;
@@ -33,12 +37,4 @@ public class AuditLog {
         this.details = details;
         this.ipAddress = ipAddress;
     }
-
-    public Long getId() { return id; }
-    public String getUsername() { return username; }
-    public String getRole() { return role; }
-    public String getAction() { return action; }
-    public String getDetails() { return details; }
-    public String getIpAddress() { return ipAddress; }
-    public LocalDateTime getTimestamp() { return timestamp; }
 }

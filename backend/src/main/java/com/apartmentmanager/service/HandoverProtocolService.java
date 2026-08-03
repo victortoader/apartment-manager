@@ -4,6 +4,7 @@ import com.apartmentmanager.model.Apartment;
 import com.apartmentmanager.model.DocumentType;
 import com.apartmentmanager.model.HandoverProtocol;
 import com.apartmentmanager.repository.HandoverProtocolRepository;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -12,15 +13,11 @@ import java.nio.file.Path;
 import java.util.List;
 
 @Service
+@RequiredArgsConstructor
 public class HandoverProtocolService {
 
     private final HandoverProtocolRepository repository;
     private final PhotoStorageService photoStorage;
-
-    public HandoverProtocolService(HandoverProtocolRepository repository, PhotoStorageService photoStorage) {
-        this.repository = repository;
-        this.photoStorage = photoStorage;
-    }
 
     public List<HandoverProtocol> findByApartmentId(Long apartmentId) {
         return repository.findByApartmentId(apartmentId);

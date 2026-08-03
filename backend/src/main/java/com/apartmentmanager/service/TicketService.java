@@ -7,25 +7,19 @@ import com.apartmentmanager.model.User;
 import com.apartmentmanager.repository.ApartmentRepository;
 import com.apartmentmanager.repository.TicketRepository;
 import com.apartmentmanager.repository.UserRepository;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
+@RequiredArgsConstructor
 public class TicketService {
 
     private final TicketRepository ticketRepository;
     private final ApartmentRepository apartmentRepository;
     private final UserRepository userRepository;
-
-    public TicketService(TicketRepository ticketRepository,
-                         ApartmentRepository apartmentRepository,
-                         UserRepository userRepository) {
-        this.ticketRepository = ticketRepository;
-        this.apartmentRepository = apartmentRepository;
-        this.userRepository = userRepository;
-    }
 
     public Ticket create(String title, String description, Long apartmentId, Long userId) {
         Apartment apartment = apartmentRepository.findById(apartmentId)

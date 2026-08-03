@@ -5,6 +5,7 @@ import com.apartmentmanager.model.User;
 import com.apartmentmanager.repository.UserRepository;
 import com.apartmentmanager.service.AuditService;
 import com.apartmentmanager.service.ContactService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
@@ -15,17 +16,12 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/api")
+@RequiredArgsConstructor
 public class ContactController {
 
     private final ContactService contactService;
     private final UserRepository userRepository;
     private final AuditService auditService;
-
-    public ContactController(ContactService contactService, UserRepository userRepository, AuditService auditService) {
-        this.contactService = contactService;
-        this.userRepository = userRepository;
-        this.auditService = auditService;
-    }
 
     @GetMapping("/apartments/{apartmentId}/contacts")
     public List<Contact> getContacts(@PathVariable Long apartmentId) {

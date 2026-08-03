@@ -3,8 +3,14 @@ package com.apartmentmanager.model;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import java.time.LocalDateTime;
 
+@Getter
+@Setter
+@NoArgsConstructor
 @Entity
 @Table(name = "notes")
 public class Note {
@@ -24,22 +30,8 @@ public class Note {
     @JsonIgnore
     private Apartment apartment;
 
-    public Note() {}
-
     public Note(String content, Apartment apartment) {
         this.content = content;
         this.apartment = apartment;
     }
-
-    public Long getId() { return id; }
-    public void setId(Long id) { this.id = id; }
-
-    public String getContent() { return content; }
-    public void setContent(String content) { this.content = content; }
-
-    public LocalDateTime getCreatedAt() { return createdAt; }
-    public void setCreatedAt(LocalDateTime createdAt) { this.createdAt = createdAt; }
-
-    public Apartment getApartment() { return apartment; }
-    public void setApartment(Apartment apartment) { this.apartment = apartment; }
 }

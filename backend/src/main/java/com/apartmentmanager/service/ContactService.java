@@ -4,20 +4,17 @@ import com.apartmentmanager.model.Apartment;
 import com.apartmentmanager.model.Contact;
 import com.apartmentmanager.repository.ApartmentRepository;
 import com.apartmentmanager.repository.ContactRepository;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
 @Service
+@RequiredArgsConstructor
 public class ContactService {
 
     private final ContactRepository contactRepository;
     private final ApartmentRepository apartmentRepository;
-
-    public ContactService(ContactRepository contactRepository, ApartmentRepository apartmentRepository) {
-        this.contactRepository = contactRepository;
-        this.apartmentRepository = apartmentRepository;
-    }
 
     public List<Contact> findByApartmentId(Long apartmentId) {
         return contactRepository.findByApartmentId(apartmentId);

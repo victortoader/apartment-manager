@@ -10,6 +10,7 @@ import com.apartmentmanager.repository.UserRepository;
 import jakarta.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -20,6 +21,7 @@ import java.nio.file.Paths;
 import java.util.UUID;
 
 @Service
+@RequiredArgsConstructor
 public class SeedDataService {
 
     private final UserRepository userRepository;
@@ -33,25 +35,6 @@ public class SeedDataService {
 
     @Value("${app.seed.enabled:false}")
     private boolean seedEnabled;
-
-    public SeedDataService(UserRepository userRepository,
-                           ApartmentRepository apartmentRepository,
-                           ApartmentService apartmentService,
-                           TicketRepository ticketRepository,
-                           ContactRepository contactRepository,
-                           NoteRepository noteRepository,
-                           OcrKeywordsRepository ocrKeywordsRepository,
-                           PasswordEncoder passwordEncoder,
-                           UserService userService) {
-        this.userRepository = userRepository;
-        this.apartmentRepository = apartmentRepository;
-        this.apartmentService = apartmentService;
-        this.ticketRepository = ticketRepository;
-        this.contactRepository = contactRepository;
-        this.noteRepository = noteRepository;
-        this.ocrKeywordsRepository = ocrKeywordsRepository;
-        this.passwordEncoder = passwordEncoder;
-    }
 
     @PostConstruct
     @Transactional

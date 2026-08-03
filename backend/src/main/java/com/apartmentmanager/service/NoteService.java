@@ -4,20 +4,17 @@ import com.apartmentmanager.model.Apartment;
 import com.apartmentmanager.model.Note;
 import com.apartmentmanager.repository.ApartmentRepository;
 import com.apartmentmanager.repository.NoteRepository;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
 @Service
+@RequiredArgsConstructor
 public class NoteService {
 
     private final NoteRepository noteRepository;
     private final ApartmentRepository apartmentRepository;
-
-    public NoteService(NoteRepository noteRepository, ApartmentRepository apartmentRepository) {
-        this.noteRepository = noteRepository;
-        this.apartmentRepository = apartmentRepository;
-    }
 
     public List<Note> findByApartmentId(Long apartmentId) {
         return noteRepository.findByApartmentIdOrderByCreatedAtDesc(apartmentId);

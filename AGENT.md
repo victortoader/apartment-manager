@@ -24,7 +24,7 @@ backend/src/main/java/com/apartmentmanager/
 │   ├── GlobalExceptionHandler.java      # @ControllerAdvice
 │   ├── ApartmentSummaryDto.java         # Java record for /summary endpoint
 │   └── PresentationDto.java             # Java record for public presentation
-├── model/                               # JPA entities, no Lombok, manual getters/setters
+├── model/                               # JPA entities, Lombok @Getter/@Setter/@NoArgsConstructor
 ├── repository/                          # JpaRepository interfaces + custom @Query for N+1 fixes
 ├── service/                             # @Service classes, constructor injection
 └── security/                            # JWT filter chain, BCrypt, CORS
@@ -205,7 +205,7 @@ Uses `tools.jackson.databind.ObjectMapper` (Jackson 3.x, the new package), not `
 
 ## Code Conventions
 
-- **No Lombok** — all getters/setters written manually
+- **Lombok** — entities use `@Getter @Setter @NoArgsConstructor` (plus all-args constructors where needed); services/controllers use `@RequiredArgsConstructor` (no manual constructors)
 - Constructor injection everywhere (no `@Autowired` on fields)
 - `@JsonIgnore` on passwords and back-references
 - `@JsonProperty("tenant")` on computed `Apartment.getTenant()` method

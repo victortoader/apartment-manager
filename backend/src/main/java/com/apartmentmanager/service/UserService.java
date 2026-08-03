@@ -7,22 +7,18 @@ import com.apartmentmanager.repository.ApartmentRepository;
 import com.apartmentmanager.repository.UserRepository;
 import jakarta.annotation.PostConstruct;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
 @Service
+@RequiredArgsConstructor
 public class UserService {
 
     private final UserRepository userRepository;
     private final ApartmentRepository apartmentRepository;
     private final PasswordEncoder passwordEncoder;
-
-    public UserService(UserRepository userRepository, ApartmentRepository apartmentRepository, PasswordEncoder passwordEncoder) {
-        this.userRepository = userRepository;
-        this.apartmentRepository = apartmentRepository;
-        this.passwordEncoder = passwordEncoder;
-    }
 
     @PostConstruct
     public void init() {

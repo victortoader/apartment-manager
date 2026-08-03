@@ -4,10 +4,16 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
+@Getter
+@Setter
+@NoArgsConstructor
 @Entity
 @Table(name = "tickets")
 public class Ticket {
@@ -51,42 +57,10 @@ public class Ticket {
     )
     private java.util.Set<User> readBy = new java.util.HashSet<>();
 
-    public Ticket() {}
-
     public Ticket(String title, String description, Apartment apartment, User createdBy) {
         this.title = title;
         this.description = description;
         this.apartment = apartment;
         this.createdBy = createdBy;
     }
-
-    public Long getId() { return id; }
-    public void setId(Long id) { this.id = id; }
-
-    public String getTitle() { return title; }
-    public void setTitle(String title) { this.title = title; }
-
-    public String getDescription() { return description; }
-    public void setDescription(String description) { this.description = description; }
-
-    public TicketStatus getStatus() { return status; }
-    public void setStatus(TicketStatus status) { this.status = status; }
-
-    public Apartment getApartment() { return apartment; }
-    public void setApartment(Apartment apartment) { this.apartment = apartment; }
-
-    public User getCreatedBy() { return createdBy; }
-    public void setCreatedBy(User createdBy) { this.createdBy = createdBy; }
-
-    public LocalDateTime getCreatedAt() { return createdAt; }
-    public void setCreatedAt(LocalDateTime createdAt) { this.createdAt = createdAt; }
-
-    public LocalDateTime getUpdatedAt() { return updatedAt; }
-    public void setUpdatedAt(LocalDateTime updatedAt) { this.updatedAt = updatedAt; }
-
-    public List<String> getPhotoPaths() { return photoPaths; }
-    public void setPhotoPaths(List<String> photoPaths) { this.photoPaths = photoPaths; }
-
-    public java.util.Set<User> getReadBy() { return readBy; }
-    public void setReadBy(java.util.Set<User> readBy) { this.readBy = readBy; }
 }
