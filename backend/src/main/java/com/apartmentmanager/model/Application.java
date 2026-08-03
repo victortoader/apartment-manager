@@ -1,8 +1,14 @@
 package com.apartmentmanager.model;
 
 import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import java.time.LocalDateTime;
 
+@Getter
+@Setter
+@NoArgsConstructor
 @Entity
 @Table(name = "applications")
 public class Application {
@@ -30,8 +36,6 @@ public class Application {
     @Column(columnDefinition = "TEXT")
     private String formData;
 
-    public Application() {}
-
     public Application(Apartment apartment, String applicantName, String applicantEmail,
                        String applicantPhone, String storedFileName, String originalFileName,
                        String formData) {
@@ -43,31 +47,4 @@ public class Application {
         this.originalFileName = originalFileName;
         this.formData = formData;
     }
-
-    public Long getId() { return id; }
-    public void setId(Long id) { this.id = id; }
-
-    public Apartment getApartment() { return apartment; }
-    public void setApartment(Apartment apartment) { this.apartment = apartment; }
-
-    public String getApplicantName() { return applicantName; }
-    public void setApplicantName(String applicantName) { this.applicantName = applicantName; }
-
-    public String getApplicantEmail() { return applicantEmail; }
-    public void setApplicantEmail(String applicantEmail) { this.applicantEmail = applicantEmail; }
-
-    public String getApplicantPhone() { return applicantPhone; }
-    public void setApplicantPhone(String applicantPhone) { this.applicantPhone = applicantPhone; }
-
-    public String getStoredFileName() { return storedFileName; }
-    public void setStoredFileName(String storedFileName) { this.storedFileName = storedFileName; }
-
-    public String getOriginalFileName() { return originalFileName; }
-    public void setOriginalFileName(String originalFileName) { this.originalFileName = originalFileName; }
-
-    public LocalDateTime getSubmittedAt() { return submittedAt; }
-    public void setSubmittedAt(LocalDateTime submittedAt) { this.submittedAt = submittedAt; }
-
-    public String getFormData() { return formData; }
-    public void setFormData(String formData) { this.formData = formData; }
 }

@@ -345,17 +345,7 @@ public class OcrService {
         return tesseract;
     }
 
-    public static class OcrResult {
-        private final Double amount;
-        private final String currency;
-        private final double confidence;
-
-        public OcrResult(Double amount, String currency, double confidence) {
-            this.amount = amount;
-            this.currency = currency;
-            this.confidence = confidence;
-        }
-
+    public record OcrResult(Double amount, String currency, double confidence) {
         public Double getAmount() { return amount; }
         public String getCurrency() { return currency; }
         public double getConfidence() { return confidence; }

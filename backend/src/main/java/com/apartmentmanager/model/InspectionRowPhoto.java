@@ -2,7 +2,13 @@ package com.apartmentmanager.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
+@Getter
+@Setter
+@NoArgsConstructor
 @Entity
 @Table(name = "inspection_row_photos")
 public class InspectionRowPhoto {
@@ -21,21 +27,4 @@ public class InspectionRowPhoto {
     @JoinColumn(name = "row_id")
     @JsonIgnore
     private InspectionRow row;
-
-    public InspectionRowPhoto() {}
-
-    public Long getId() { return id; }
-    public void setId(Long id) { this.id = id; }
-
-    public String getStoredFileName() { return storedFileName; }
-    public void setStoredFileName(String storedFileName) { this.storedFileName = storedFileName; }
-
-    public String getOriginalFileName() { return originalFileName; }
-    public void setOriginalFileName(String originalFileName) { this.originalFileName = originalFileName; }
-
-    public int getSortOrder() { return sortOrder; }
-    public void setSortOrder(int sortOrder) { this.sortOrder = sortOrder; }
-
-    public InspectionRow getRow() { return row; }
-    public void setRow(InspectionRow row) { this.row = row; }
 }

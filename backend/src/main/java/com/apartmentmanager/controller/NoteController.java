@@ -5,6 +5,7 @@ import com.apartmentmanager.model.User;
 import com.apartmentmanager.repository.UserRepository;
 import com.apartmentmanager.service.AuditService;
 import com.apartmentmanager.service.NoteService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
@@ -15,17 +16,12 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/api")
+@RequiredArgsConstructor
 public class NoteController {
 
     private final NoteService noteService;
     private final UserRepository userRepository;
     private final AuditService auditService;
-
-    public NoteController(NoteService noteService, UserRepository userRepository, AuditService auditService) {
-        this.noteService = noteService;
-        this.userRepository = userRepository;
-        this.auditService = auditService;
-    }
 
     @GetMapping("/apartments/{apartmentId}/notes")
     @PreAuthorize("hasAnyRole('OWNER', 'ADMIN')")

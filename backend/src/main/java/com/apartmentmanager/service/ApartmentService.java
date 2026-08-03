@@ -7,12 +7,14 @@ import com.apartmentmanager.repository.TicketRepository;
 import com.apartmentmanager.repository.BillPaymentRepository;
 import com.apartmentmanager.repository.HandoverProtocolRepository;
 import com.apartmentmanager.repository.UserRepository;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
 @Service
+@RequiredArgsConstructor
 public class ApartmentService {
 
     private final ApartmentRepository repository;
@@ -21,17 +23,6 @@ public class ApartmentService {
     private final BillPaymentRepository billPaymentRepository;
     private final HandoverProtocolRepository handoverProtocolRepository;
     private final UserRepository userRepository;
-
-    public ApartmentService(ApartmentRepository repository, PhotoStorageService photoStorage,
-                            TicketRepository ticketRepository, BillPaymentRepository billPaymentRepository,
-                            HandoverProtocolRepository handoverProtocolRepository, UserRepository userRepository) {
-        this.repository = repository;
-        this.photoStorage = photoStorage;
-        this.ticketRepository = ticketRepository;
-        this.billPaymentRepository = billPaymentRepository;
-        this.handoverProtocolRepository = handoverProtocolRepository;
-        this.userRepository = userRepository;
-    }
 
     public List<Apartment> findAll() {
         return repository.findAllWithTenants();

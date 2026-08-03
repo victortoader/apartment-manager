@@ -8,6 +8,7 @@ import com.apartmentmanager.repository.UserRepository;
 import com.apartmentmanager.service.PhotoStorageService;
 import com.apartmentmanager.service.TicketService;
 import com.apartmentmanager.service.AuditService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
 import org.springframework.http.HttpHeaders;
@@ -26,20 +27,13 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/api")
+@RequiredArgsConstructor
 public class TicketController {
 
     private final TicketService ticketService;
     private final UserRepository userRepository;
     private final PhotoStorageService photoStorageService;
     private final AuditService auditService;
-
-    public TicketController(TicketService ticketService, UserRepository userRepository,
-                            PhotoStorageService photoStorageService, AuditService auditService) {
-        this.ticketService = ticketService;
-        this.userRepository = userRepository;
-        this.photoStorageService = photoStorageService;
-        this.auditService = auditService;
-    }
 
     @PostMapping("/apartments/{apartmentId}/tickets")
     public ResponseEntity<?> createTicket(@PathVariable Long apartmentId,

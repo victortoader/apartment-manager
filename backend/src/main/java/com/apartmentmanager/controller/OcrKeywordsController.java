@@ -2,6 +2,7 @@ package com.apartmentmanager.controller;
 
 import com.apartmentmanager.model.OcrKeywords;
 import com.apartmentmanager.repository.OcrKeywordsRepository;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -11,13 +12,10 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/api/ocr-keywords")
+@RequiredArgsConstructor
 public class OcrKeywordsController {
 
     private final OcrKeywordsRepository ocrKeywordsRepository;
-
-    public OcrKeywordsController(OcrKeywordsRepository ocrKeywordsRepository) {
-        this.ocrKeywordsRepository = ocrKeywordsRepository;
-    }
 
     @GetMapping
     public ResponseEntity<List<OcrKeywords>> getAll() {

@@ -2,9 +2,15 @@ package com.apartmentmanager.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import java.util.ArrayList;
 import java.util.List;
 
+@Getter
+@Setter
+@NoArgsConstructor
 @Entity
 @Table(name = "inspection_sections")
 public class InspectionSection {
@@ -25,21 +31,4 @@ public class InspectionSection {
     @OneToMany(mappedBy = "section", cascade = CascadeType.ALL, orphanRemoval = true)
     @OrderBy("sortOrder")
     private List<InspectionRow> rows = new ArrayList<>();
-
-    public InspectionSection() {}
-
-    public Long getId() { return id; }
-    public void setId(Long id) { this.id = id; }
-
-    public String getTitle() { return title; }
-    public void setTitle(String title) { this.title = title; }
-
-    public int getSortOrder() { return sortOrder; }
-    public void setSortOrder(int sortOrder) { this.sortOrder = sortOrder; }
-
-    public Inspection getInspection() { return inspection; }
-    public void setInspection(Inspection inspection) { this.inspection = inspection; }
-
-    public List<InspectionRow> getRows() { return rows; }
-    public void setRows(List<InspectionRow> rows) { this.rows = rows; }
 }

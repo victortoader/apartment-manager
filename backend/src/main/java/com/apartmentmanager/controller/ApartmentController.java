@@ -12,6 +12,7 @@ import com.apartmentmanager.service.ApartmentService;
 import com.apartmentmanager.service.HandoverProtocolService;
 import com.apartmentmanager.service.PhotoStorageService;
 import com.apartmentmanager.service.AuditService;
+import lombok.RequiredArgsConstructor;
 import com.apartmentmanager.model.TicketStatus;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
@@ -31,6 +32,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/apartments")
+@RequiredArgsConstructor
 public class ApartmentController {
 
     private final ApartmentService apartmentService;
@@ -40,22 +42,6 @@ public class ApartmentController {
     private final BillPaymentRepository billPaymentRepository;
     private final TicketRepository ticketRepository;
     private final AuditService auditService;
-
-    public ApartmentController(ApartmentService apartmentService,
-                               PhotoStorageService photoStorageService,
-                               HandoverProtocolService protocolService,
-                               UserRepository userRepository,
-                               BillPaymentRepository billPaymentRepository,
-                               TicketRepository ticketRepository,
-                               AuditService auditService) {
-        this.apartmentService = apartmentService;
-        this.photoStorageService = photoStorageService;
-        this.protocolService = protocolService;
-        this.userRepository = userRepository;
-        this.billPaymentRepository = billPaymentRepository;
-        this.ticketRepository = ticketRepository;
-        this.auditService = auditService;
-    }
 
     @GetMapping
     public List<Apartment> getAll(Authentication auth) {

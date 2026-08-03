@@ -5,6 +5,7 @@ import com.apartmentmanager.model.Application;
 import com.apartmentmanager.repository.ApplicationRepository;
 import com.apartmentmanager.service.ApartmentService;
 import com.apartmentmanager.service.PhotoStorageService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
 import org.springframework.http.HttpHeaders;
@@ -21,19 +22,12 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/api/applications")
+@RequiredArgsConstructor
 public class ApplicationController {
 
     private final ApplicationRepository applicationRepository;
     private final ApartmentService apartmentService;
     private final PhotoStorageService photoStorageService;
-
-    public ApplicationController(ApplicationRepository applicationRepository,
-                                  ApartmentService apartmentService,
-                                  PhotoStorageService photoStorageService) {
-        this.applicationRepository = applicationRepository;
-        this.apartmentService = apartmentService;
-        this.photoStorageService = photoStorageService;
-    }
 
     @PostMapping
     public ResponseEntity<Map<String, Object>> submit(

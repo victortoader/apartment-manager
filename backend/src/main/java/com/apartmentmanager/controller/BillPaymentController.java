@@ -7,6 +7,7 @@ import com.apartmentmanager.repository.UserRepository;
 import com.apartmentmanager.service.ApartmentService;
 import com.apartmentmanager.service.BillPaymentService;
 import com.apartmentmanager.service.AuditService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
 import org.springframework.http.HttpHeaders;
@@ -25,22 +26,13 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/api")
+@RequiredArgsConstructor
 public class BillPaymentController {
 
     private final BillPaymentService billPaymentService;
     private final ApartmentService apartmentService;
     private final UserRepository userRepository;
     private final AuditService auditService;
-
-    public BillPaymentController(BillPaymentService billPaymentService,
-                                 ApartmentService apartmentService,
-                                 UserRepository userRepository,
-                                 AuditService auditService) {
-        this.billPaymentService = billPaymentService;
-        this.apartmentService = apartmentService;
-        this.userRepository = userRepository;
-        this.auditService = auditService;
-    }
 
     @GetMapping("/apartments/{id}/bills")
     public ResponseEntity<List<BillPayment>> getBills(@PathVariable Long id, Authentication auth) {

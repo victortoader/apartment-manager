@@ -2,8 +2,14 @@ package com.apartmentmanager.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import java.time.LocalDateTime;
 
+@Getter
+@Setter
+@NoArgsConstructor
 @Entity
 @Table(name = "bill_payments")
 public class BillPayment {
@@ -41,8 +47,6 @@ public class BillPayment {
     @JoinColumn(name = "uploaded_by_id")
     private User uploadedBy;
 
-    public BillPayment() {}
-
     public BillPayment(String originalFileName, String storedFileName, String contentType, String billType, String documentType, Apartment apartment, User uploadedBy) {
         this.originalFileName = originalFileName;
         this.storedFileName = storedFileName;
@@ -52,43 +56,4 @@ public class BillPayment {
         this.apartment = apartment;
         this.uploadedBy = uploadedBy;
     }
-
-    public Long getId() { return id; }
-    public void setId(Long id) { this.id = id; }
-
-    public String getOriginalFileName() { return originalFileName; }
-    public void setOriginalFileName(String originalFileName) { this.originalFileName = originalFileName; }
-
-    public String getStoredFileName() { return storedFileName; }
-    public void setStoredFileName(String storedFileName) { this.storedFileName = storedFileName; }
-
-    public String getContentType() { return contentType; }
-    public void setContentType(String contentType) { this.contentType = contentType; }
-
-    public String getBillType() { return billType; }
-    public void setBillType(String billType) { this.billType = billType; }
-
-    public String getDocumentType() { return documentType; }
-    public void setDocumentType(String documentType) { this.documentType = documentType; }
-
-    public Double getExtractedAmount() { return extractedAmount; }
-    public void setExtractedAmount(Double extractedAmount) { this.extractedAmount = extractedAmount; }
-
-    public String getExtractedCurrency() { return extractedCurrency; }
-    public void setExtractedCurrency(String extractedCurrency) { this.extractedCurrency = extractedCurrency; }
-
-    public Double getOcrConfidence() { return ocrConfidence; }
-    public void setOcrConfidence(Double ocrConfidence) { this.ocrConfidence = ocrConfidence; }
-
-    public Boolean getOcrFailed() { return ocrFailed; }
-    public void setOcrFailed(Boolean ocrFailed) { this.ocrFailed = ocrFailed; }
-
-    public LocalDateTime getUploadDate() { return uploadDate; }
-    public void setUploadDate(LocalDateTime uploadDate) { this.uploadDate = uploadDate; }
-
-    public Apartment getApartment() { return apartment; }
-    public void setApartment(Apartment apartment) { this.apartment = apartment; }
-
-    public User getUploadedBy() { return uploadedBy; }
-    public void setUploadedBy(User uploadedBy) { this.uploadedBy = uploadedBy; }
 }
