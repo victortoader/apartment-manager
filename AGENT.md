@@ -20,7 +20,6 @@ backend/src/main/java/com/apartmentmanager/
 │   ├── TicketController.java            # Ticket CRUD, photos, status, unread
 │   ├── UserManagementController.java    # User CRUD, apartment assignment
 │   ├── AuditController.java             # GET /api/audit with optional ?username= filter
-│   ├── HelloController.java             # GET /hello → "Hello, World!"
 │   ├── GlobalExceptionHandler.java      # @ControllerAdvice
 │   ├── ApartmentSummaryDto.java         # Java record for /summary endpoint
 │   └── PresentationDto.java             # Java record for public presentation
