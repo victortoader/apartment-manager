@@ -28,12 +28,10 @@ jobs:
           cache: gradle
 
       - name: Grant execution permission to Gradle
-        working-directory: backend
         run: chmod +x gradlew
 
       - name: Run backend tests
-        working-directory: backend
-        run: ./gradlew test --no-daemon
+        run: ./gradlew :backend:test --no-daemon
 
   build-frontend:
     name: Build frontend
@@ -75,7 +73,6 @@ jobs:
           cache: gradle
 
       - name: Grant execution permission to Gradle
-        working-directory: backend
         run: chmod +x gradlew
 
       - name: Set up Node.js
@@ -94,11 +91,10 @@ jobs:
         run: npx playwright install --with-deps chromium
 
       - name: Start backend
-        working-directory: backend
         env:
           DEFAULT_PASSWORD: ${{ secrets.DEFAULT_PASSWORD }}
         run: |
-          ./gradlew bootRun --no-daemon > backend.log 2>&1 &
+          ./gradlew :backend:bootRun --no-daemon > backend.log 2>&1 &
           echo "Waiting for backend on :8080..."
           for i in $(seq 1 300); do
             code=$(curl -s -o /dev/null -w '%{http_code}' http://localhost:8080/api/auth/login || echo 000)
