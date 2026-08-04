@@ -3,7 +3,7 @@
 set -Eeuo pipefail
 
 APP_DIR="/home/ubuntu/apartment-manager"
-BRANCH="main"
+BRANCH="${1:-main}"
 SSM_PREFIX="/apartment-manager"
 
 cd "$APP_DIR"
