@@ -1,11 +1,14 @@
 package com.apartmentmanager.repository;
 
+import com.apartmentmanager.model.Role;
 import com.apartmentmanager.model.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 
+import java.util.List;
 import java.util.Optional;
 
 public interface UserRepository extends JpaRepository<User, Long> {
     Optional<User> findByUsername(String username);
     boolean existsByUsername(String username);
+    List<User> findByApartment_IdAndRole(Long apartmentId, Role role);
 }

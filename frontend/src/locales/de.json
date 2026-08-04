@@ -117,7 +117,9 @@
     "createUser": "Benutzer erstellen",
     "noApartment": "Keine Wohnung",
     "deleteConfirm": "Diesen Benutzer löschen?",
-    "createFailed": "Benutzer konnte nicht erstellt werden"
+    "createFailed": "Benutzer konnte nicht erstellt werden",
+    "editEmail": "E-Mail bearbeiten",
+    "emailUpdateFailed": "E-Mail konnte nicht aktualisiert werden"
   },
 
   "tickets": {

@@ -25,6 +25,7 @@ public class BillPaymentService {
 
     private final BillPaymentRepository billPaymentRepository;
     private final OcrService ocrService;
+    private final TenantNotificationService tenantNotificationService;
     private final Path uploadPath;
     private final ExecutorService ocrExecutor = Executors.newCachedThreadPool(r -> {
         Thread t = new Thread(r, "ocr-worker");
@@ -32,9 +33,10 @@ public class BillPaymentService {
         return t;
     });
 
-    public BillPaymentService(BillPaymentRepository billPaymentRepository, OcrService ocrService) {
+    public BillPaymentService(BillPaymentRepository billPaymentRepository, OcrService ocrService, TenantNotificationService tenantNotificationService) {
         this.billPaymentRepository = billPaymentRepository;
         this.ocrService = ocrService;
+        this.tenantNotificationService = tenantNotificationService;
         String uploadDir = System.getProperty("app.upload.dir", "uploads");
         this.uploadPath = Paths.get(uploadDir).toAbsolutePath().normalize();
         try {
@@ -59,6 +61,8 @@ public class BillPaymentService {
 
         BillPayment bill = new BillPayment(originalName, storedName, contentType, billType, documentType, apartment, user);
         bill = billPaymentRepository.save(bill);
+
+        tenantNotificationService.notifyDocumentUploaded(apartment, bill);
 
         final BillPayment billRef = bill;
         final Path filePathRef = filePath;

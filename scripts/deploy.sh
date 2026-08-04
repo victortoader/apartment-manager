@@ -23,6 +23,8 @@ DEFAULT_PASSWORD=$(aws ssm get-parameter --name "$SSM_PREFIX/DEFAULT_PASSWORD" -
 EMAIL_FETCH_ENABLED=$(aws ssm get-parameter --name "$SSM_PREFIX/EMAIL_FETCH_ENABLED" --with-decryption --query "Parameter.Value" --output text 2>/dev/null || echo "false")
 EMAIL_FETCH_ADDRESS=$(aws ssm get-parameter --name "$SSM_PREFIX/EMAIL_FETCH_ADDRESS" --with-decryption --query "Parameter.Value" --output text 2>/dev/null || echo "")
 EMAIL_FETCH_PASSWORD=$(aws ssm get-parameter --name "$SSM_PREFIX/EMAIL_FETCH_PASSWORD" --with-decryption --query "Parameter.Value" --output text 2>/dev/null || echo "")
+EMAIL_NOTIFY_ENABLED=$(aws ssm get-parameter --name "$SSM_PREFIX/EMAIL_NOTIFY_ENABLED" --with-decryption --query "Parameter.Value" --output text 2>/dev/null || echo "false")
+EMAIL_NOTIFY_FROM=$(aws ssm get-parameter --name "$SSM_PREFIX/EMAIL_NOTIFY_FROM" --with-decryption --query "Parameter.Value" --output text 2>/dev/null || echo "")
 
 cat > .env <<EOF
 DB_USERNAME=$DB_USERNAME
@@ -32,6 +34,8 @@ DEFAULT_PASSWORD=$DEFAULT_PASSWORD
 EMAIL_FETCH_ENABLED=$EMAIL_FETCH_ENABLED
 EMAIL_FETCH_ADDRESS=$EMAIL_FETCH_ADDRESS
 EMAIL_FETCH_PASSWORD=$EMAIL_FETCH_PASSWORD
+EMAIL_NOTIFY_ENABLED=$EMAIL_NOTIFY_ENABLED
+EMAIL_NOTIFY_FROM=$EMAIL_NOTIFY_FROM
 EOF
 chmod 600 .env
 

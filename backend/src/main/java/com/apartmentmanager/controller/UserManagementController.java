@@ -53,6 +53,18 @@ public class UserManagementController {
         }
     }
 
+    @Audited(action = "EMAIL_UPDATED", message = "Updated email for user #{id}")
+    @PutMapping("/{id}/email")
+    @PreAuthorize("hasRole('OWNER')")
+    public ResponseEntity<?> updateEmail(@PathVariable Long id, @RequestBody Map<String, String> body) {
+        try {
+            User user = userService.updateEmail(id, body.get("email"));
+            return ResponseEntity.ok(user);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
+        }
+    }
+
     @Audited(action = "USER_DELETED", message = "Deleted user #{id}")
     @DeleteMapping("/{id}")
     @PreAuthorize("hasRole('OWNER')")

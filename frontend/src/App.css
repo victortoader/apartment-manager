@@ -933,6 +933,21 @@ h1 {
   margin-left: 8px;
 }
 
+.user-email-wrap {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  min-width: 0;
+}
+
+.user-email-input {
+  font-size: 12px;
+  padding: 3px 6px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  width: 180px;
+}
+
 .role-badge {
   font-size: 11px;
   padding: 2px 8px;
