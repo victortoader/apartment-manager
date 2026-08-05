@@ -51,7 +51,8 @@ function PaidBills({ apartmentId }) {
   const { user, authHeader } = useAuth();
   const isTenant = user?.role === 'TENANT';
   const isOwner = user?.role === 'OWNER';
-  const canUpload = isTenant;
+  const isAdmin = user?.role === 'ADMIN';
+  const canUpload = isTenant || isOwner || isAdmin;
   const canDelete = isOwner;
   const [bills, setBills] = useState([]);
   const [loading, setLoading] = useState(true);
