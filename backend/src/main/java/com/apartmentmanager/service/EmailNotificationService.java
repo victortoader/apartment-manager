@@ -20,9 +20,9 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 @Service
-public class TenantNotificationService {
+public class EmailNotificationService {
 
-    private static final Logger log = LoggerFactory.getLogger(TenantNotificationService.class);
+    private static final Logger log = LoggerFactory.getLogger(EmailNotificationService.class);
     private static final DateTimeFormatter DATE_FORMAT = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
 
     private final ObjectProvider<JavaMailSender> mailSenderProvider;
@@ -42,7 +42,7 @@ public class TenantNotificationService {
     @Value("${app.email.notify.base-url:}")
     private String baseUrl;
 
-    public TenantNotificationService(ObjectProvider<JavaMailSender> mailSenderProvider, UserRepository userRepository) {
+    public EmailNotificationService(ObjectProvider<JavaMailSender> mailSenderProvider, UserRepository userRepository) {
         this.mailSenderProvider = mailSenderProvider;
         this.userRepository = userRepository;
     }

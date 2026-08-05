@@ -21,19 +21,19 @@ import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
 
-class TenantNotificationServiceTest {
+class EmailNotificationServiceTest {
 
     private JavaMailSender mailSender;
     private ObjectProvider<JavaMailSender> mailSenderProvider;
     private UserRepository userRepository;
-    private TenantNotificationService service;
+    private EmailNotificationService service;
 
     @BeforeEach
     void setUp() {
         mailSender = mock(JavaMailSender.class);
         mailSenderProvider = mock(ObjectProvider.class);
         userRepository = mock(UserRepository.class);
-        service = new TenantNotificationService(mailSenderProvider, userRepository);
+        service = new EmailNotificationService(mailSenderProvider, userRepository);
     }
 
     @Test

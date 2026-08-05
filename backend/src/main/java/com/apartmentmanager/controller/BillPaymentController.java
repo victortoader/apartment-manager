@@ -66,7 +66,7 @@ public class BillPaymentController {
 
         try {
             Apartment apartment = apartmentService.findById(id);
-            BillPayment bill = billPaymentService.upload(apartment, user, file, billType, documentType);
+            BillPayment bill = billPaymentService.uploadFromBytes(apartment, user, file.getBytes(), file.getOriginalFilename(), file.getContentType(), billType, documentType);
             return ResponseEntity.ok(bill);
         } catch (IOException e) {
             return ResponseEntity.badRequest().build();
