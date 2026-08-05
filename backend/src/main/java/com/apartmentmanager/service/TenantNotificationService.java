@@ -39,6 +39,9 @@ public class TenantNotificationService {
     @Value("${app.email.notify.from:${spring.mail.username:}}")
     private String from;
 
+    @Value("${app.email.notify.base-url:}")
+    private String baseUrl;
+
     public TenantNotificationService(ObjectProvider<JavaMailSender> mailSenderProvider, UserRepository userRepository) {
         this.mailSenderProvider = mailSenderProvider;
         this.userRepository = userRepository;
@@ -64,6 +67,13 @@ public class TenantNotificationService {
         }
     }
 
+    private String buildApartmentUrl(Apartment apartment) {
+        if (baseUrl == null || baseUrl.isBlank()) {
+            return null;
+        }
+        return baseUrl + "/apartments/" + apartment.getId();
+    }
+
     private void send(JavaMailSender mailSender, User tenant, Apartment apartment, BillPayment bill) {
         try {
             SimpleMailMessage message = new SimpleMailMessage();
@@ -83,6 +93,8 @@ public class TenantNotificationService {
     private String buildBody(User tenant, Apartment apartment, BillPayment bill) {
         String uploader = bill.getUploadedBy() != null ? bill.getUploadedBy().getUsername() : "unknown";
         String date = bill.getUploadDate() != null ? DATE_FORMAT.format(bill.getUploadDate()) : "unknown";
+        String apartmentUrl = buildApartmentUrl(apartment);
+        String linkSection = apartmentUrl != null ? String.join("\n", "", "View your apartment:", apartmentUrl) : "";
         return String.join("\n",
                 "Hello " + tenant.getUsername() + ",",
                 "",
@@ -92,6 +104,8 @@ public class TenantNotificationService {
                 "  Bill type: " + bill.getBillType(),
                 "  Document:  " + bill.getDocumentType(),
                 "  Uploaded:  " + date + " by " + uploader,
+                "",
+                linkSection,
                 "",
                 "You can view it in the apartment portal.",
                 "",

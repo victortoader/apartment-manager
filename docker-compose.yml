@@ -28,6 +28,7 @@ services:
       - EMAIL_FETCH_PASSWORD=${EMAIL_FETCH_PASSWORD:-}
       - EMAIL_NOTIFY_ENABLED=${EMAIL_NOTIFY_ENABLED:-false}
       - EMAIL_NOTIFY_FROM=${EMAIL_NOTIFY_FROM:-}
+      - APP_BASE_URL=${APP_BASE_URL:-}
     expose:
       - "8080"
     volumes:
