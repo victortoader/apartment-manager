@@ -3,7 +3,15 @@
 set -Eeuo pipefail
 
 APP_DIR="/home/ubuntu/apartment-manager"
-BRANCH="${1:-main}"
+BRANCH="${1:-}"
+if [ -z "$BRANCH" ]; then
+  if read -r -t 10 -p "Branch to deploy [main]: " BRANCH; then
+    BRANCH="${BRANCH:-main}"
+  else
+    echo "No input received, deploying main by default"
+    BRANCH="main"
+  fi
+fi
 SSM_PREFIX="/apartment-manager"
 
 cd "$APP_DIR"
