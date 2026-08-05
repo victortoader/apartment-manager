@@ -34,6 +34,12 @@ variable "volume_size" {
   default     = 15
 }
 
+variable "email_notify_enabled" {
+  description = "Enable email notifications when documents are uploaded"
+  type        = string
+  default     = "true"
+}
+
 variable "ssh_public_key" {
   description = "SSH public key for the deployer key pair (leave empty to skip)"
   type        = string

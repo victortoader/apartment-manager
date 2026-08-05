@@ -119,6 +119,30 @@ class UserManagementTest extends AbstractIntegrationTest {
     }
 
     @Test
+    void updateEmailAsOwner_succeeds() throws Exception {
+        User tenant = userRepository.findByUsername("tenant").orElseThrow();
+
+        mockMvc.perform(put("/api/users/" + tenant.getId() + "/email")
+                        .header("Authorization", bearer("owner"))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"email\":\"new-tenant@example.com\"}"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.email").value("new-tenant@example.com"));
+
+        User updated = userRepository.findByUsername("tenant").orElseThrow();
+        assert "new-tenant@example.com".equals(updated.getEmail());
+    }
+
+    @Test
+    void updateEmailAsAdmin_returns403() throws Exception {
+        mockMvc.perform(put("/api/users/1/email")
+                        .header("Authorization", bearer("admin"))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"email\":\"hacker@example.com\"}"))
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
     void deleteUserAsOwner_succeeds() throws Exception {
         mockMvc.perform(post("/api/users")
                         .header("Authorization", bearer("owner"))

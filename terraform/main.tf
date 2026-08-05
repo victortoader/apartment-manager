@@ -132,6 +132,14 @@ resource "aws_iam_instance_profile" "app" {
   role = aws_iam_role.ec2_role.name
 }
 
+resource "aws_ssm_parameter" "email_notify_enabled" {
+  name        = "/${var.ssm_prefix}/EMAIL_NOTIFY_ENABLED"
+  type        = "String"
+  value       = var.email_notify_enabled
+  description = "Enable email notifications when documents are uploaded"
+  overwrite   = true
+}
+
 resource "aws_s3_bucket" "uploads_backup" {
   bucket = var.uploads_backup_bucket
 }

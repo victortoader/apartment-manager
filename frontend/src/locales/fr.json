@@ -117,7 +117,9 @@
     "createUser": "Créer un utilisateur",
     "noApartment": "Aucun appartement",
     "deleteConfirm": "Supprimer cet utilisateur ?",
-    "createFailed": "Échec de la création de l'utilisateur"
+    "createFailed": "Échec de la création de l'utilisateur",
+    "editEmail": "Modifier l'email",
+    "emailUpdateFailed": "Échec de la mise à jour de l'email"
   },
 
   "tickets": {

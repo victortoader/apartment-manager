@@ -122,7 +122,9 @@
     "createUser": "Create User",
     "noApartment": "No apartment",
     "deleteConfirm": "Delete this user?",
-    "createFailed": "Failed to create user"
+    "createFailed": "Failed to create user",
+    "editEmail": "Edit email",
+    "emailUpdateFailed": "Failed to update email"
   },
 
   "tickets": {

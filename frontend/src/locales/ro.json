@@ -117,7 +117,9 @@
     "createUser": "Creează utilizator",
     "noApartment": "Niciun apartament",
     "deleteConfirm": "Ștergeți acest utilizator?",
-    "createFailed": "Nu s-a putut crea utilizatorul"
+    "createFailed": "Nu s-a putut crea utilizatorul",
+    "editEmail": "Editează emailul",
+    "emailUpdateFailed": "Nu s-a putut actualiza emailul"
   },
 
   "tickets": {

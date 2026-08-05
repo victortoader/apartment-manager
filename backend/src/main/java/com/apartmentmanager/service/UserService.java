@@ -62,6 +62,12 @@ public class UserService {
         return userRepository.save(user);
     }
 
+    public User updateEmail(Long userId, String email) {
+        User user = findById(userId);
+        user.setEmail(email);
+        return userRepository.save(user);
+    }
+
     public void deleteUser(Long id) {
         userRepository.deleteById(id);
     }

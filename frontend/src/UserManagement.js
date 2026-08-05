@@ -36,6 +36,8 @@ function UserManagement() {
   const [apartments, setApartments] = useState([]);
   const [form, setForm] = useState({ username: '', password: '', email: '', role: 'TENANT' });
   const [error, setError] = useState('');
+  const [editingEmailId, setEditingEmailId] = useState(null);
+  const [emailDraft, setEmailDraft] = useState('');
 
   useEffect(() => {
     fetchUsers();
@@ -93,6 +95,26 @@ function UserManagement() {
     }
   };
 
+  const startEmailEdit = (u) => {
+    setEditingEmailId(u.id);
+    setEmailDraft(u.email || '');
+  };
+
+  const saveEmail = async (userId) => {
+    const res = await fetch(`${API}/api/users/${userId}/email`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json', ...authHeader() },
+      body: JSON.stringify({ email: emailDraft })
+    });
+    setEditingEmailId(null);
+    if (res.ok) {
+      fetchUsers();
+    } else {
+      const data = await res.json();
+      setError(data.error || t('userManagement.emailUpdateFailed'));
+    }
+  };
+
   const roleBadge = (role) => {
     const cls = role === 'OWNER' ? 'role-owner' : role === 'ADMIN' ? 'role-admin' : 'role-tenant';
     return <span className={`role-badge ${cls}`}>{role}</span>;
@@ -146,7 +168,30 @@ function UserManagement() {
             <div key={u.id} className="user-item">
               <div className="user-info">
                 <span className="user-name">{u.username}</span>
-                {u.email && <span className="user-email">{u.email}</span>}
+                {editingEmailId === u.id ? (
+                  <div className="user-email-wrap">
+                    <input
+                      type="email"
+                      className="user-email-input"
+                      value={emailDraft}
+                      onChange={(e) => setEmailDraft(e.target.value)}
+                      placeholder={t('userManagement.email')}
+                    />
+                    <button className="btn-edit small" onClick={() => saveEmail(u.id)}>{t('save')}</button>
+                    <button className="btn-cancel small" onClick={() => setEditingEmailId(null)}>{t('cancel')}</button>
+                  </div>
+                ) : (
+                  <div className="user-email-wrap">
+                    <span className="user-email">{u.email || '—'}</span>
+                    <button
+                      className="btn-edit small"
+                      onClick={() => startEmailEdit(u)}
+                      title={t('userManagement.editEmail')}
+                    >
+                      {t('edit')}
+                    </button>
+                  </div>
+                )}
                 {roleBadge(u.role)}
               </div>
               {u.role === 'TENANT' && (

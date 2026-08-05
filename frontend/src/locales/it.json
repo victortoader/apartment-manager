@@ -117,7 +117,9 @@
     "createUser": "Crea utente",
     "noApartment": "Nessun appartamento",
     "deleteConfirm": "Eliminare questo utente?",
-    "createFailed": "Impossibile creare l'utente"
+    "createFailed": "Impossibile creare l'utente",
+    "editEmail": "Modifica email",
+    "emailUpdateFailed": "Impossibile aggiornare l'email"
   },
 
   "tickets": {

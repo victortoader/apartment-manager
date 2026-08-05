@@ -7,7 +7,6 @@ import com.apartmentmanager.repository.BillPaymentRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -25,6 +24,7 @@ public class BillPaymentService {
 
     private final BillPaymentRepository billPaymentRepository;
     private final OcrService ocrService;
+    private final EmailNotificationService emailNotificationService;
     private final Path uploadPath;
     private final ExecutorService ocrExecutor = Executors.newCachedThreadPool(r -> {
         Thread t = new Thread(r, "ocr-worker");
@@ -32,9 +32,10 @@ public class BillPaymentService {
         return t;
     });
 
-    public BillPaymentService(BillPaymentRepository billPaymentRepository, OcrService ocrService) {
+    public BillPaymentService(BillPaymentRepository billPaymentRepository, OcrService ocrService, EmailNotificationService emailNotificationService) {
         this.billPaymentRepository = billPaymentRepository;
         this.ocrService = ocrService;
+        this.emailNotificationService = emailNotificationService;
         String uploadDir = System.getProperty("app.upload.dir", "uploads");
         this.uploadPath = Paths.get(uploadDir).toAbsolutePath().normalize();
         try {
@@ -42,10 +43,6 @@ public class BillPaymentService {
         } catch (IOException e) {
             throw new RuntimeException("Could not create upload directory", e);
         }
-    }
-
-    public BillPayment upload(Apartment apartment, User user, MultipartFile file, String billType, String documentType) throws IOException {
-        return uploadFromBytes(apartment, user, file.getBytes(), file.getOriginalFilename(), file.getContentType(), billType, documentType);
     }
 
     public BillPayment uploadFromBytes(Apartment apartment, User user, byte[] data, String originalName, String contentType, String billType, String documentType) throws IOException {
@@ -59,6 +56,8 @@ public class BillPaymentService {
 
         BillPayment bill = new BillPayment(originalName, storedName, contentType, billType, documentType, apartment, user);
         bill = billPaymentRepository.save(bill);
+
+        emailNotificationService.notifyDocumentUploaded(apartment, bill);
 
         final BillPayment billRef = bill;
         final Path filePathRef = filePath;
