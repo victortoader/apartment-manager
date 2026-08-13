@@ -32,13 +32,14 @@ test.describe('Inspection E2E', () => {
     // Wait for apartment fetch (property auto-filled) to settle
     await page.waitForTimeout(2000);
 
-    // Use getByLabel for fields wrapped in <label>
-    await page.getByLabel('Company Name').fill('Test GmbH');
-    await page.getByLabel('Address').fill('Musterstr. 1');
-    await page.getByLabel('Postal Code').fill('12345');
-    await page.getByLabel('City').fill('Berlin');
-    await page.getByLabel('Phone').fill('+49 30 12345678');
-    await page.getByLabel('Email').fill('test@example.com');
+    // Use getByLabel for fields wrapped in <label>; scope to the Moving in Tenant section
+    const movingIn = page.locator('.insp-section').filter({ hasText: /moving in tenant/i });
+    await movingIn.getByLabel('Name', { exact: true }).fill('Test GmbH');
+    await movingIn.getByLabel('Address', { exact: true }).fill('Musterstr. 1');
+    await movingIn.getByLabel('Postal Code', { exact: true }).fill('12345');
+    await movingIn.getByLabel('City', { exact: true }).fill('Berlin');
+    await movingIn.getByLabel('Phone', { exact: true }).fill('+49 30 12345678');
+    await movingIn.getByLabel('Email', { exact: true }).fill('test@example.com');
 
     await page.getByLabel('Object Number').fill('OBJ-001');
     await page.getByLabel('Rental Object').fill('Whg 3 OG');
