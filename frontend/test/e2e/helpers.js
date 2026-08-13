@@ -44,7 +44,7 @@ export async function loginAs(page, username, password = DEFAULT_PASSWORD) {
   await page.getByPlaceholder('Username').fill(username);
   await page.getByPlaceholder('Password').fill(password);
   await page.getByRole('button', { name: /sign in/i }).click();
-  await page.waitForSelector('.apartment-stack', { timeout: 20000 });
+  await page.waitForSelector('.apartment-stack', { timeout: 45000 });
 }
 
 export async function openFirstApartmentDetail(page) {

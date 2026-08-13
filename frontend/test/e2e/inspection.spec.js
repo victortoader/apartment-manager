@@ -42,7 +42,7 @@ test.describe('Inspection E2E', () => {
     await movingIn.getByLabel('Email', { exact: true }).fill('test@example.com');
 
     await page.getByLabel('Object Number').fill('OBJ-001');
-    await page.getByLabel('Rental Object').fill('Whg 3 OG');
+    await expect(page.getByLabel('Rental Object')).not.toBeEditable();
     await page.getByLabel('Incoming Party').fill('Max Mustermann');
 
     await page.getByRole('button', { name: /add section/i }).click();

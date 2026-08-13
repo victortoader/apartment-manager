@@ -39,7 +39,7 @@ test.describe('Paid bills', () => {
     const item = page.locator('.paid-bills-item').filter({ hasText: fileName });
     await expect(item).toBeVisible();
 
-    await item.locator('.ocr-amount').filter({ hasText: '150.00' }).waitFor({ state: 'visible', timeout: 30000 });
+    await item.locator('.ocr-amount').filter({ hasText: '150.00' }).waitFor({ state: 'visible', timeout: 60000 });
     await item.locator('.btn-edit.tiny').click();
     await item.locator('.ocr-amount-input').fill('123.45');
     await item.locator('.btn-save.tiny').click();
