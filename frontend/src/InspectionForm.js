@@ -92,11 +92,16 @@ function InspectionForm() {
     if (inspectionId) {
       loadInspection(inspectionId);
     }
-    if (id) {
+    if (id && !inspectionId) {
       fetch(`${API}/api/apartments/${id}`, { headers: authHeader() })
         .then(r => r.json())
         .then(apt => {
-          setInspection(prev => ({ ...prev, property: apt.title || '' }));
+          setInspection(prev => ({
+            ...prev,
+            property: apt.title || prev.property,
+            rentalObject: apt.location || prev.rentalObject,
+            incomingParty: apt.tenant || prev.incomingParty
+          }));
         })
         .catch(() => {});
     }
@@ -294,12 +299,12 @@ function InspectionForm() {
         <section className="insp-section">
           <h2>{t('inspection.propertyInfo')}</h2>
           <div className="insp-grid-2">
-            <label>{t('inspection.property')}<input value={inspection.property} onChange={e => handleChange('property', e.target.value)} /></label>
+            <label>{t('inspection.property')}<input value={inspection.property} readOnly /></label>
             <label>{t('inspection.objectNumber')}<input value={inspection.objectNumber} onChange={e => handleChange('objectNumber', e.target.value)} /></label>
-            <label>{t('inspection.rentalObject')}<input value={inspection.rentalObject} onChange={e => handleChange('rentalObject', e.target.value)} /></label>
+            <label>{t('inspection.rentalObject')}<input value={inspection.rentalObject} readOnly /></label>
             <label>{t('inspection.incomingParty')}<input value={inspection.incomingParty} onChange={e => handleChange('incomingParty', e.target.value)} /></label>
-            <label>{t('inspection.documentType')}<input value={inspection.documentType} onChange={e => handleChange('documentType', e.target.value)} /></label>
-            <label>{t('inspection.date')}<input type="date" value={inspection.date} onChange={e => handleChange('date', e.target.value)} /></label>
+            <label>{t('inspection.documentType')}<input value={inspection.documentType} readOnly /></label>
+            <label>{t('inspection.date')}<input type="date" value={inspection.date} readOnly /></label>
           </div>
         </section>
 
