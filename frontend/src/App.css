@@ -3048,7 +3048,7 @@ h1 {
 
 .insp-signature-row {
   display: grid;
-  grid-template-columns: 1fr 1fr 1fr 1fr auto;
+  grid-template-columns: minmax(130px, 170px) minmax(130px, 170px) minmax(130px, 170px) auto auto;
   gap: 8px;
   align-items: center;
   margin-bottom: 8px;
@@ -3058,24 +3058,63 @@ h1 {
   border-radius: 8px;
 }
 
-.insp-signature-row input {
+.insp-signature-row input,
+.insp-signature-row select {
   padding: 8px 12px;
   border: 1px solid #ddd;
   border-radius: 6px;
   font-size: 13px;
   width: 100%;
   box-sizing: border-box;
+  background: white;
 }
 
-.insp-signature-row input:focus {
+.insp-signature-row input:focus,
+.insp-signature-row select:focus {
   outline: none;
   border-color: #1a73e8;
 }
 
-.insp-signature-row .btn-delete.small {
-  padding: 6px 10px;
-  font-size: 14px;
+.signature-pad-wrap {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: nowrap;
 }
+
+.signature-pad {
+  background: white;
+  border: 1px dashed #ccc;
+  border-radius: 8px;
+  cursor: crosshair;
+  touch-action: none;
+  user-select: none;
+  -webkit-user-select: none;
+  display: block;
+}
+
+.signature-pad-wrap .btn-cancel.small {
+  padding: 6px 12px;
+  width: 70px;
+  text-align: center;
+  box-sizing: border-box;
+}
+
+.insp-signature-row .btn-delete.small {
+  font-size: 12px;
+  padding: 6px 12px;
+  background: #ea4335;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  color: white;
+  line-height: 1;
+  width: 70px;
+  text-align: center;
+  box-sizing: border-box;
+}
+
+.insp-signature-row .btn-delete.small:hover { background: #d32f2f; }
 
 .insp-actions {
   display: flex;

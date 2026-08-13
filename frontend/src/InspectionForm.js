@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from './AuthContext';
+import SignaturePad from './SignaturePad';
 
 const API = process.env.REACT_APP_API_URL || '';
 
@@ -23,6 +24,14 @@ function InspectionForm() {
     date: today,
     time: now,
     companyName: '',
+    firstName: '',
+    previousName: '',
+    previousFirstName: '',
+    previousAddress: '',
+    previousPostalCode: '',
+    previousCity: '',
+    previousPhone: '',
+    previousEmail: '',
     companyAddress: '',
     companyPostalCode: '',
     companyCity: '',
@@ -33,7 +42,7 @@ function InspectionForm() {
     rentalObject: '',
     incomingParty: '',
     confirmationsJson: '["Der Zustand der Wohnung wurde gemeinsam besichtigt und dokumentiert.","Spätere Mängel sind innerhalb von 7 Tagen schriftlich anzuzeigen."]',
-    signaturesJson: '[{"role":"Vermieter","city":"","date":"","printedName":""},{"role":"Mieter","city":"","date":"","printedName":""}]',
+    signaturesJson: '[{"role":"Moving in tenant","name":"","city":"","signature":""},{"role":"admin","name":"","city":"","signature":""}]',
     sections: []
   });
 
@@ -285,8 +294,22 @@ function InspectionForm() {
 
       <div className="inspection-form">
         <section className="insp-section">
-          <h2>{t('inspection.companyInfo')}</h2>
+          <h2>{t('inspection.previousTenant')}</h2>
           <div className="insp-grid-2">
+            <label>{t('inspection.firstName')}<input value={inspection.previousFirstName} onChange={e => handleChange('previousFirstName', e.target.value)} /></label>
+            <label>{t('inspection.companyName')}<input value={inspection.previousName} onChange={e => handleChange('previousName', e.target.value)} /></label>
+            <label>{t('inspection.companyAddress')}<input value={inspection.previousAddress} onChange={e => handleChange('previousAddress', e.target.value)} /></label>
+            <label>{t('inspection.postalCode')}<input value={inspection.previousPostalCode} onChange={e => handleChange('previousPostalCode', e.target.value)} /></label>
+            <label>{t('inspection.city')}<input value={inspection.previousCity} onChange={e => handleChange('previousCity', e.target.value)} /></label>
+            <label>{t('inspection.phone')}<input value={inspection.previousPhone} onChange={e => handleChange('previousPhone', e.target.value)} /></label>
+            <label>{t('inspection.email')}<input value={inspection.previousEmail} onChange={e => handleChange('previousEmail', e.target.value)} /></label>
+          </div>
+        </section>
+
+        <section className="insp-section">
+          <h2>{t('inspection.newTenant')}</h2>
+          <div className="insp-grid-2">
+            <label>{t('inspection.firstName')}<input value={inspection.firstName} onChange={e => handleChange('firstName', e.target.value)} /></label>
             <label>{t('inspection.companyName')}<input value={inspection.companyName} onChange={e => handleChange('companyName', e.target.value)} /></label>
             <label>{t('inspection.companyAddress')}<input value={inspection.companyAddress} onChange={e => handleChange('companyAddress', e.target.value)} /></label>
             <label>{t('inspection.postalCode')}<input value={inspection.companyPostalCode} onChange={e => handleChange('companyPostalCode', e.target.value)} /></label>
@@ -394,23 +417,28 @@ function InspectionForm() {
           {(() => {
             let sigs;
             try { sigs = JSON.parse(inspection.signaturesJson || '[]'); } catch { sigs = []; }
-            if (!sigs.length) sigs = [{ role: '', city: '', date: '', printedName: '' }];
+            if (!sigs.length) sigs = [{ role: 'Moving in tenant', name: '', city: '', signature: '' }];
             return sigs.map((sig, si) => (
               <div key={si} className="insp-signature-row">
-                <input placeholder={t('inspection.signatureRole')} value={sig.role} onChange={e => {
+                <select value={sig.role} onChange={e => {
                   const copy = [...sigs]; copy[si] = { ...copy[si], role: e.target.value };
+                  handleChange('signaturesJson', JSON.stringify(copy));
+                }}>
+                  <option value="Moving in tenant">{t('inspection.roleMovingIn')}</option>
+                  <option value="Moving out tenant">{t('inspection.roleMovingOut')}</option>
+                  <option value="admin">{t('inspection.roleAdmin')}</option>
+                  <option value="owner">{t('inspection.roleOwner')}</option>
+                </select>
+                <input placeholder={t('inspection.signatureName')} value={sig.name} onChange={e => {
+                  const copy = [...sigs]; copy[si] = { ...copy[si], name: e.target.value };
                   handleChange('signaturesJson', JSON.stringify(copy));
                 }} />
                 <input placeholder={t('inspection.city')} value={sig.city} onChange={e => {
                   const copy = [...sigs]; copy[si] = { ...copy[si], city: e.target.value };
                   handleChange('signaturesJson', JSON.stringify(copy));
                 }} />
-                <input type="date" value={sig.date} onChange={e => {
-                  const copy = [...sigs]; copy[si] = { ...copy[si], date: e.target.value };
-                  handleChange('signaturesJson', JSON.stringify(copy));
-                }} />
-                <input placeholder={t('inspection.printedName')} value={sig.printedName} onChange={e => {
-                  const copy = [...sigs]; copy[si] = { ...copy[si], printedName: e.target.value };
+                <SignaturePad value={sig.signature} onChange={dataUrl => {
+                  const copy = [...sigs]; copy[si] = { ...copy[si], signature: dataUrl };
                   handleChange('signaturesJson', JSON.stringify(copy));
                 }} />
                 <button className="btn-delete small" onClick={() => {
@@ -423,7 +451,7 @@ function InspectionForm() {
           <button className="btn-upload small" onClick={() => {
             let sigs;
             try { sigs = JSON.parse(inspection.signaturesJson || '[]'); } catch { sigs = []; }
-            sigs.push({ role: '', city: '', date: '', printedName: '' });
+            sigs.push({ role: 'Moving in tenant', name: '', city: '', signature: '' });
             handleChange('signaturesJson', JSON.stringify(sigs));
           }}>{t('inspection.addSignature')}</button>
         </section>

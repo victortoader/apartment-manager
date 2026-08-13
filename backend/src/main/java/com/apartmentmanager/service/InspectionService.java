@@ -86,6 +86,14 @@ public class InspectionService {
         if (update.getDate() != null) existing.setDate(update.getDate());
         if (update.getTime() != null) existing.setTime(update.getTime());
         if (update.getCompanyName() != null) existing.setCompanyName(update.getCompanyName());
+        if (update.getFirstName() != null) existing.setFirstName(update.getFirstName());
+        if (update.getPreviousName() != null) existing.setPreviousName(update.getPreviousName());
+        if (update.getPreviousFirstName() != null) existing.setPreviousFirstName(update.getPreviousFirstName());
+        if (update.getPreviousAddress() != null) existing.setPreviousAddress(update.getPreviousAddress());
+        if (update.getPreviousPostalCode() != null) existing.setPreviousPostalCode(update.getPreviousPostalCode());
+        if (update.getPreviousCity() != null) existing.setPreviousCity(update.getPreviousCity());
+        if (update.getPreviousPhone() != null) existing.setPreviousPhone(update.getPreviousPhone());
+        if (update.getPreviousEmail() != null) existing.setPreviousEmail(update.getPreviousEmail());
         if (update.getCompanyAddress() != null) existing.setCompanyAddress(update.getCompanyAddress());
         if (update.getCompanyPostalCode() != null) existing.setCompanyPostalCode(update.getCompanyPostalCode());
         if (update.getCompanyCity() != null) existing.setCompanyCity(update.getCompanyCity());
@@ -298,7 +306,7 @@ public class InspectionService {
             y = drawConfirmations(cs, inspection, y);
             y -= 12;
             if (y < 140) { y = addPage(doc, pages, cs); cs = new PDPageContentStream(doc, pages.get(pages.size()-1)); }
-            drawSignatures(cs, inspection, y);
+            drawSignatures(cs, doc, inspection, y);
             cs.close();
 
             if (!allPhotos.isEmpty()) {
@@ -372,21 +380,27 @@ public class InspectionService {
 
     private float drawHeader(PDPageContentStream cs, Inspection i, float y) throws IOException {
         float sz = 9;
+        int lines = 3;
         cs.beginText();
         cs.setFont(FONT_BOLD, sz);
         cs.setLeading(sz + 2);
         cs.newLineAtOffset(ML, y);
-        cs.showText(nn(i.getCompanyName()));
+        cs.showText((nn(i.getFirstName()) + " " + nn(i.getCompanyName())).trim());
         cs.newLine();
         cs.setFont(FONT, sz);
+        if (i.getPreviousName() != null || i.getPreviousFirstName() != null) {
+            cs.showText(("Bisherige(r) Mieter: " + nn(i.getPreviousFirstName()) + " " + nn(i.getPreviousName())).trim());
+            cs.newLine();
+            lines++;
+        }
         cs.showText(nn(i.getCompanyAddress()));
         cs.newLine();
         cs.showText((nn(i.getCompanyPostalCode()) + " " + nn(i.getCompanyCity())).trim());
         cs.newLine();
-        if (i.getCompanyPhone() != null) { cs.showText("Tel: " + i.getCompanyPhone()); cs.newLine(); }
-        if (i.getCompanyEmail() != null) cs.showText(i.getCompanyEmail());
+        if (i.getCompanyPhone() != null) { cs.showText("Tel: " + i.getCompanyPhone()); cs.newLine(); lines++; }
+        if (i.getCompanyEmail() != null) { cs.showText(i.getCompanyEmail()); lines++; }
         cs.endText();
-        return y - (i.getCompanyEmail() != null ? 5 : 4) * (sz + 2);
+        return y - lines * (sz + 2);
     }
 
     private float drawTitle(PDPageContentStream cs, Inspection i, float y) throws IOException {
@@ -499,7 +513,7 @@ public class InspectionService {
     }
 
     @SuppressWarnings("unchecked")
-    private float drawSignatures(PDPageContentStream cs, Inspection i, float y) throws IOException {
+    private float drawSignatures(PDPageContentStream cs, PDDocument doc, Inspection i, float y) throws IOException {
         cs.beginText(); cs.setFont(FONT_BOLD, 11); cs.newLineAtOffset(ML, y); cs.showText("Unterschriften"); cs.endText();
         y -= 20;
 
@@ -511,8 +525,8 @@ public class InspectionService {
             } catch (Exception ignored) {}
         }
         if (sigs.isEmpty()) {
-            sigs.add(hm("role", "Vermieter"));
-            sigs.add(hm("role", "Mieter"));
+            sigs.add(hm("role", "Moving in tenant"));
+            sigs.add(hm("role", "admin"));
         }
 
         float half = CW / 2, startY = y;
@@ -521,14 +535,28 @@ public class InspectionService {
             float sx = ML + (n % 2) * half;
             if (n % 2 == 0) y = startY - (n / 2) * 70;
             cs.beginText(); cs.setFont(FONT_BOLD, 9); cs.newLineAtOffset(sx, y); cs.showText(s.getOrDefault("role", "")); cs.endText();
-            cs.beginText(); cs.setFont(FONT, 9); cs.newLineAtOffset(sx, y - 14); cs.showText("Ort: " + s.getOrDefault("city", ""));
-            cs.newLineAtOffset(100, 0); cs.showText("Datum: " + s.getOrDefault("date", "")); cs.endText();
+            cs.beginText(); cs.setFont(FONT, 9); cs.newLineAtOffset(sx, y - 14); cs.showText(s.getOrDefault("name", "")); cs.endText();
+            cs.beginText(); cs.setFont(FONT, 9); cs.newLineAtOffset(sx, y - 26); cs.showText("Ort: " + s.getOrDefault("city", "")); cs.endText();
             cs.setStrokingColor(0.74f, 0.74f, 0.74f); cs.setLineWidth(0.5f);
-            cs.moveTo(sx, y - 30); cs.lineTo(sx + half - 20, y - 30); cs.stroke();
-            cs.beginText(); cs.setFont(FONT, 7); cs.newLineAtOffset(sx, y - 34); cs.showText("Unterschrift"); cs.endText();
-            cs.beginText(); cs.setFont(FONT, 9); cs.newLineAtOffset(sx, y - 48); cs.showText("Name: " + s.getOrDefault("printedName", "")); cs.endText();
+            cs.moveTo(sx, y - 40); cs.lineTo(sx + half - 20, y - 40); cs.stroke();
+            cs.beginText(); cs.setFont(FONT, 7); cs.newLineAtOffset(sx, y - 44); cs.showText("Unterschrift"); cs.endText();
+            drawSignatureImage(cs, doc, s.get("signature"), sx, y - 40, half - 20, 14);
         }
         return startY - ((sigs.size() + 1) / 2) * 70;
+    }
+
+    private void drawSignatureImage(PDPageContentStream cs, PDDocument doc, String dataUrl, float x, float lineY, float maxW, float maxH) throws IOException {
+        if (dataUrl == null || dataUrl.isBlank() || !dataUrl.startsWith("data:image/")) return;
+        int comma = dataUrl.indexOf(',');
+        if (comma < 0) return;
+        try {
+            byte[] bytes = Base64.getDecoder().decode(dataUrl.substring(comma + 1));
+            PDImageXObject img = PDImageXObject.createFromByteArray(doc, bytes, "signature");
+            float scale = Math.min(maxW / img.getWidth(), maxH / img.getHeight());
+            float iw = img.getWidth() * scale;
+            float ih = img.getHeight() * scale;
+            cs.drawImage(img, x + (maxW - iw) / 2, lineY - ih, iw, ih);
+        } catch (Exception ignored) {}
     }
 
     private void drawFooter(PDDocument doc, List<PDPage> pages) throws IOException {

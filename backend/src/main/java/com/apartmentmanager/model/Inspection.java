@@ -35,6 +35,22 @@ public class Inspection {
 
     private String companyName;
 
+    private String firstName;
+
+    private String previousName;
+
+    private String previousFirstName;
+
+    private String previousAddress;
+
+    private String previousPostalCode;
+
+    private String previousCity;
+
+    private String previousPhone;
+
+    private String previousEmail;
+
     private String companyAddress;
 
     private String companyPostalCode;
