@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { AuthProvider, useAuth } from './AuthContext';
 import ApartmentList from './ApartmentList';
 import ApartmentDetail from './ApartmentDetail';
+import ManagePhotos from './ManagePhotos';
 import UserManagement from './UserManagement';
 import Tickets from './Tickets';
 import Presentation from './Presentation';
@@ -31,6 +32,7 @@ function App() {
           <Route path="/presentations/apartments/:id" element={<Presentation />} />
           <Route path="/" element={<ProtectedRoute><ApartmentList /></ProtectedRoute>} />
           <Route path="/apartments/:id" element={<ProtectedRoute><ApartmentDetail /></ProtectedRoute>} />
+          <Route path="/apartments/:id/photos" element={<ProtectedRoute><ManagePhotos /></ProtectedRoute>} />
           <Route path="/users" element={<ProtectedRoute><UserManagement /></ProtectedRoute>} />
           <Route path="/tickets" element={<ProtectedRoute><Tickets /></ProtectedRoute>} />
           <Route path="/audit" element={<ProtectedRoute><AuditLog /></ProtectedRoute>} />

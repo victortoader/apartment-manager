@@ -134,6 +134,32 @@ public class ApartmentController {
         }
     }
 
+    @Audited(action = "APARTMENT_PHOTO_DELETED", message = "Deleted photo from apartment #{id}")
+    @DeleteMapping("/{id}/photos/{fileName}")
+    @PreAuthorize("hasRole('OWNER')")
+    public ResponseEntity<Void> deletePhoto(@PathVariable Long id, @PathVariable String fileName) {
+        Apartment apartment = apartmentService.findById(id);
+        if (apartment.getPhotoPaths().remove(fileName)) {
+            photoStorageService.delete(fileName);
+            apartmentService.save(apartment);
+        }
+        return ResponseEntity.noContent().build();
+    }
+
+    @Audited(action = "APARTMENT_MAIN_PHOTO_SET", message = "Set main photo for apartment #{id}")
+    @PutMapping("/{id}/photos/main")
+    @PreAuthorize("hasRole('OWNER')")
+    public ResponseEntity<Apartment> setMainPhoto(@PathVariable Long id, @RequestBody java.util.Map<String, String> body) {
+        String fileName = body.get("fileName");
+        Apartment apartment = apartmentService.findById(id);
+        if (fileName != null && apartment.getPhotoPaths().contains(fileName)) {
+            apartment.getPhotoPaths().remove(fileName);
+            apartment.getPhotoPaths().add(0, fileName);
+            apartmentService.save(apartment);
+        }
+        return ResponseEntity.ok(apartment);
+    }
+
     @GetMapping("/photos/{fileName}")
     public ResponseEntity<Resource> getPhoto(@PathVariable String fileName) {
         try {

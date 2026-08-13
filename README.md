@@ -172,6 +172,8 @@ Generate a JWT secret: `openssl rand -base64 48`
 | POST | `/api/apartments` | Owner/Admin | Create apartment |
 | DELETE | `/api/apartments/{id}` | Owner | Delete apartment |
 | POST | `/api/apartments/{id}/photos` | All | Upload photo |
+| DELETE | `/api/apartments/{id}/photos/{fileName}` | Owner | Delete photo |
+| PUT | `/api/apartments/{id}/photos/main` | Owner | Set main photo |
 | GET | `/api/apartments/{id}/presentation` | Public | Presentation page data |
 | PUT | `/api/apartments/{id}/presentation` | Owner | Update presentation |
 | PUT | `/api/apartments/{id}/details` | Owner | Update price/description |

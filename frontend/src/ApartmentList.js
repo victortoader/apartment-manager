@@ -169,18 +169,6 @@ function ApartmentList() {
     }
   };
 
-  const handlePhotoUpload = async (apartmentId, file) => {
-    const formData = new FormData();
-    formData.append('file', file);
-    await fetch(`${API}/api/apartments/${apartmentId}/photos`, {
-      method: 'POST',
-      headers: authHeader(),
-      body: formData
-    });
-    fetchApartments();
-    fetchSummaries();
-  };
-
   const handleDelete = async (id) => {
     if (window.confirm(t('apartmentList.deleteConfirm'))) {
       await fetch(`${API}/api/apartments/${id}`, {
@@ -472,11 +460,10 @@ function ApartmentList() {
                     {t('apartmentList.seeApplications')} ({applicationCounts[apt.id]})
                   </button>
                 )}
-                {manageMode && canCreate && (
-                  <label className="btn-upload small" onClick={e => e.stopPropagation()}>
-                    {t('apartmentList.addPhoto')}
-                    <input type="file" accept="image/*" hidden onChange={(e) => handlePhotoUpload(apt.id, e.target.files[0])} />
-                  </label>
+                {manageMode && isOwner && (
+                  <button className="btn-upload small" onClick={(e) => { e.stopPropagation(); window.location.href = `/apartments/${apt.id}/photos`; }}>
+                    {t('apartmentList.managePhotos')}
+                  </button>
                 )}
                 {manageMode && canDelete && (
                   <button className="btn-delete small" onClick={(e) => { e.stopPropagation(); handleDelete(apt.id); }}>{t('delete')}</button>

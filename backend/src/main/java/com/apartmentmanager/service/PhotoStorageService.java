@@ -36,4 +36,12 @@ public class PhotoStorageService {
     public Path load(String fileName) {
         return Paths.get(uploadDir).toAbsolutePath().normalize().resolve(fileName);
     }
+
+    public void delete(String fileName) {
+        try {
+            Files.deleteIfExists(load(fileName));
+        } catch (IOException e) {
+            throw new RuntimeException("Failed to delete file: " + fileName, e);
+        }
+    }
 }

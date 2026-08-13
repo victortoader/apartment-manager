@@ -160,17 +160,6 @@ function ApartmentDetail() {
     URL.revokeObjectURL(url);
   };
 
-  const handlePhotoUpload = async (file) => {
-    const formData = new FormData();
-    formData.append('file', file);
-    await fetch(`${API}/api/apartments/${id}/photos`, {
-      method: 'POST',
-      headers: authHeader(),
-      body: formData
-    });
-    fetchApartment();
-  };
-
   const handleProtocolUpload = async (file) => {
     setUploading(true);
     const formData = new FormData();
@@ -245,12 +234,6 @@ function ApartmentDetail() {
               <img src={`${API}/api/apartments/photos/${apartment.photoPaths[0]}`} alt="Photo" />
             ) : (
               <img src="/placeholder.svg" alt="No photos" className="placeholder-img" />
-            )}
-            {canUpload && (
-              <label className="btn-upload large">
-                {t('detail.addPhoto')}
-                <input type="file" accept="image/*" hidden onChange={(e) => handlePhotoUpload(e.target.files[0])} />
-              </label>
             )}
           </div>
 
