@@ -323,7 +323,7 @@
   },
 
   "inspection": {
-    "title": "Handover Inspection",
+    "title": "Handover Inspection / Protokoll",
     "newTenant": "Moving in Tenant",
     "firstName": "First Name",
     "companyName": "Name",
@@ -347,6 +347,8 @@
     "textPlaceholder": "Condition / Notes",
     "costShare": "Cost share",
     "photo": "Photo",
+    "photoCamera": "Take Photo",
+    "photoGallery": "Upload Photo",
     "addRow": "+ Add Row",
     "status": "Status",
     "new": "New",
@@ -375,6 +377,7 @@
     "generating": "Generating...",
     "generated": "PDF generated successfully!",
     "generateFailed": "PDF generation failed",
+    "signaturesRequired": "Please draw all signatures before generating the PDF.",
     "downloadPdf": "Download PDF",
     "downloadPhotos": "Download Photos",
     "downloadingPhotos": "Downloading...",

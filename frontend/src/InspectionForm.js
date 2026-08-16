@@ -7,7 +7,7 @@ import SignaturePad from './SignaturePad';
 const API = process.env.REACT_APP_API_URL || '';
 
 function InspectionForm() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const { id, inspectionId } = useParams();
   const navigate = useNavigate();
   const { user, authHeader } = useAuth();
@@ -238,8 +238,11 @@ function InspectionForm() {
 
   const handleGenerate = async () => {
     if (!editId) { alert(t('inspection.saveFirst')); return; }
+    if (!signaturesComplete()) { alert(t('inspection.signaturesRequired')); return; }
     setGenerating(true);
-    const res = await fetch(`${API}/api/inspections/${editId}/generate`, {
+    const saved = await doSaveRef.current();
+    if (!saved) { alert(t('inspection.saveFailed')); setGenerating(false); return; }
+    const res = await fetch(`${API}/api/inspections/${editId}/generate?lang=${encodeURIComponent(i18n.language)}`, {
       method: 'POST',
       headers: authHeader()
     });
@@ -248,7 +251,8 @@ function InspectionForm() {
       setGeneratedProtocol(protocol);
       alert(t('inspection.generated'));
     } else {
-      alert(t('inspection.generateFailed'));
+      const data = await res.json().catch(() => null);
+      alert(data?.error || t('inspection.generateFailed'));
     }
     setGenerating(false);
   };
@@ -282,6 +286,15 @@ function InspectionForm() {
   ];
 
   const hasPhotos = (inspection.sections || []).some(s => (s.rows || []).some(r => (r.photos || []).length > 0));
+
+  const signaturesComplete = () => {
+    try {
+      const sigs = JSON.parse(inspection.signaturesJson || '[]');
+      return sigs.length > 0 && sigs.every(s => !!(s.signature && s.signature.startsWith('data:image/')));
+    } catch {
+      return false;
+    }
+  };
 
   return (
     <div className="app">
@@ -376,7 +389,11 @@ function InspectionForm() {
                         className="insp-cost-input"
                       />
                       <label className="btn-upload small" style={{ fontSize: 11 }}>
-                        {t('inspection.photo')}
+                        {t('inspection.photoCamera')}
+                        <input type="file" accept="image/*" capture="environment" hidden onChange={e => { if (e.target.files[0]) uploadPhoto(si, ri, e.target.files[0]); }} />
+                      </label>
+                      <label className="btn-upload small" style={{ fontSize: 11 }}>
+                        {t('inspection.photoGallery')}
                         <input type="file" accept="image/*" hidden onChange={e => { if (e.target.files[0]) uploadPhoto(si, ri, e.target.files[0]); }} />
                       </label>
                       <button className="btn-delete small" onClick={() => removeRow(si, ri)}>×</button>

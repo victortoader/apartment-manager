@@ -109,10 +109,13 @@ public class InspectionController {
 
     @PostMapping("/inspections/{id}/generate")
     @PreAuthorize("hasAnyRole('OWNER', 'ADMIN')")
-    public ResponseEntity<?> generatePdf(@PathVariable Long id) {
+    public ResponseEntity<?> generatePdf(@PathVariable Long id,
+                                         @RequestParam(value = "lang", defaultValue = "de") String lang) {
         try {
-            HandoverProtocol protocol = inspectionService.generatePdf(id);
+            HandoverProtocol protocol = inspectionService.generatePdf(id, lang);
             return ResponseEntity.ok(protocol);
+        } catch (IllegalStateException e) {
+            return ResponseEntity.badRequest().body(java.util.Map.of("error", e.getMessage()));
         } catch (Exception e) {
             return ResponseEntity.internalServerError().body(java.util.Map.of("error", e.getMessage()));
         }

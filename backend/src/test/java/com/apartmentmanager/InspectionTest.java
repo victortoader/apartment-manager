@@ -4,6 +4,9 @@ import com.apartmentmanager.model.Apartment;
 import com.apartmentmanager.model.HandoverProtocol;
 import com.apartmentmanager.model.Inspection;
 import com.apartmentmanager.repository.InspectionRepository;
+import org.apache.pdfbox.Loader;
+import org.apache.pdfbox.pdmodel.PDDocument;
+import org.apache.pdfbox.text.PDFTextStripper;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
@@ -23,7 +26,7 @@ class InspectionTest extends AbstractIntegrationTest {
         Apartment apt = createApartment("Inspection Apt");
 
         String confirmationsJson = "[\\\"Schluessel erhalten\\\",\\\"Wassermesserstand notiert\\\"]";
-        String signaturesJson = "[{\\\"role\\\":\\\"Vermieter\\\",\\\"city\\\":\\\"Berlin\\\",\\\"date\\\":\\\"30.07.2026\\\",\\\"printedName\\\":\\\"Hans Vermieter\\\"}]";
+        String signaturesJson = "[{\\\"role\\\":\\\"Vermieter\\\",\\\"name\\\":\\\"Hans Vermieter\\\",\\\"city\\\":\\\"Berlin\\\",\\\"signature\\\":\\\"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==\\\"}]";
         String body = jsonResource("inspections/full-inspection.json").formatted(confirmationsJson, signaturesJson);
 
         var result = mockMvc.perform(post("/api/apartments/" + apt.getId() + "/inspections")
@@ -125,6 +128,102 @@ class InspectionTest extends AbstractIntegrationTest {
                         .header("Authorization", bearer("owner")))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").isNumber());
+    }
+
+    @Test
+    void generatePdf_containsFullFormStructure() throws Exception {
+        Apartment apt = createApartment("Form Structure Apt");
+
+        String confirmationsJson = "[\\\"Schluessel erhalten\\\"]";
+        String signaturesJson = "[{\\\"role\\\":\\\"Vermieter\\\",\\\"name\\\":\\\"Hans Vermieter\\\",\\\"city\\\":\\\"Berlin\\\",\\\"signature\\\":\\\"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==\\\"}]";
+        String body = jsonResource("inspections/full-inspection.json").formatted(confirmationsJson, signaturesJson);
+
+        var res = mockMvc.perform(post("/api/apartments/" + apt.getId() + "/inspections")
+                        .header("Authorization", bearer("owner"))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(body))
+                .andExpect(status().isOk()).andReturn();
+        Long inspectionId = objectMapper.readTree(res.getResponse().getContentAsString()).get("id").asLong();
+
+        mockMvc.perform(post("/api/inspections/" + inspectionId + "/generate")
+                        .header("Authorization", bearer("owner")))
+                .andExpect(status().isOk());
+
+        HandoverProtocol protocol = protocolRepository.findByApartmentId(apt.getId()).get(0);
+        byte[] pdfBytes = mockMvc.perform(get("/api/apartments/protocols/" + protocol.getFileName())
+                        .header("Authorization", bearer("owner")))
+                .andExpect(status().isOk())
+                .andReturn().getResponse().getContentAsByteArray();
+
+        try (PDDocument doc = Loader.loadPDF(pdfBytes)) {
+            String text = new PDFTextStripper().getText(doc);
+            assert text.contains("Ausziehender Mieter") : "PDF must contain the Moving out Tenant section";
+            assert text.contains("Einziehender Mieter") : "PDF must contain the Moving in Tenant section";
+            assert text.contains("Vorname") && text.contains("E-Mail") : "PDF must contain tenant fields";
+            assert text.contains("Test GmbH") && text.contains("Musterstr. 1") : "PDF must contain tenant data";
+            assert text.contains("Liegenschaft") : "PDF must contain property metadata";
+            assert text.contains("Wohnzimmer") && text.contains("Kueche") : "PDF must contain inspection sections";
+            assert text.contains("Bestaetigungen") : "PDF must contain confirmations";
+            assert text.contains("Unterschriften") : "PDF must contain signatures";
+        }
+    }
+
+    @Test
+    void generatePdf_withEnglishLang_usesEnglishLabels() throws Exception {
+        Apartment apt = createApartment("English Form Apt");
+
+        String confirmationsJson = "[\\\"Keys received\\\"]";
+        String signaturesJson = "[{\\\"role\\\":\\\"Landlord\\\",\\\"name\\\":\\\"Hans Vermieter\\\",\\\"city\\\":\\\"Berlin\\\",\\\"signature\\\":\\\"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==\\\"}]";
+        String body = jsonResource("inspections/full-inspection.json").formatted(confirmationsJson, signaturesJson);
+
+        var res = mockMvc.perform(post("/api/apartments/" + apt.getId() + "/inspections")
+                        .header("Authorization", bearer("owner"))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(body))
+                .andExpect(status().isOk()).andReturn();
+        Long inspectionId = objectMapper.readTree(res.getResponse().getContentAsString()).get("id").asLong();
+
+        mockMvc.perform(post("/api/inspections/" + inspectionId + "/generate")
+                        .header("Authorization", bearer("owner"))
+                        .param("lang", "en"))
+                .andExpect(status().isOk());
+
+        HandoverProtocol protocol = protocolRepository.findByApartmentId(apt.getId()).get(0);
+        byte[] pdfBytes = mockMvc.perform(get("/api/apartments/protocols/" + protocol.getFileName())
+                        .header("Authorization", bearer("owner")))
+                .andExpect(status().isOk())
+                .andReturn().getResponse().getContentAsByteArray();
+
+        try (PDDocument doc = Loader.loadPDF(pdfBytes)) {
+            String text = new PDFTextStripper().getText(doc);
+            assert text.contains("Moving out Tenant") : "PDF must contain the English Moving out Tenant section";
+            assert text.contains("Moving in Tenant") : "PDF must contain the English Moving in Tenant section";
+            assert text.contains("First Name") && text.contains("Email") : "PDF must contain English tenant fields";
+            assert text.contains("Property") : "PDF must contain English property metadata";
+            assert text.contains("Confirmations") : "PDF must contain English confirmations";
+            assert text.contains("Signatures") : "PDF must contain English signatures";
+            assert text.contains("Page 1/") : "PDF must contain the English page footer";
+        }
+    }
+
+    @Test
+    void generatePdf_withoutSignatures_returnsError() throws Exception {
+        Apartment apt = createApartment("No Signature Apt");
+
+        String body = jsonResource("inspections/inspection-one-section.json");
+        var res = mockMvc.perform(post("/api/apartments/" + apt.getId() + "/inspections")
+                        .header("Authorization", bearer("owner"))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(body))
+                .andExpect(status().isOk())
+                .andReturn();
+
+        Long inspectionId = objectMapper.readTree(res.getResponse().getContentAsString()).get("id").asLong();
+
+        mockMvc.perform(post("/api/inspections/" + inspectionId + "/generate")
+                        .header("Authorization", bearer("owner")))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.error").value(containsStringIgnoringCase("signature")));
     }
 
     @Test
