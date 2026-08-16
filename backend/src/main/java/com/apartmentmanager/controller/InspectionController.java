@@ -11,6 +11,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api")
@@ -109,10 +110,13 @@ public class InspectionController {
 
     @PostMapping("/inspections/{id}/generate")
     @PreAuthorize("hasAnyRole('OWNER', 'ADMIN')")
-    public ResponseEntity<?> generatePdf(@PathVariable Long id) {
+    public ResponseEntity<?> generatePdf(@PathVariable Long id,
+                                         @RequestBody(required = false) Map<String, String> labels) {
         try {
-            HandoverProtocol protocol = inspectionService.generatePdf(id);
+            HandoverProtocol protocol = inspectionService.generatePdf(id, labels);
             return ResponseEntity.ok(protocol);
+        } catch (IllegalStateException e) {
+            return ResponseEntity.badRequest().body(java.util.Map.of("error", e.getMessage()));
         } catch (Exception e) {
             return ResponseEntity.internalServerError().body(java.util.Map.of("error", e.getMessage()));
         }

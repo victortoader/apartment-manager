@@ -61,6 +61,20 @@ test.describe('Inspection E2E', () => {
     await page.getByRole('button', { name: /^save$/i }).click();
     await expect.poll(() => alertText.toLowerCase()).toContain('saved');
 
+    // Draw signatures (mandatory before generating PDF)
+    const pads = page.locator('.signature-pad');
+    for (let i = 0; i < await pads.count(); i++) {
+      const pad = pads.nth(i);
+      await pad.scrollIntoViewIfNeeded();
+      const box = await pad.boundingBox();
+      if (!box) throw new Error('signature pad not visible');
+      await page.mouse.move(box.x + box.width / 2, box.y + box.height / 2);
+      await page.mouse.down();
+      await page.mouse.move(box.x + box.width / 2 + 40, box.y + box.height / 2 - 10, { steps: 8 });
+      await page.mouse.move(box.x + box.width / 2 - 40, box.y + box.height / 2 + 10, { steps: 8 });
+      await page.mouse.up();
+    }
+
     // Generate PDF
     alertText = '';
     await page.getByRole('button', { name: /generate pdf/i }).click();

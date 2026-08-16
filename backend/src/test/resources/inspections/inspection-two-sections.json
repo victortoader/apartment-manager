@@ -3,6 +3,7 @@
     "date": "2026-07-30",
     "companyName": "Test GmbH",
     "property": "Testhaus",
+    "signaturesJson": "[{\"role\":\"Vermieter\",\"name\":\"Hans Vermieter\",\"city\":\"Berlin\",\"signature\":\"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==\"}]",
     "sections": [
         {
             "title": "Wohnzimmer",
