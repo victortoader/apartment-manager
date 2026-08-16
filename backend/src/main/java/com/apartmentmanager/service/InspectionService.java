@@ -42,8 +42,8 @@ public class InspectionService {
 
     private static final float PAGE_W = PDRectangle.A4.getWidth();
     private static final float PAGE_H = PDRectangle.A4.getHeight();
-    private static final float MT = 51f, MR = 45f, MB = 51f, ML = 45f;
-    private static final float CW = PAGE_W - ML - MR;
+    private static final float MARGIN_TOP = 51f, MARGIN_RIGHT = 45f, MARGIN_BOTTOM = 51f, MARGIN_LEFT = 45f;
+    private static final float CONTENT_WIDTH = PAGE_W - MARGIN_LEFT - MARGIN_RIGHT;
 
     private static final PDFont FONT = new PDType1Font(Standard14Fonts.FontName.HELVETICA);
     private static final PDFont FONT_BOLD = new PDType1Font(Standard14Fonts.FontName.HELVETICA_BOLD);
@@ -258,35 +258,35 @@ public class InspectionService {
         validateSignatures(inspection);
         PdfLabels labels = new PdfLabels(labelMap);
 
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
         try (PDDocument doc = new PDDocument()) {
             List<PDPage> pages = new ArrayList<>();
             PDPage page = new PDPage(PDRectangle.A4);
             doc.addPage(page);
             pages.add(page);
-            PDPageContentStream cs = new PDPageContentStream(doc, page);
-            float y = PAGE_H - MT;
+            PDPageContentStream contentStream = new PDPageContentStream(doc, page);
+            float cursorY = PAGE_H - MARGIN_TOP;
 
-            y = drawTitle(cs, inspection, y, labels);
-            y -= 10;
-            y = drawTenantSections(cs, inspection, y, labels);
-            y -= 8;
-            y = drawPropertyMetadata(cs, inspection, y, labels);
-            y -= 8;
+            cursorY = drawTitle(contentStream, inspection, cursorY, labels);
+            cursorY -= 10;
+            cursorY = drawTenantSections(contentStream, inspection, cursorY, labels);
+            cursorY -= 8;
+            cursorY = drawPropertyMetadata(contentStream, inspection, cursorY, labels);
+            cursorY -= 8;
 
             List<PhotoEntry> allPhotos = new ArrayList<>();
             int photoCounter = 1;
 
             if (inspection.getSections() != null) {
                 for (InspectionSection section : inspection.getSections()) {
-                    if (y < 120) { y = addPage(doc, pages, cs); cs = new PDPageContentStream(doc, pages.get(pages.size()-1)); }
-                    y = drawSectionTitle(cs, section.getTitle(), y);
-                    y -= 4;
-                    float[] cw = cw();
-                    y = drawTableHeader(cs, y, cw, labels);
+                    if (cursorY < 120) { cursorY = addPage(doc, pages, contentStream); contentStream = new PDPageContentStream(doc, pages.get(pages.size()-1)); }
+                    cursorY = drawSectionTitle(contentStream, section.getTitle(), cursorY);
+                    cursorY -= 4;
+                    float[] columnWidths = tableColumnWidths();
+                    cursorY = drawTableHeader(contentStream, cursorY, columnWidths, labels);
                     if (section.getRows() != null) {
                         for (InspectionRow row : section.getRows()) {
-                            if (y < 80) { y = addPage(doc, pages, cs); cs = new PDPageContentStream(doc, pages.get(pages.size()-1)); y = drawTableHeader(cs, y, cw, labels); }
+                            if (cursorY < 80) { cursorY = addPage(doc, pages, contentStream); contentStream = new PDPageContentStream(doc, pages.get(pages.size()-1)); cursorY = drawTableHeader(contentStream, cursorY, columnWidths, labels); }
                             List<Integer> refs = new ArrayList<>();
                             if (row.getPhotos() != null) {
                                 for (InspectionRowPhoto ph : row.getPhotos()) {
@@ -295,37 +295,37 @@ public class InspectionService {
                                     photoCounter++;
                                 }
                             }
-                            y = drawTableRow(cs, row, y, cw, refs);
-                            y -= 2;
+                            cursorY = drawTableRow(contentStream, row, cursorY, columnWidths, refs);
+                            cursorY -= 2;
                         }
                         if (section.getRows().isEmpty()) {
-                            if (y < 80) { y = addPage(doc, pages, cs); cs = new PDPageContentStream(doc, pages.get(pages.size()-1)); y = drawTableHeader(cs, y, cw, labels); }
-                            y = drawTableRow(cs, new InspectionRow(), y, cw, Collections.emptyList());
-                            y -= 2;
+                            if (cursorY < 80) { cursorY = addPage(doc, pages, contentStream); contentStream = new PDPageContentStream(doc, pages.get(pages.size()-1)); cursorY = drawTableHeader(contentStream, cursorY, columnWidths, labels); }
+                            cursorY = drawTableRow(contentStream, new InspectionRow(), cursorY, columnWidths, Collections.emptyList());
+                            cursorY -= 2;
                         }
                     }
-                    y -= 6;
+                    cursorY -= 6;
                 }
             }
 
-            y -= 8;
-            if (y < 140) { y = addPage(doc, pages, cs); cs = new PDPageContentStream(doc, pages.get(pages.size()-1)); }
-            y = drawConfirmations(cs, inspection, y, labels);
-            y -= 12;
-            cs.close();
-            drawSignatures(doc, pages, inspection, y, labels);
+            cursorY -= 8;
+            if (cursorY < 140) { cursorY = addPage(doc, pages, contentStream); contentStream = new PDPageContentStream(doc, pages.get(pages.size()-1)); }
+            cursorY = drawConfirmations(contentStream, inspection, cursorY, labels);
+            cursorY -= 12;
+            contentStream.close();
+            drawSignatures(doc, pages, inspection, cursorY, labels);
 
             if (!allPhotos.isEmpty()) {
                 addPhotoAppendix(doc, allPhotos, pages, labels);
             }
             drawFooter(doc, pages, labels);
-            doc.save(baos);
+            doc.save(outputStream);
         }
 
         String storedName = "inspection-" + inspectionId + "-" + UUID.randomUUID() + ".pdf";
         Path uploadPath = Paths.get(uploadDir).toAbsolutePath().normalize();
         Files.createDirectories(uploadPath);
-        Files.write(uploadPath.resolve(storedName), baos.toByteArray());
+        Files.write(uploadPath.resolve(storedName), outputStream.toByteArray());
 
         Apartment apartment = inspection.getApartment();
         HandoverProtocol protocol = new HandoverProtocol(storedName,
@@ -340,9 +340,9 @@ public class InspectionService {
     @Transactional
     public byte[] downloadPhotosZip(Long inspectionId) throws IOException {
         Inspection inspection = getById(inspectionId);
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
         int idx = 1;
-        try (ZipOutputStream zos = new ZipOutputStream(baos)) {
+        try (ZipOutputStream zos = new ZipOutputStream(outputStream)) {
             if (inspection.getSections() != null) {
                 for (InspectionSection section : inspection.getSections()) {
                     if (section.getRows() != null) {
@@ -364,7 +364,7 @@ public class InspectionService {
                 }
             }
         }
-        return baos.toByteArray();
+        return outputStream.toByteArray();
     }
 
     private String safeZipName(String original) {
@@ -376,310 +376,310 @@ public class InspectionService {
         return name.isBlank() ? "photo" : name;
     }
 
-    private float addPage(PDDocument doc, List<PDPage> pages, PDPageContentStream cs) throws IOException {
-        cs.close();
-        PDPage p = new PDPage(PDRectangle.A4);
-        doc.addPage(p);
-        pages.add(p);
-        return PAGE_H - MT;
+    private float addPage(PDDocument doc, List<PDPage> pages, PDPageContentStream contentStream) throws IOException {
+        contentStream.close();
+        PDPage page = new PDPage(PDRectangle.A4);
+        doc.addPage(page);
+        pages.add(page);
+        return PAGE_H - MARGIN_TOP;
     }
 
-    private float drawTitle(PDPageContentStream cs, Inspection i, float y, PdfLabels labels) throws IOException {
-        String t = (i.getDocumentType() != null ? i.getDocumentType() : "Uebergabeprotokoll")
-                + " " + labels.get("datePrefix") + " " + (i.getDate() != null ? i.getDate().format(DateTimeFormatter.ofPattern("dd.MM.yyyy")) : "")
-                + ", " + (i.getTime() != null ? i.getTime().format(DateTimeFormatter.ofPattern("HH:mm")) : "");
-        cs.beginText(); cs.setFont(FONT_BOLD, 16); cs.newLineAtOffset(ML, y); cs.showText(t); cs.endText();
-        return y - 22;
+    private float drawTitle(PDPageContentStream contentStream, Inspection inspection, float cursorY, PdfLabels labels) throws IOException {
+        String title = (inspection.getDocumentType() != null ? inspection.getDocumentType() : "Uebergabeprotokoll")
+                + " " + labels.get("datePrefix") + " " + (inspection.getDate() != null ? inspection.getDate().format(DateTimeFormatter.ofPattern("dd.MM.yyyy")) : "")
+                + ", " + (inspection.getTime() != null ? inspection.getTime().format(DateTimeFormatter.ofPattern("HH:mm")) : "");
+        contentStream.beginText(); contentStream.setFont(FONT_BOLD, 16); contentStream.newLineAtOffset(MARGIN_LEFT, cursorY); contentStream.showText(title); contentStream.endText();
+        return cursorY - 22;
     }
 
-    private float drawTenantSections(PDPageContentStream cs, Inspection i, float y, PdfLabels labels) throws IOException {
+    private float drawTenantSections(PDPageContentStream contentStream, Inspection inspection, float cursorY, PdfLabels labels) throws IOException {
         String[][] fieldsOut = {
-            {labels.get("firstName"), nn(i.getPreviousFirstName())},
-            {labels.get("name"), nn(i.getPreviousName())},
-            {labels.get("address"), nn(i.getPreviousAddress())},
-            {labels.get("postalCode"), nn(i.getPreviousPostalCode())},
-            {labels.get("city"), nn(i.getPreviousCity())},
-            {labels.get("phone"), nn(i.getPreviousPhone())},
-            {labels.get("email"), nn(i.getPreviousEmail())}
+            {labels.get("firstName"), nullToEmpty(inspection.getPreviousFirstName())},
+            {labels.get("name"), nullToEmpty(inspection.getPreviousName())},
+            {labels.get("address"), nullToEmpty(inspection.getPreviousAddress())},
+            {labels.get("postalCode"), nullToEmpty(inspection.getPreviousPostalCode())},
+            {labels.get("city"), nullToEmpty(inspection.getPreviousCity())},
+            {labels.get("phone"), nullToEmpty(inspection.getPreviousPhone())},
+            {labels.get("email"), nullToEmpty(inspection.getPreviousEmail())}
         };
         String[][] fieldsIn = {
-            {labels.get("firstName"), nn(i.getFirstName())},
-            {labels.get("name"), nn(i.getCompanyName())},
-            {labels.get("address"), nn(i.getCompanyAddress())},
-            {labels.get("postalCode"), nn(i.getCompanyPostalCode())},
-            {labels.get("city"), nn(i.getCompanyCity())},
-            {labels.get("phone"), nn(i.getCompanyPhone())},
-            {labels.get("email"), nn(i.getCompanyEmail())}
+            {labels.get("firstName"), nullToEmpty(inspection.getFirstName())},
+            {labels.get("name"), nullToEmpty(inspection.getCompanyName())},
+            {labels.get("address"), nullToEmpty(inspection.getCompanyAddress())},
+            {labels.get("postalCode"), nullToEmpty(inspection.getCompanyPostalCode())},
+            {labels.get("city"), nullToEmpty(inspection.getCompanyCity())},
+            {labels.get("phone"), nullToEmpty(inspection.getCompanyPhone())},
+            {labels.get("email"), nullToEmpty(inspection.getCompanyEmail())}
         };
 
-        float half = CW / 2;
-        float headingH = 16, rowH = 14;
+        float halfContentWidth = CONTENT_WIDTH / 2;
+        float headingHeight = 16, rowHeight = 14;
         int rows = fieldsOut.length;
 
-        float maxLabelW = 0;
-        for (String[] f : fieldsOut) maxLabelW = Math.max(maxLabelW, swBold(f[0] + ":", 9));
-        for (String[] f : fieldsIn) maxLabelW = Math.max(maxLabelW, swBold(f[0] + ":", 9));
-        float labelW = Math.min(maxLabelW + 12, half - 60);
+        float maxLabelWidth = 0;
+        for (String[] field : fieldsOut) maxLabelWidth = Math.max(maxLabelWidth, boldTextWidth(field[0] + ":", 9));
+        for (String[] field : fieldsIn) maxLabelWidth = Math.max(maxLabelWidth, boldTextWidth(field[0] + ":", 9));
+        float labelWidth = Math.min(maxLabelWidth + 12, halfContentWidth - 60);
 
         float[] rowHeights = new float[rows];
-        float totalH = headingH;
-        for (int f = 0; f < rows; f++) {
-            int lines = Math.max(wrapText(nn(fieldsOut[f][1]), 9f, half - labelW - 8).size(),
-                                 wrapText(nn(fieldsIn[f][1]), 9f, half - labelW - 8).size());
-            float h = Math.max(rowH, (lines - 1) * 11 + 13);
-            rowHeights[f] = h;
-            totalH += h;
+        float totalHeight = headingHeight;
+        for (int fieldIndex = 0; fieldIndex < rows; fieldIndex++) {
+            int lines = Math.max(wrapText(nullToEmpty(fieldsOut[fieldIndex][1]), 9f, halfContentWidth - labelWidth - 8).size(),
+                                 wrapText(nullToEmpty(fieldsIn[fieldIndex][1]), 9f, halfContentWidth - labelWidth - 8).size());
+            float cellHeight = Math.max(rowHeight, (lines - 1) * 11 + 13);
+            rowHeights[fieldIndex] = cellHeight;
+            totalHeight += cellHeight;
         }
 
-        for (int c = 0; c < 2; c++) {
-            String[][] fields = c == 0 ? fieldsOut : fieldsIn;
-            float x0 = ML + c * half;
-            float tableTop = y;
-            float tableBottom = y - totalH;
+        for (int column = 0; column < 2; column++) {
+            String[][] fields = column == 0 ? fieldsOut : fieldsIn;
+            float tableX = MARGIN_LEFT + column * halfContentWidth;
+            float tableTop = cursorY;
+            float tableBottom = cursorY - totalHeight;
 
-            cs.setStrokingColor(0.6f, 0.6f, 0.6f);
-            cs.setLineWidth(0.5f);
-            cs.addRect(x0, tableBottom, half, tableTop - tableBottom);
-            cs.stroke();
-            cs.moveTo(x0, tableTop - headingH); cs.lineTo(x0 + half, tableTop - headingH); cs.stroke();
-            float sepY = tableTop - headingH;
-            for (int f = 0; f < rows - 1; f++) {
-                sepY -= rowHeights[f];
-                cs.moveTo(x0, sepY); cs.lineTo(x0 + half, sepY); cs.stroke();
+            contentStream.setStrokingColor(0.6f, 0.6f, 0.6f);
+            contentStream.setLineWidth(0.5f);
+            contentStream.addRect(tableX, tableBottom, halfContentWidth, tableTop - tableBottom);
+            contentStream.stroke();
+            contentStream.moveTo(tableX, tableTop - headingHeight); contentStream.lineTo(tableX + halfContentWidth, tableTop - headingHeight); contentStream.stroke();
+            float separatorY = tableTop - headingHeight;
+            for (int fieldIndex = 0; fieldIndex < rows - 1; fieldIndex++) {
+                separatorY -= rowHeights[fieldIndex];
+                contentStream.moveTo(tableX, separatorY); contentStream.lineTo(tableX + halfContentWidth, separatorY); contentStream.stroke();
             }
-            cs.moveTo(x0 + labelW, tableBottom); cs.lineTo(x0 + labelW, tableTop); cs.stroke();
-            cs.setNonStrokingColor(0, 0, 0);
+            contentStream.moveTo(tableX + labelWidth, tableBottom); contentStream.lineTo(tableX + labelWidth, tableTop); contentStream.stroke();
+            contentStream.setNonStrokingColor(0, 0, 0);
 
-            cs.beginText(); cs.setFont(FONT_BOLD, 10);
-            cs.newLineAtOffset(x0 + 4, tableTop - headingH + 4);
-            cs.showText(c == 0 ? labels.get("outTenant") : labels.get("inTenant"));
-            cs.endText();
+            contentStream.beginText(); contentStream.setFont(FONT_BOLD, 10);
+            contentStream.newLineAtOffset(tableX + 4, tableTop - headingHeight + 4);
+            contentStream.showText(column == 0 ? labels.get("outTenant") : labels.get("inTenant"));
+            contentStream.endText();
 
-            float ry = tableTop - headingH;
-            for (int f = 0; f < rows; f++) {
-                float cellH = rowHeights[f];
-                cs.beginText(); cs.setFont(FONT_BOLD, 9);
-                cs.newLineAtOffset(x0 + 4, ry - cellH + 4);
-                cs.showText(fields[f][0] + ":");
-                cs.endText();
+            float rowY = tableTop - headingHeight;
+            for (int fieldIndex = 0; fieldIndex < rows; fieldIndex++) {
+                float cellHeight = rowHeights[fieldIndex];
+                contentStream.beginText(); contentStream.setFont(FONT_BOLD, 9);
+                contentStream.newLineAtOffset(tableX + 4, rowY - cellHeight + 4);
+                contentStream.showText(fields[fieldIndex][0] + ":");
+                contentStream.endText();
 
-                List<String> valueLines = wrapText(nn(fields[f][1]), 9f, half - labelW - 8);
-                cs.beginText(); cs.setFont(FONT, 9); cs.setLeading(11);
-                cs.newLineAtOffset(x0 + labelW + 4, ry - 9);
-                for (String line : valueLines) { cs.showText(line); cs.newLine(); }
-                cs.endText();
+                List<String> valueLines = wrapText(nullToEmpty(fields[fieldIndex][1]), 9f, halfContentWidth - labelWidth - 8);
+                contentStream.beginText(); contentStream.setFont(FONT, 9); contentStream.setLeading(11);
+                contentStream.newLineAtOffset(tableX + labelWidth + 4, rowY - 9);
+                for (String line : valueLines) { contentStream.showText(line); contentStream.newLine(); }
+                contentStream.endText();
 
-                ry -= cellH;
+                rowY -= cellHeight;
             }
         }
-        return y - totalH;
+        return cursorY - totalHeight;
     }
 
-    private float drawPropertyMetadata(PDPageContentStream cs, Inspection i, float y, PdfLabels labels) throws IOException {
-        String[][] f = {
-            {labels.get("property"), nn(i.getProperty())},
-            {labels.get("objectNumber"), nn(i.getObjectNumber())},
-            {labels.get("rentalObject"), nn(i.getRentalObject())},
-            {labels.get("incomingParty"), nn(i.getIncomingParty())}
+    private float drawPropertyMetadata(PDPageContentStream contentStream, Inspection inspection, float cursorY, PdfLabels labels) throws IOException {
+        String[][] fields = {
+            {labels.get("property"), nullToEmpty(inspection.getProperty())},
+            {labels.get("objectNumber"), nullToEmpty(inspection.getObjectNumber())},
+            {labels.get("rentalObject"), nullToEmpty(inspection.getRentalObject())},
+            {labels.get("incomingParty"), nullToEmpty(inspection.getIncomingParty())}
         };
-        float half = CW / 2;
-        for (int n = 0; n < f.length; n++) {
-            float x = n < 2 ? ML : ML + half;
-            float ry = y - (n % 2) * 16;
-            cs.beginText(); cs.setFont(FONT_BOLD, 9); cs.newLineAtOffset(x, ry); cs.showText(f[n][0] + ":"); cs.endText();
-            cs.beginText(); cs.setFont(FONT, 9); cs.newLineAtOffset(x + 80, ry); cs.showText(f[n][1]); cs.endText();
+        float halfContentWidth = CONTENT_WIDTH / 2;
+        for (int index = 0; index < fields.length; index++) {
+            float cursorX = index < 2 ? MARGIN_LEFT : MARGIN_LEFT + halfContentWidth;
+            float rowY = cursorY - (index % 2) * 16;
+            contentStream.beginText(); contentStream.setFont(FONT_BOLD, 9); contentStream.newLineAtOffset(cursorX, rowY); contentStream.showText(fields[index][0] + ":"); contentStream.endText();
+            contentStream.beginText(); contentStream.setFont(FONT, 9); contentStream.newLineAtOffset(cursorX + 80, rowY); contentStream.showText(fields[index][1]); contentStream.endText();
         }
-        return y - 36;
+        return cursorY - 36;
     }
 
-    private float[] cw() {
-        float w = CW;
-        return new float[]{w*0.19f, w*0.37f, w*0.07f, w*0.07f, w*0.08f, w*0.07f, w*0.07f, w*0.08f};
+    private float[] tableColumnWidths() {
+        float contentWidth = CONTENT_WIDTH;
+        return new float[]{contentWidth*0.19f, contentWidth*0.37f, contentWidth*0.07f, contentWidth*0.07f, contentWidth*0.08f, contentWidth*0.07f, contentWidth*0.07f, contentWidth*0.08f};
     }
 
-    private float drawSectionTitle(PDPageContentStream cs, String title, float y) throws IOException {
-        cs.beginText(); cs.setFont(FONT_BOLD, 11); cs.newLineAtOffset(ML, y); cs.showText(title); cs.endText();
-        return y - 16;
+    private float drawSectionTitle(PDPageContentStream contentStream, String title, float cursorY) throws IOException {
+        contentStream.beginText(); contentStream.setFont(FONT_BOLD, 11); contentStream.newLineAtOffset(MARGIN_LEFT, cursorY); contentStream.showText(title); contentStream.endText();
+        return cursorY - 16;
     }
 
-    private float drawTableHeader(PDPageContentStream cs, float y, float[] cw, PdfLabels labels) throws IOException {
-        String[] h = {labels.get("detail"), labels.get("text"), labels.get("photos"), labels.get("new"), labels.get("normal"), labels.get("defect"), labels.get("missing"), labels.get("costShare")};
-        float x = ML, rh = 14;
-        cs.setStrokingColor(0.74f, 0.74f, 0.74f);
-        cs.setLineWidth(0.5f);
-        for (int i = 0; i < h.length; i++) { cs.addRect(x, y - rh, cw[i], rh); x += cw[i]; }
-        cs.stroke();
-        x = ML;
-        for (int i = 0; i < h.length; i++) {
-            cs.beginText(); cs.setFont(FONT_BOLD, 7.5f); cs.setNonStrokingColor(0.33f, 0.33f, 0.33f);
-            cs.newLineAtOffset(x + (cw[i] - sw(h[i], 7.5f)) / 2, y - rh + 4); cs.showText(h[i]); cs.endText();
-            x += cw[i];
+    private float drawTableHeader(PDPageContentStream contentStream, float cursorY, float[] columnWidths, PdfLabels labels) throws IOException {
+        String[] headers = {labels.get("detail"), labels.get("text"), labels.get("photos"), labels.get("new"), labels.get("normal"), labels.get("defect"), labels.get("missing"), labels.get("costShare")};
+        float cursorX = MARGIN_LEFT, rowHeight = 14;
+        contentStream.setStrokingColor(0.74f, 0.74f, 0.74f);
+        contentStream.setLineWidth(0.5f);
+        for (int i = 0; i < headers.length; i++) { contentStream.addRect(cursorX, cursorY - rowHeight, columnWidths[i], rowHeight); cursorX += columnWidths[i]; }
+        contentStream.stroke();
+        cursorX = MARGIN_LEFT;
+        for (int i = 0; i < headers.length; i++) {
+            contentStream.beginText(); contentStream.setFont(FONT_BOLD, 7.5f); contentStream.setNonStrokingColor(0.33f, 0.33f, 0.33f);
+            contentStream.newLineAtOffset(cursorX + (columnWidths[i] - textWidth(headers[i], 7.5f)) / 2, cursorY - rowHeight + 4); contentStream.showText(headers[i]); contentStream.endText();
+            cursorX += columnWidths[i];
         }
-        cs.setNonStrokingColor(0, 0, 0);
-        return y - rh;
+        contentStream.setNonStrokingColor(0, 0, 0);
+        return cursorY - rowHeight;
     }
 
-    private float drawTableRow(PDPageContentStream cs, InspectionRow row, float y, float[] cw, List<Integer> refs) throws IOException {
-        float x = ML;
-        String txt = nn(row.getText());
-        float rh = Math.max(18, txt.length() > 60 ? 18 + (txt.length() / 60) * 10 : 18);
-        cs.setStrokingColor(0.74f, 0.74f, 0.74f); cs.setLineWidth(0.5f);
-        for (int i = 0; i < cw.length; i++) { cs.addRect(x, y - rh, cw[i], rh); x += cw[i]; }
-        cs.stroke();
-        x = ML;
+    private float drawTableRow(PDPageContentStream contentStream, InspectionRow row, float cursorY, float[] columnWidths, List<Integer> refs) throws IOException {
+        float cursorX = MARGIN_LEFT;
+        String text = nullToEmpty(row.getText());
+        float rowHeight = Math.max(18, text.length() > 60 ? 18 + (text.length() / 60) * 10 : 18);
+        contentStream.setStrokingColor(0.74f, 0.74f, 0.74f); contentStream.setLineWidth(0.5f);
+        for (int i = 0; i < columnWidths.length; i++) { contentStream.addRect(cursorX, cursorY - rowHeight, columnWidths[i], rowHeight); cursorX += columnWidths[i]; }
+        contentStream.stroke();
+        cursorX = MARGIN_LEFT;
 
-        cs.beginText(); cs.setFont(FONT, 8.5f); cs.newLineAtOffset(x + 3, y - 12); cs.showText(nn(row.getDetail())); cs.endText();
-        x += cw[0];
+        contentStream.beginText(); contentStream.setFont(FONT, 8.5f); contentStream.newLineAtOffset(cursorX + 3, cursorY - 12); contentStream.showText(nullToEmpty(row.getDetail())); contentStream.endText();
+        cursorX += columnWidths[0];
 
-        cs.beginText(); cs.setFont(FONT, 8.5f); cs.setLeading(10); cs.newLineAtOffset(x + 3, y - 12);
-        float lw = 0;
-        for (String w : txt.split(" ")) {
-            float ww = sw(w + " ", 8.5f);
-            if (lw + ww > cw[1] - 6) { cs.newLine(); lw = 0; }
-            cs.showText(w + " "); lw += ww;
+        contentStream.beginText(); contentStream.setFont(FONT, 8.5f); contentStream.setLeading(10); contentStream.newLineAtOffset(cursorX + 3, cursorY - 12);
+        float lineWidth = 0;
+        for (String word : text.split(" ")) {
+            float wordWidth = textWidth(word + " ", 8.5f);
+            if (lineWidth + wordWidth > columnWidths[1] - 6) { contentStream.newLine(); lineWidth = 0; }
+            contentStream.showText(word + " "); lineWidth += wordWidth;
         }
-        cs.endText();
-        x += cw[1];
+        contentStream.endText();
+        cursorX += columnWidths[1];
 
         String circled = refs.stream().map(this::circled).collect(Collectors.joining(" "));
-        cs.beginText(); cs.setFont(FONT, 8); cs.newLineAtOffset(x + (cw[2] - sw(circled, 8)) / 2, y - 12); cs.showText(circled); cs.endText();
-        x += cw[2];
+        contentStream.beginText(); contentStream.setFont(FONT, 8); contentStream.newLineAtOffset(cursorX + (columnWidths[2] - textWidth(circled, 8)) / 2, cursorY - 12); contentStream.showText(circled); contentStream.endText();
+        cursorX += columnWidths[2];
 
-        String st = row.getStatus() != null ? row.getStatus() : "";
+        String status = row.getStatus() != null ? row.getStatus() : "";
         String[] statusKeys = {"new", "normal", "defect", "missing"};
         for (int i = 0; i < statusKeys.length; i++) {
-            if (statusKeys[i].equals(st)) {
-                cs.setLineWidth(1.2f);
-                float cx = x + cw[3] / 2, cy = y - 8;
-                cs.moveTo(cx - 3, cy - 1); cs.lineTo(cx, cy + 3); cs.lineTo(cx + 4, cy - 3);
-                cs.stroke();
+            if (statusKeys[i].equals(status)) {
+                contentStream.setLineWidth(1.2f);
+                float checkCenterX = cursorX + columnWidths[3] / 2, checkCenterY = cursorY - 8;
+                contentStream.moveTo(checkCenterX - 3, checkCenterY - 1); contentStream.lineTo(checkCenterX, checkCenterY + 3); contentStream.lineTo(checkCenterX + 4, checkCenterY - 3);
+                contentStream.stroke();
             }
-            x += cw[3];
+            cursorX += columnWidths[3];
         }
 
-        cs.beginText(); cs.setFont(FONT, 8.5f); cs.newLineAtOffset(x + 3, y - 12); cs.showText(nn(row.getCostShare())); cs.endText();
-        return y - rh;
+        contentStream.beginText(); contentStream.setFont(FONT, 8.5f); contentStream.newLineAtOffset(cursorX + 3, cursorY - 12); contentStream.showText(nullToEmpty(row.getCostShare())); contentStream.endText();
+        return cursorY - rowHeight;
     }
 
     @SuppressWarnings("unchecked")
-    private float drawConfirmations(PDPageContentStream cs, Inspection i, float y, PdfLabels labels) throws IOException {
-        cs.beginText(); cs.setFont(FONT_BOLD, 11); cs.newLineAtOffset(ML, y); cs.showText(labels.get("confirmations")); cs.endText();
-        y -= 16;
-        if (i.getConfirmationsJson() != null && !i.getConfirmationsJson().isEmpty()) {
+    private float drawConfirmations(PDPageContentStream contentStream, Inspection inspection, float cursorY, PdfLabels labels) throws IOException {
+        contentStream.beginText(); contentStream.setFont(FONT_BOLD, 11); contentStream.newLineAtOffset(MARGIN_LEFT, cursorY); contentStream.showText(labels.get("confirmations")); contentStream.endText();
+        cursorY -= 16;
+        if (inspection.getConfirmationsJson() != null && !inspection.getConfirmationsJson().isEmpty()) {
             try {
-                List<String> confs = new tools.jackson.databind.ObjectMapper().readValue(i.getConfirmationsJson(), List.class);
-                cs.beginText(); cs.setFont(FONT, 9); cs.setLeading(13); cs.newLineAtOffset(ML, y);
-                for (String c : confs) { cs.showText("\u2022 " + c); cs.newLine(); y -= 13; }
-                cs.endText();
+                List<String> confirmations = new tools.jackson.databind.ObjectMapper().readValue(inspection.getConfirmationsJson(), List.class);
+                contentStream.beginText(); contentStream.setFont(FONT, 9); contentStream.setLeading(13); contentStream.newLineAtOffset(MARGIN_LEFT, cursorY);
+                for (String confirmation : confirmations) { contentStream.showText("\u2022 " + confirmation); contentStream.newLine(); cursorY -= 13; }
+                contentStream.endText();
             } catch (Exception ignored) {}
         }
-        return y;
+        return cursorY;
     }
 
     @SuppressWarnings("unchecked")
-    private List<Map<String, String>> parseSignatures(Inspection i) {
+    private List<Map<String, String>> parseSignatures(Inspection inspection) {
         List<Map<String, String>> sigs = new ArrayList<>();
-        if (i.getSignaturesJson() != null && !i.getSignaturesJson().isEmpty()) {
+        if (inspection.getSignaturesJson() != null && !inspection.getSignaturesJson().isEmpty()) {
             try {
-                sigs.addAll(new tools.jackson.databind.ObjectMapper().readValue(i.getSignaturesJson(), List.class));
+                sigs.addAll(new tools.jackson.databind.ObjectMapper().readValue(inspection.getSignaturesJson(), List.class));
             } catch (Exception ignored) {}
         }
         return sigs;
     }
 
-    private void validateSignatures(Inspection i) {
-        List<Map<String, String>> sigs = parseSignatures(i);
+    private void validateSignatures(Inspection inspection) {
+        List<Map<String, String>> sigs = parseSignatures(inspection);
         if (sigs.isEmpty()) {
             throw new IllegalStateException("Signatures are required before generating the PDF");
         }
-        for (int n = 0; n < sigs.size(); n++) {
-            String sig = sigs.get(n).get("signature");
+        for (int index = 0; index < sigs.size(); index++) {
+            String sig = sigs.get(index).get("signature");
             if (sig == null || sig.isBlank() || !sig.startsWith("data:image/")) {
                 throw new IllegalStateException("All signatures must be drawn before generating the PDF");
             }
         }
     }
 
-    private void drawSignatures(PDDocument doc, List<PDPage> pages, Inspection i, float y, PdfLabels labels) throws IOException {
-        List<Map<String, String>> sigs = parseSignatures(i);
+    private void drawSignatures(PDDocument doc, List<PDPage> pages, Inspection inspection, float cursorY, PdfLabels labels) throws IOException {
+        List<Map<String, String>> sigs = parseSignatures(inspection);
         if (sigs.isEmpty()) {
-            sigs.add(hm("role", "Moving in tenant"));
-            sigs.add(hm("role", "admin"));
+            sigs.add(singletonMap("role", "Moving in tenant"));
+            sigs.add(singletonMap("role", "admin"));
         }
 
-        float half = CW / 2;
-        float blockH = 74;
+        float halfContentWidth = CONTENT_WIDTH / 2;
+        float blockHeight = 74;
 
-        PDPageContentStream cs = new PDPageContentStream(doc, pages.get(pages.size() - 1),
+        PDPageContentStream contentStream = new PDPageContentStream(doc, pages.get(pages.size() - 1),
                 PDPageContentStream.AppendMode.APPEND, true, false);
-        cs.beginText(); cs.setFont(FONT_BOLD, 11); cs.newLineAtOffset(ML, y); cs.showText(labels.get("signatures")); cs.endText();
-        y -= 20;
+        contentStream.beginText(); contentStream.setFont(FONT_BOLD, 11); contentStream.newLineAtOffset(MARGIN_LEFT, cursorY); contentStream.showText(labels.get("signatures")); contentStream.endText();
+        cursorY -= 20;
 
-        for (int n = 0; n < sigs.size(); n++) {
-            if (n % 2 == 0 && n > 0 && y - blockH < MB + 40) {
-                y = addPage(doc, pages, cs);
-                cs = new PDPageContentStream(doc, pages.get(pages.size() - 1),
+        for (int index = 0; index < sigs.size(); index++) {
+            if (index % 2 == 0 && index > 0 && cursorY - blockHeight < MARGIN_BOTTOM + 40) {
+                cursorY = addPage(doc, pages, contentStream);
+                contentStream = new PDPageContentStream(doc, pages.get(pages.size() - 1),
                         PDPageContentStream.AppendMode.APPEND, true, false);
             }
-            Map<String, String> s = sigs.get(n);
-            float sx = ML + (n % 2) * half;
-            String role = s.getOrDefault("role", "");
-            String name = s.getOrDefault("name", "");
-            String city = s.getOrDefault("city", "");
+            Map<String, String> sig = sigs.get(index);
+            float signatureX = MARGIN_LEFT + (index % 2) * halfContentWidth;
+            String role = sig.getOrDefault("role", "");
+            String name = sig.getOrDefault("name", "");
+            String city = sig.getOrDefault("city", "");
             String info = String.join("  |  ", role, name, labels.get("cityPrefix") + " " + city);
-            List<String> infoLines = wrapText(info, 8.5f, half - 12);
-            cs.beginText(); cs.setFont(FONT, 8.5f); cs.setLeading(11);
-            cs.newLineAtOffset(sx, y);
-            for (String l : infoLines) { cs.showText(l); cs.newLine(); }
-            cs.endText();
-            float lineY = y - infoLines.size() * 11 - 4;
-            cs.setStrokingColor(0.74f, 0.74f, 0.74f); cs.setLineWidth(0.5f);
-            cs.moveTo(sx, lineY); cs.lineTo(sx + half - 20, lineY); cs.stroke();
-            drawSignatureImage(cs, doc, s.get("signature"), sx, lineY, half - 20, 30);
-            if (n % 2 == 1) y -= blockH;
+            List<String> infoLines = wrapText(info, 8.5f, halfContentWidth - 12);
+            contentStream.beginText(); contentStream.setFont(FONT, 8.5f); contentStream.setLeading(11);
+            contentStream.newLineAtOffset(signatureX, cursorY);
+            for (String line : infoLines) { contentStream.showText(line); contentStream.newLine(); }
+            contentStream.endText();
+            float signatureLineY = cursorY - infoLines.size() * 11 - 4;
+            contentStream.setStrokingColor(0.74f, 0.74f, 0.74f); contentStream.setLineWidth(0.5f);
+            contentStream.moveTo(signatureX, signatureLineY); contentStream.lineTo(signatureX + halfContentWidth - 20, signatureLineY); contentStream.stroke();
+            drawSignatureImage(contentStream, doc, sig.get("signature"), signatureX, signatureLineY, halfContentWidth - 20, 30);
+            if (index % 2 == 1) cursorY -= blockHeight;
         }
-        cs.close();
+        contentStream.close();
     }
 
-    private List<String> wrapText(String text, float size, float maxW) throws IOException {
+    private List<String> wrapText(String text, float size, float maxWidth) throws IOException {
         List<String> lines = new ArrayList<>();
         if (text == null || text.isEmpty()) return List.of("");
-        StringBuilder cur = new StringBuilder();
-        float w = 0;
+        StringBuilder currentLine = new StringBuilder();
+        float lineWidth = 0;
         for (String word : text.split(" ")) {
-            float ww = sw(word + " ", size);
-            if (w + ww > maxW && cur.length() > 0) {
-                lines.add(cur.toString().trim());
-                cur = new StringBuilder();
-                w = 0;
+            float wordWidth = textWidth(word + " ", size);
+            if (lineWidth + wordWidth > maxWidth && currentLine.length() > 0) {
+                lines.add(currentLine.toString().trim());
+                currentLine = new StringBuilder();
+                lineWidth = 0;
             }
-            cur.append(word).append(' ');
-            w += ww;
+            currentLine.append(word).append(' ');
+            lineWidth += wordWidth;
         }
-        if (cur.length() > 0) lines.add(cur.toString().trim());
+        if (currentLine.length() > 0) lines.add(currentLine.toString().trim());
         return lines.isEmpty() ? List.of("") : lines;
     }
 
-    private void drawSignatureImage(PDPageContentStream cs, PDDocument doc, String dataUrl, float x, float lineY, float maxW, float maxH) throws IOException {
+    private void drawSignatureImage(PDPageContentStream contentStream, PDDocument doc, String dataUrl, float cursorX, float baselineY, float maxWidth, float maxHeight) throws IOException {
         if (dataUrl == null || dataUrl.isBlank() || !dataUrl.startsWith("data:image/")) return;
-        int comma = dataUrl.indexOf(',');
-        if (comma < 0) return;
+        int commaIndex = dataUrl.indexOf(',');
+        if (commaIndex < 0) return;
         try {
-            byte[] bytes = Base64.getDecoder().decode(dataUrl.substring(comma + 1));
+            byte[] bytes = Base64.getDecoder().decode(dataUrl.substring(commaIndex + 1));
             PDImageXObject img = PDImageXObject.createFromByteArray(doc, bytes, "signature");
-            float scale = Math.min(maxW / img.getWidth(), maxH / img.getHeight());
-            float iw = img.getWidth() * scale;
-            float ih = img.getHeight() * scale;
-            cs.drawImage(img, x + (maxW - iw) / 2, lineY - ih, iw, ih);
+            float scale = Math.min(maxWidth / img.getWidth(), maxHeight / img.getHeight());
+            float imageWidth = img.getWidth() * scale;
+            float imageHeight = img.getHeight() * scale;
+            contentStream.drawImage(img, cursorX + (maxWidth - imageWidth) / 2, baselineY - imageHeight, imageWidth, imageHeight);
         } catch (Exception ignored) {}
     }
 
     private void drawFooter(PDDocument doc, List<PDPage> pages, PdfLabels labels) throws IOException {
         for (int i = 0; i < pages.size(); i++) {
-            PDPageContentStream fcs = new PDPageContentStream(doc, pages.get(i), PDPageContentStream.AppendMode.APPEND, true);
+            PDPageContentStream footerStream = new PDPageContentStream(doc, pages.get(i), PDPageContentStream.AppendMode.APPEND, true);
             String text = labels.get("page") + " " + (i + 1) + "/" + pages.size();
-            fcs.beginText(); fcs.setFont(FONT, 7); fcs.newLineAtOffset((PAGE_W - sw(text, 7)) / 2, 20); fcs.showText(text); fcs.endText();
-            fcs.close();
+            footerStream.beginText(); footerStream.setFont(FONT, 7); footerStream.newLineAtOffset((PAGE_W - textWidth(text, 7)) / 2, 20); footerStream.showText(text); footerStream.endText();
+            footerStream.close();
         }
     }
 
@@ -687,64 +687,64 @@ public class InspectionService {
         PDPage page = new PDPage(PDRectangle.A4);
         doc.addPage(page);
         pages.add(page);
-        PDPageContentStream cs = new PDPageContentStream(doc, page);
-        float y = PAGE_H - MT;
-        cs.beginText(); cs.setFont(FONT_BOLD, 16); cs.newLineAtOffset(ML, y); cs.showText(labels.get("photoIndex")); cs.endText();
-        y -= 30;
+        PDPageContentStream contentStream = new PDPageContentStream(doc, page);
+        float cursorY = PAGE_H - MARGIN_TOP;
+        contentStream.beginText(); contentStream.setFont(FONT_BOLD, 16); contentStream.newLineAtOffset(MARGIN_LEFT, cursorY); contentStream.showText(labels.get("photoIndex")); contentStream.endText();
+        cursorY -= 30;
 
-        for (PhotoEntry p : photos) {
-            if (y < 120) {
-                cs.close();
+        for (PhotoEntry photo : photos) {
+            if (cursorY < 120) {
+                contentStream.close();
                 page = new PDPage(PDRectangle.A4);
                 doc.addPage(page);
                 pages.add(page);
-                cs = new PDPageContentStream(doc, page);
-                y = PAGE_H - MT - 10;
+                contentStream = new PDPageContentStream(doc, page);
+                cursorY = PAGE_H - MARGIN_TOP - 10;
             }
-            float imgH = 0;
+            float imageHeight = 0;
             try {
-                Path imgPath = photoStorage.load(p.storedFileName);
+                Path imgPath = photoStorage.load(photo.storedFileName);
                 if (Files.exists(imgPath)) {
                     PDImageXObject img = PDImageXObject.createFromFileByContent(imgPath.toFile(), doc);
-                    float scale = Math.min(CW / img.getWidth(), (y - 60) / img.getHeight());
-                    float imgW = img.getWidth() * scale;
-                    imgH = img.getHeight() * scale;
-                    cs.drawImage(img, ML + (CW - imgW) / 2, y - imgH, imgW, imgH);
+                    float scale = Math.min(CONTENT_WIDTH / img.getWidth(), (cursorY - 60) / img.getHeight());
+                    float imageWidth = img.getWidth() * scale;
+                    imageHeight = img.getHeight() * scale;
+                    contentStream.drawImage(img, MARGIN_LEFT + (CONTENT_WIDTH - imageWidth) / 2, cursorY - imageHeight, imageWidth, imageHeight);
                 }
             } catch (Exception ignored) {}
-            String caption = "(" + p.id + ") " + p.section;
-            float capY = y - imgH - 14;
-            cs.beginText(); cs.setFont(FONT, 8);
-            cs.newLineAtOffset(ML + (CW - sw(caption, 8)) / 2, capY);
-            cs.showText(caption);
-            cs.endText();
-            y -= imgH + 24;
+            String caption = "(" + photo.id + ") " + photo.section;
+            float captionY = cursorY - imageHeight - 14;
+            contentStream.beginText(); contentStream.setFont(FONT, 8);
+            contentStream.newLineAtOffset(MARGIN_LEFT + (CONTENT_WIDTH - textWidth(caption, 8)) / 2, captionY);
+            contentStream.showText(caption);
+            contentStream.endText();
+            cursorY -= imageHeight + 24;
         }
-        cs.close();
+        contentStream.close();
     }
 
-    private String circled(int n) {
-        return "(" + n + ")";
+    private String circled(int index) {
+        return "(" + index + ")";
     }
 
-    private float sw(String text, float size) throws IOException {
+    private float textWidth(String text, float size) throws IOException {
         if (text == null || text.isEmpty()) return 0;
         return FONT.getStringWidth(text) / 1000f * size;
     }
 
-    private float swBold(String text, float size) throws IOException {
+    private float boldTextWidth(String text, float size) throws IOException {
         if (text == null || text.isEmpty()) return 0;
         return FONT_BOLD.getStringWidth(text) / 1000f * size;
     }
 
-    private String nn(String s) { return s != null ? s : ""; }
+    private String nullToEmpty(String text) { return text != null ? text : ""; }
 
-    private Map<String, String> hm(String k, String v) {
-        Map<String, String> m = new HashMap<>(); m.put(k, v); return m;
+    private Map<String, String> singletonMap(String key, String value) {
+        Map<String, String> map = new HashMap<>(); map.put(key, value); return map;
     }
 
     private static class PhotoEntry {
         int id; String section, detail, storedFileName;
-        PhotoEntry(int id, String s, String d, String f) { this.id = id; this.section = s; this.detail = d; this.storedFileName = f; }
+        PhotoEntry(int id, String section, String detail, String storedFileName) { this.id = id; this.section = section; this.detail = detail; this.storedFileName = storedFileName; }
     }
 }
