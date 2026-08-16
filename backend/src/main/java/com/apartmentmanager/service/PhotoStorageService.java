@@ -37,6 +37,17 @@ public class PhotoStorageService {
         return Paths.get(uploadDir).toAbsolutePath().normalize().resolve(fileName);
     }
 
+    public org.springframework.http.MediaType contentType(String fileName) {
+        String n = fileName == null ? "" : fileName.toLowerCase();
+        if (n.endsWith(".png")) return org.springframework.http.MediaType.IMAGE_PNG;
+        if (n.endsWith(".gif")) return org.springframework.http.MediaType.IMAGE_GIF;
+        if (n.endsWith(".webp")) return org.springframework.http.MediaType.parseMediaType("image/webp");
+        if (n.endsWith(".bmp")) return org.springframework.http.MediaType.parseMediaType("image/bmp");
+        if (n.endsWith(".avif")) return org.springframework.http.MediaType.parseMediaType("image/avif");
+        if (n.endsWith(".heic") || n.endsWith(".heif")) return org.springframework.http.MediaType.parseMediaType("image/heic");
+        return org.springframework.http.MediaType.IMAGE_JPEG;
+    }
+
     public void delete(String fileName) {
         try {
             Files.deleteIfExists(load(fileName));

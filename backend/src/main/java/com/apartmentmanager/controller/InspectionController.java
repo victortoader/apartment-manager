@@ -143,7 +143,7 @@ public class InspectionController {
             org.springframework.core.io.Resource resource = new org.springframework.core.io.UrlResource(filePath.toUri());
             if (resource.exists()) {
                 return ResponseEntity.ok()
-                        .contentType(org.springframework.http.MediaType.IMAGE_JPEG)
+                        .contentType(photoStorage.contentType(fileName))
                         .header(org.springframework.http.HttpHeaders.CONTENT_DISPOSITION, "inline")
                         .body(resource);
             }

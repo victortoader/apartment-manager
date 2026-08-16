@@ -53,6 +53,7 @@
     "deletePhoto": "Șterge",
     "deletePhotoConfirm": "Ștergeți această fotografie?",
     "noPhotos": "Nicio fotografie încă.",
+    "photoUploadError": "Încărcarea fotografiei a eșuat. Verificați dimensiunea fișierului și încercați din nou.",
     "deleteConfirm": "Ștergeți acest apartament?",
     "confirmPassword": "Confirmare parolă",
     "passwordPrompt": "Introduceți parola pentru a activa modul de gestionare.",

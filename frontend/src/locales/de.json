@@ -53,6 +53,7 @@
     "deletePhoto": "Löschen",
     "deletePhotoConfirm": "Dieses Foto löschen?",
     "noPhotos": "Noch keine Fotos.",
+    "photoUploadError": "Foto-Upload fehlgeschlagen. Prüfen Sie die Dateigröße und versuchen Sie es erneut.",
     "deleteConfirm": "Diese Wohnung löschen?",
     "confirmPassword": "Passwort bestätigen",
     "passwordPrompt": "Geben Sie Ihr Passwort ein, um den Verwaltungsmodus zu aktivieren.",

@@ -11,6 +11,7 @@ function ManagePhotos() {
   const navigate = useNavigate();
   const { authHeader } = useAuth();
   const [apartment, setApartment] = useState(null);
+  const [uploadError, setUploadError] = useState(null);
 
   useEffect(() => {
     fetchApartment();
@@ -25,34 +26,42 @@ function ManagePhotos() {
     }
   };
 
-  const handlePhotoUpload = async (file) => {
+  const handlePhotoUpload = async (event) => {
+    const file = event.target.files[0];
+    event.target.value = '';
+    setUploadError(null);
+    if (!file) return;
     const formData = new FormData();
     formData.append('file', file);
-    await fetch(`${API}/api/apartments/${id}/photos`, {
+    const res = await fetch(`${API}/api/apartments/${id}/photos`, {
       method: 'POST',
       headers: authHeader(),
       body: formData
     });
-    fetchApartment();
-  };
-
-  const handleDeletePhoto = async (fileName) => {
-    if (window.confirm(t('apartmentList.deletePhotoConfirm'))) {
-      await fetch(`${API}/api/apartments/${id}/photos/${encodeURIComponent(fileName)}`, {
-        method: 'DELETE',
-        headers: authHeader()
-      });
+    if (!res.ok) {
+      setUploadError(t('apartmentList.photoUploadError'));
+    } else {
       fetchApartment();
     }
   };
 
+  const handleDeletePhoto = async (fileName) => {
+    if (window.confirm(t('apartmentList.deletePhotoConfirm'))) {
+      const res = await fetch(`${API}/api/apartments/${id}/photos/${encodeURIComponent(fileName)}`, {
+        method: 'DELETE',
+        headers: authHeader()
+      });
+      if (res.ok) fetchApartment();
+    }
+  };
+
   const handleSetMainPhoto = async (fileName) => {
-    await fetch(`${API}/api/apartments/${id}/photos/main`, {
+    const res = await fetch(`${API}/api/apartments/${id}/photos/main`, {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json', ...authHeader() },
       body: JSON.stringify({ fileName })
     });
-    fetchApartment();
+    if (res.ok) fetchApartment();
   };
 
   if (!apartment) return <div className="app"><p>{t('loading')}</p></div>;
@@ -69,9 +78,11 @@ function ManagePhotos() {
           <h2>{t('apartmentList.managePhotos')}</h2>
           <label className="btn-upload">
             {t('apartmentList.addPhoto')}
-            <input type="file" accept="image/*" hidden onChange={(e) => handlePhotoUpload(e.target.files[0])} />
+            <input type="file" accept="image/*" hidden onChange={handlePhotoUpload} />
           </label>
         </div>
+
+        {uploadError && <p className="login-error">{uploadError}</p>}
 
         {apartment.photoPaths && apartment.photoPaths.length > 0 ? (
           <div className="photo-manager-list">

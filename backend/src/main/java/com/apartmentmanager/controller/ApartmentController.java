@@ -167,7 +167,7 @@ public class ApartmentController {
             Resource resource = new UrlResource(filePath.toUri());
             if (resource.exists()) {
                 return ResponseEntity.ok()
-                        .contentType(MediaType.IMAGE_JPEG)
+                        .contentType(photoStorageService.contentType(fileName))
                         .header(HttpHeaders.CONTENT_DISPOSITION, "inline")
                         .body(resource);
             }
