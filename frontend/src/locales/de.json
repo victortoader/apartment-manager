@@ -233,7 +233,36 @@
     "downloadPhotos": "Fotos herunterladen",
     "downloadingPhotos": "Lade herunter...",
     "downloadPhotosFailed": "Foto-Download fehlgeschlagen",
-    "createNew": "Neues Protokoll"
+    "createNew": "Neues Protokoll",
+    "pdf": {
+      "datePrefix": "vom",
+      "outTenant": "Ausziehender Mieter",
+      "inTenant": "Einziehender Mieter",
+      "firstName": "Vorname",
+      "name": "Name",
+      "address": "Adresse",
+      "postalCode": "PLZ",
+      "city": "Ort",
+      "phone": "Telefon",
+      "email": "E-Mail",
+      "property": "Liegenschaft",
+      "objectNumber": "Objekt-Nr.",
+      "rentalObject": "Mietobjekt",
+      "incomingParty": "Einziehende Partei",
+      "detail": "Detail",
+      "text": "Text",
+      "photos": "Bilder",
+      "new": "Neu",
+      "normal": "Normal",
+      "defect": "Mangel",
+      "missing": "Fehlt",
+      "costShare": "Kostenanteil",
+      "confirmations": "Bestaetigungen",
+      "signatures": "Unterschriften",
+      "cityPrefix": "Ort:",
+      "page": "Seite",
+      "photoIndex": "Bildverzeichnis"
+    }
   },
 
   "auditLog": {

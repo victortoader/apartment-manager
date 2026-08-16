@@ -233,7 +233,36 @@
     "downloadPhotos": "Télécharger les photos",
     "downloadingPhotos": "Téléchargement...",
     "downloadPhotosFailed": "Échec du téléchargement des photos",
-    "createNew": "Nouvelle inspection"
+    "createNew": "Nouvelle inspection",
+    "pdf": {
+      "datePrefix": "du",
+      "outTenant": "Locataire sortant",
+      "inTenant": "Locataire entrant",
+      "firstName": "Prénom",
+      "name": "Nom",
+      "address": "Adresse",
+      "postalCode": "Code postal",
+      "city": "Ville",
+      "phone": "Téléphone",
+      "email": "Email",
+      "property": "Bien",
+      "objectNumber": "N° objet",
+      "rentalObject": "Objet loué",
+      "incomingParty": "Partie entrante",
+      "detail": "Détail",
+      "text": "Texte",
+      "photos": "Photos",
+      "new": "Neuf",
+      "normal": "Normal",
+      "defect": "Défaut",
+      "missing": "Manquant",
+      "costShare": "Quote-part",
+      "confirmations": "Confirmations",
+      "signatures": "Signatures",
+      "cityPrefix": "Ville:",
+      "page": "Page",
+      "photoIndex": "Index des photos"
+    }
   },
 
   "auditLog": {

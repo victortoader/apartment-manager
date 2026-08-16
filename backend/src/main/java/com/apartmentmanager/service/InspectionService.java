@@ -253,15 +253,10 @@ public class InspectionService {
     }
 
     @Transactional
-    public HandoverProtocol generatePdf(Long inspectionId) throws IOException {
-        return generatePdf(inspectionId, "de");
-    }
-
-    @Transactional
-    public HandoverProtocol generatePdf(Long inspectionId, String lang) throws IOException {
+    public HandoverProtocol generatePdf(Long inspectionId, Map<String, String> labelMap) throws IOException {
         Inspection inspection = getById(inspectionId);
         validateSignatures(inspection);
-        PdfLabels labels = new PdfLabels(lang);
+        PdfLabels labels = new PdfLabels(labelMap);
 
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         try (PDDocument doc = new PDDocument()) {

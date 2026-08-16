@@ -382,7 +382,36 @@
     "downloadPhotos": "Download Photos",
     "downloadingPhotos": "Downloading...",
     "downloadPhotosFailed": "Photo download failed",
-    "createNew": "New Inspection"
+    "createNew": "New Inspection",
+    "pdf": {
+      "datePrefix": "on",
+      "outTenant": "Moving out Tenant",
+      "inTenant": "Moving in Tenant",
+      "firstName": "First Name",
+      "name": "Name",
+      "address": "Address",
+      "postalCode": "Postal Code",
+      "city": "City",
+      "phone": "Phone",
+      "email": "Email",
+      "property": "Property",
+      "objectNumber": "Object No.",
+      "rentalObject": "Rental Object",
+      "incomingParty": "Incoming Party",
+      "detail": "Detail",
+      "text": "Text",
+      "photos": "Photos",
+      "new": "New",
+      "normal": "Normal",
+      "defect": "Defect",
+      "missing": "Missing",
+      "costShare": "Cost share",
+      "confirmations": "Confirmations",
+      "signatures": "Signatures",
+      "cityPrefix": "City:",
+      "page": "Page",
+      "photoIndex": "Photo Index"
+    }
   },
 
   "auditLog": {

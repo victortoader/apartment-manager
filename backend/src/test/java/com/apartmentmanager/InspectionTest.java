@@ -25,8 +25,8 @@ class InspectionTest extends AbstractIntegrationTest {
     void saveAndGeneratePdf_succeeds() throws Exception {
         Apartment apt = createApartment("Inspection Apt");
 
-        String confirmationsJson = "[\\\"Schluessel erhalten\\\",\\\"Wassermesserstand notiert\\\"]";
-        String signaturesJson = "[{\\\"role\\\":\\\"Vermieter\\\",\\\"name\\\":\\\"Hans Vermieter\\\",\\\"city\\\":\\\"Berlin\\\",\\\"signature\\\":\\\"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==\\\"}]";
+        String confirmationsJson = jsonResource("inspections/confirmations.json");
+        String signaturesJson = jsonResource("inspections/signatures.json");
         String body = jsonResource("inspections/full-inspection.json").formatted(confirmationsJson, signaturesJson);
 
         var result = mockMvc.perform(post("/api/apartments/" + apt.getId() + "/inspections")
@@ -71,7 +71,7 @@ class InspectionTest extends AbstractIntegrationTest {
         mockMvc.perform(post("/api/apartments/" + apt.getId() + "/inspections")
                         .header("Authorization", bearer("admin"))
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content("{\"documentType\":\"Uebergabeprotokoll\",\"sections\":[]}"))
+                        .content(jsonResource("inspections/inspection-empty.json")))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").isNumber());
     }
@@ -83,7 +83,7 @@ class InspectionTest extends AbstractIntegrationTest {
         mockMvc.perform(post("/api/apartments/" + apt.getId() + "/inspections")
                         .header("Authorization", bearer("tenant"))
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content("{\"documentType\":\"Uebergabeprotokoll\"}"))
+                        .content(jsonResource("inspections/inspection-empty.json")))
                 .andExpect(status().isForbidden());
     }
 
@@ -134,8 +134,8 @@ class InspectionTest extends AbstractIntegrationTest {
     void generatePdf_containsFullFormStructure() throws Exception {
         Apartment apt = createApartment("Form Structure Apt");
 
-        String confirmationsJson = "[\\\"Schluessel erhalten\\\"]";
-        String signaturesJson = "[{\\\"role\\\":\\\"Vermieter\\\",\\\"name\\\":\\\"Hans Vermieter\\\",\\\"city\\\":\\\"Berlin\\\",\\\"signature\\\":\\\"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==\\\"}]";
+        String confirmationsJson = jsonResource("inspections/confirmations-single.json");
+        String signaturesJson = jsonResource("inspections/signatures.json");
         String body = jsonResource("inspections/full-inspection.json").formatted(confirmationsJson, signaturesJson);
 
         var res = mockMvc.perform(post("/api/apartments/" + apt.getId() + "/inspections")
@@ -145,8 +145,12 @@ class InspectionTest extends AbstractIntegrationTest {
                 .andExpect(status().isOk()).andReturn();
         Long inspectionId = objectMapper.readTree(res.getResponse().getContentAsString()).get("id").asLong();
 
+        String labelsJson = jsonResource("inspections/labels-de.json");
+
         mockMvc.perform(post("/api/inspections/" + inspectionId + "/generate")
-                        .header("Authorization", bearer("owner")))
+                        .header("Authorization", bearer("owner"))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(labelsJson))
                 .andExpect(status().isOk());
 
         HandoverProtocol protocol = protocolRepository.findByApartmentId(apt.getId()).get(0);
@@ -169,11 +173,11 @@ class InspectionTest extends AbstractIntegrationTest {
     }
 
     @Test
-    void generatePdf_withEnglishLang_usesEnglishLabels() throws Exception {
+    void generatePdf_withEnglishLabels_usesEnglishLabels() throws Exception {
         Apartment apt = createApartment("English Form Apt");
 
-        String confirmationsJson = "[\\\"Keys received\\\"]";
-        String signaturesJson = "[{\\\"role\\\":\\\"Landlord\\\",\\\"name\\\":\\\"Hans Vermieter\\\",\\\"city\\\":\\\"Berlin\\\",\\\"signature\\\":\\\"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==\\\"}]";
+        String confirmationsJson = jsonResource("inspections/confirmations-keys.json");
+        String signaturesJson = jsonResource("inspections/signatures-landlord.json");
         String body = jsonResource("inspections/full-inspection.json").formatted(confirmationsJson, signaturesJson);
 
         var res = mockMvc.perform(post("/api/apartments/" + apt.getId() + "/inspections")
@@ -183,9 +187,12 @@ class InspectionTest extends AbstractIntegrationTest {
                 .andExpect(status().isOk()).andReturn();
         Long inspectionId = objectMapper.readTree(res.getResponse().getContentAsString()).get("id").asLong();
 
+        String labelsJson = jsonResource("inspections/labels-en.json");
+
         mockMvc.perform(post("/api/inspections/" + inspectionId + "/generate")
                         .header("Authorization", bearer("owner"))
-                        .param("lang", "en"))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(labelsJson))
                 .andExpect(status().isOk());
 
         HandoverProtocol protocol = protocolRepository.findByApartmentId(apt.getId()).get(0);
@@ -233,13 +240,13 @@ class InspectionTest extends AbstractIntegrationTest {
         mockMvc.perform(post("/api/apartments/" + apt.getId() + "/inspections")
                         .header("Authorization", bearer("owner"))
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content("{\"documentType\":\"First\",\"sections\":[]}"))
+                        .content(jsonResource("inspections/inspection-empty.json")))
                 .andExpect(status().isOk());
 
         mockMvc.perform(post("/api/apartments/" + apt.getId() + "/inspections")
                         .header("Authorization", bearer("owner"))
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content("{\"documentType\":\"Second\",\"sections\":[]}"))
+                        .content(jsonResource("inspections/inspection-empty.json")))
                 .andExpect(status().isOk());
 
         mockMvc.perform(get("/api/apartments/" + apt.getId() + "/inspections")

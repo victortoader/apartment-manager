@@ -6,8 +6,14 @@ import SignaturePad from './SignaturePad';
 
 const API = process.env.REACT_APP_API_URL || '';
 
+const PDF_LABEL_KEYS = [
+  'datePrefix', 'outTenant', 'inTenant', 'firstName', 'name', 'address', 'postalCode', 'city', 'phone',
+  'email', 'property', 'objectNumber', 'rentalObject', 'incomingParty', 'detail', 'text', 'photos', 'new',
+  'normal', 'defect', 'missing', 'costShare', 'confirmations', 'signatures', 'cityPrefix', 'page', 'photoIndex'
+];
+
 function InspectionForm() {
-  const { t, i18n } = useTranslation();
+  const { t } = useTranslation();
   const { id, inspectionId } = useParams();
   const navigate = useNavigate();
   const { user, authHeader } = useAuth();
@@ -242,9 +248,12 @@ function InspectionForm() {
     setGenerating(true);
     const saved = await doSaveRef.current();
     if (!saved) { alert(t('inspection.saveFailed')); setGenerating(false); return; }
-    const res = await fetch(`${API}/api/inspections/${editId}/generate?lang=${encodeURIComponent(i18n.language)}`, {
+    const labels = {};
+    for (const k of PDF_LABEL_KEYS) labels[k] = t(`inspection.pdf.${k}`);
+    const res = await fetch(`${API}/api/inspections/${editId}/generate`, {
       method: 'POST',
-      headers: authHeader()
+      headers: { 'Content-Type': 'application/json', ...authHeader() },
+      body: JSON.stringify(labels)
     });
     if (res.ok) {
       const protocol = await res.json();
