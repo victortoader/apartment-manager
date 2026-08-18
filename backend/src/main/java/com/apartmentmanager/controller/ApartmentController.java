@@ -277,7 +277,7 @@ public class ApartmentController {
 
     @Audited(action = "PRESENTATION_UPDATED", message = "Updated presentation for apartment #{id}")
     @PutMapping("/{id}/presentation")
-    @PreAuthorize("hasRole('OWNER')")
+    @PreAuthorize("hasAnyRole('OWNER', 'ADMIN')")
     public ResponseEntity<String> updatePresentation(@PathVariable Long id, @RequestBody String content) {
         Apartment apartment = apartmentService.findById(id);
         apartment.setPresentation(content);
@@ -287,7 +287,7 @@ public class ApartmentController {
 
     @Audited(action = "APARTMENT_DETAILS_UPDATED", message = "Updated details for apartment #{id}")
     @PutMapping("/{id}/details")
-    @PreAuthorize("hasRole('OWNER')")
+    @PreAuthorize("hasAnyRole('OWNER', 'ADMIN')")
     public ResponseEntity<Apartment> updateDetails(@PathVariable Long id, @RequestBody java.util.Map<String, Object> body) {
         Apartment apartment = apartmentService.findById(id);
         if (body.containsKey("price")) {
