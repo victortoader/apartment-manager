@@ -359,6 +359,7 @@
   "application": {
     "yes": "Sì",
     "requiredFile": "Carica un documento",
+    "pdfOnly": "Sono consentiti solo file PDF",
     "noFormData": "Nessun dato del modulo disponibile",
     "section": {
       "property": "Dettagli della proprietà",
