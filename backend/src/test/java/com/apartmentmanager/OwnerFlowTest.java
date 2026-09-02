@@ -8,10 +8,15 @@ import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockMultipartFile;
 
 import static org.hamcrest.Matchers.*;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 class OwnerFlowTest extends AbstractIntegrationTest {
+
+    private static final byte[] PNG_BYTES = {
+        (byte) 0x89, 0x50, 0x4E, 0x47, 0x0D, 0x0A, 0x1A, 0x0A, 0, 0, 0, 13
+    };
 
     @Test
     void fullOwnerWorkflow() throws Exception {
@@ -30,7 +35,7 @@ class OwnerFlowTest extends AbstractIntegrationTest {
                 .andExpect(jsonPath("$.length()").value(greaterThanOrEqualTo(1)));
 
         MockMultipartFile photo = new MockMultipartFile(
-                "file", "owner_photo.jpg", "image/jpeg", "photo data".getBytes());
+                "file", "owner_photo.jpg", "image/jpeg", PNG_BYTES);
         mockMvc.perform(multipart("/api/apartments/" + created.getId() + "/photos").file(photo)
                         .header("Authorization", bearer("owner")))
                 .andExpect(status().isOk())
@@ -78,6 +83,6 @@ class OwnerFlowTest extends AbstractIntegrationTest {
                         .header("Authorization", bearer("owner")))
                 .andExpect(status().isNoContent());
 
-        assert apartmentRepository.findById(created.getId()).isEmpty();
+        assertTrue(apartmentRepository.findById(created.getId()).isEmpty(), "Apartment should be deleted");
     }
 }

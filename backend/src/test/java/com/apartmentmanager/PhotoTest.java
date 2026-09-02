@@ -6,11 +6,16 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.mock.web.MockMultipartFile;
 
+import static org.junit.jupiter.api.Assertions.*;
 import static org.hamcrest.Matchers.hasSize;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 class PhotoTest extends AbstractIntegrationTest {
+
+    private static final byte[] PNG_BYTES = {
+        (byte) 0x89, 0x50, 0x4E, 0x47, 0x0D, 0x0A, 0x1A, 0x0A, 0, 0, 0, 13
+    };
 
     private Apartment apt;
 
@@ -22,7 +27,7 @@ class PhotoTest extends AbstractIntegrationTest {
     @Test
     void uploadPhotoAsOwner_succeeds() throws Exception {
         MockMultipartFile file = new MockMultipartFile(
-                "file", "photo.jpg", "image/jpeg", "fake image content".getBytes());
+                "file", "photo.jpg", "image/jpeg", PNG_BYTES);
 
         mockMvc.perform(multipart("/api/apartments/" + apt.getId() + "/photos").file(file)
                         .header("Authorization", bearer("owner")))
@@ -33,7 +38,7 @@ class PhotoTest extends AbstractIntegrationTest {
     @Test
     void uploadPhotoAsAdmin_succeeds() throws Exception {
         MockMultipartFile file = new MockMultipartFile(
-                "file", "photo.png", "image/png", "fake image content".getBytes());
+                "file", "photo.png", "image/png", PNG_BYTES);
 
         mockMvc.perform(multipart("/api/apartments/" + apt.getId() + "/photos").file(file)
                         .header("Authorization", bearer("admin")))
@@ -47,7 +52,7 @@ class PhotoTest extends AbstractIntegrationTest {
         userRepository.save(tenant);
 
         MockMultipartFile file = new MockMultipartFile(
-                "file", "photo.jpg", "image/jpeg", "content".getBytes());
+                "file", "photo.jpg", "image/jpeg", PNG_BYTES);
 
         mockMvc.perform(multipart("/api/apartments/" + apt.getId() + "/photos").file(file)
                         .header("Authorization", bearer("tenant")))
@@ -62,7 +67,7 @@ class PhotoTest extends AbstractIntegrationTest {
 
         Apartment other = createApartment("Other Apt");
         MockMultipartFile file = new MockMultipartFile(
-                "file", "photo.jpg", "image/jpeg", "content".getBytes());
+                "file", "photo.jpg", "image/jpeg", PNG_BYTES);
 
         mockMvc.perform(multipart("/api/apartments/" + other.getId() + "/photos").file(file)
                         .header("Authorization", bearer("tenant")))
@@ -72,7 +77,7 @@ class PhotoTest extends AbstractIntegrationTest {
     @Test
     void getPhoto_isPublicEndpoint() throws Exception {
         MockMultipartFile file = new MockMultipartFile(
-                "file", "photo.jpg", "image/jpeg", "image bytes here".getBytes());
+                "file", "photo.jpg", "image/jpeg", PNG_BYTES);
 
         mockMvc.perform(multipart("/api/apartments/" + apt.getId() + "/photos").file(file)
                         .header("Authorization", bearer("owner")))
@@ -94,9 +99,9 @@ class PhotoTest extends AbstractIntegrationTest {
     @Test
     void uploadMultiplePhotos_allSaved() throws Exception {
         MockMultipartFile file1 = new MockMultipartFile(
-                "file", "photo1.jpg", "image/jpeg", "content1".getBytes());
+                "file", "photo1.jpg", "image/jpeg", PNG_BYTES);
         MockMultipartFile file2 = new MockMultipartFile(
-                "file", "photo2.png", "image/png", "content2".getBytes());
+                "file", "photo2.png", "image/png", PNG_BYTES);
 
         mockMvc.perform(multipart("/api/apartments/" + apt.getId() + "/photos").file(file1)
                         .header("Authorization", bearer("owner")))
@@ -107,6 +112,16 @@ class PhotoTest extends AbstractIntegrationTest {
                 .andExpect(status().isOk());
 
         Apartment updated = apartmentRepository.findById(apt.getId()).orElseThrow();
-        assert updated.getPhotoPaths().size() == 2;
+        assertEquals(2, updated.getPhotoPaths().size(), "Expected 2 photos to be saved");
+    }
+
+    @Test
+    void uploadNonImageFile_rejected() throws Exception {
+        MockMultipartFile file = new MockMultipartFile(
+                "file", "evil.txt", "text/plain", "this is not an image".getBytes());
+
+        mockMvc.perform(multipart("/api/apartments/" + apt.getId() + "/photos").file(file)
+                        .header("Authorization", bearer("owner")))
+                .andExpect(status().isBadRequest());
     }
 }

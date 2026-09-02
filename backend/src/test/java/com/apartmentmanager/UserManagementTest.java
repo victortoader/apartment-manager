@@ -6,6 +6,7 @@ import com.apartmentmanager.model.User;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.MediaType;
 
+import static org.junit.jupiter.api.Assertions.*;
 import static org.hamcrest.Matchers.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -46,9 +47,9 @@ class UserManagementTest extends AbstractIntegrationTest {
                 .andExpect(jsonPath("$.role").value("TENANT"))
                 .andExpect(jsonPath("$.password").doesNotExist());
 
-        assert userRepository.findByUsername("newuser").isPresent();
+        assertTrue(userRepository.findByUsername("newuser").isPresent(), "User should be created");
         User created = userRepository.findByUsername("newuser").orElseThrow();
-        assert created.getRole() == Role.TENANT;
+        assertEquals(Role.TENANT, created.getRole(), "New user should have TENANT role");
     }
 
     @Test
@@ -89,7 +90,7 @@ class UserManagementTest extends AbstractIntegrationTest {
                 .andExpect(jsonPath("$.role").value("ADMIN"));
 
         User created = userRepository.findByUsername("newadmin").orElseThrow();
-        assert created.getRole() == Role.ADMIN;
+        assertEquals(Role.ADMIN, created.getRole(), "New user should have ADMIN role");
     }
 
     @Test
@@ -105,8 +106,8 @@ class UserManagementTest extends AbstractIntegrationTest {
                 .andExpect(jsonPath("$.username").value("tenant"));
 
         User updated = userRepository.findByUsername("tenant").orElseThrow();
-        assert updated.getApartment() != null;
-        assert updated.getApartment().getId().equals(apt.getId());
+        assertNotNull(updated.getApartment(), "Tenant should have an assigned apartment");
+        assertEquals(apt.getId(), updated.getApartment().getId(), "Apartment ID should match assignment");
     }
 
     @Test
@@ -130,7 +131,7 @@ class UserManagementTest extends AbstractIntegrationTest {
                 .andExpect(jsonPath("$.email").value("new-tenant@example.com"));
 
         User updated = userRepository.findByUsername("tenant").orElseThrow();
-        assert "new-tenant@example.com".equals(updated.getEmail());
+        assertEquals("new-tenant@example.com", updated.getEmail(), "Email should be updated");
     }
 
     @Test
@@ -156,7 +157,7 @@ class UserManagementTest extends AbstractIntegrationTest {
                         .header("Authorization", bearer("owner")))
                 .andExpect(status().isNoContent());
 
-        assert userRepository.findByUsername("todelete").isEmpty();
+        assertTrue(userRepository.findByUsername("todelete").isEmpty(), "User should be deleted");
     }
 
     @Test

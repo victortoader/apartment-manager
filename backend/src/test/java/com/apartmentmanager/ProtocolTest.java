@@ -9,6 +9,7 @@ import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.web.servlet.MvcResult;
 import tools.jackson.databind.JsonNode;
 
+import static org.junit.jupiter.api.Assertions.*;
 import static org.hamcrest.Matchers.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -181,7 +182,7 @@ class ProtocolTest extends AbstractIntegrationTest {
                         .header("Authorization", bearer("owner")))
                 .andExpect(status().isNoContent());
 
-        assert protocolRepository.findById(protocolId).isEmpty();
+        assertTrue(protocolRepository.findById(protocolId).isEmpty(), "Protocol should be deleted");
     }
 
     @Test

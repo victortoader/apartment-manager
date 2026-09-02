@@ -233,7 +233,7 @@ public class InspectionService {
     @Transactional
     public InspectionRowPhoto uploadPhoto(Long rowId, MultipartFile file) throws IOException {
         InspectionRow row = rowRepository.findById(rowId).orElseThrow();
-        String storedName = photoStorage.store(file);
+        String storedName = photoStorage.storeImage(file);
         InspectionRowPhoto photo = new InspectionRowPhoto();
         photo.setStoredFileName(storedName);
         photo.setOriginalFileName(file.getOriginalFilename());
@@ -596,6 +596,15 @@ public class InspectionService {
             String sig = sigs.get(index).get("signature");
             if (sig == null || sig.isBlank() || !sig.startsWith("data:image/")) {
                 throw new IllegalStateException("All signatures must be drawn before generating the PDF");
+            }
+            int commaIndex = sig.indexOf(',');
+            if (commaIndex < 0) {
+                throw new IllegalStateException("Invalid signature data format");
+            }
+            try {
+                Base64.getDecoder().decode(sig.substring(commaIndex + 1));
+            } catch (IllegalArgumentException e) {
+                throw new IllegalStateException("Invalid signature image data");
             }
         }
     }

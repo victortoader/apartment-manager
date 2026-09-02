@@ -7,6 +7,7 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.MediaType;
 
+import static org.junit.jupiter.api.Assertions.*;
 import static org.hamcrest.Matchers.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -113,7 +114,8 @@ class ApartmentTest extends AbstractIntegrationTest {
                     .andExpect(jsonPath("$.description").value("Nice"))
                     .andExpect(jsonPath("$.location").value("Bucharest"));
 
-            assert apartmentRepository.findAll().stream().anyMatch(a -> a.getTitle().equals("New Apt"));
+            assertTrue(apartmentRepository.findAll().stream().anyMatch(a -> a.getTitle().equals("New Apt")),
+                "Apartment should be persisted");
         }
 
         @Test
@@ -150,7 +152,7 @@ class ApartmentTest extends AbstractIntegrationTest {
                             .header("Authorization", bearer("owner")))
                     .andExpect(status().isNoContent());
 
-            assert apartmentRepository.findById(apt1.getId()).isEmpty();
+            assertTrue(apartmentRepository.findById(apt1.getId()).isEmpty(), "Apartment should be deleted");
         }
 
         @Test

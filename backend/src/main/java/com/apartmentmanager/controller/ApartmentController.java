@@ -124,7 +124,7 @@ public class ApartmentController {
         }
 
         try {
-            String fileName = photoStorageService.store(file);
+            String fileName = photoStorageService.storeImage(file);
             Apartment apartment = apartmentService.findById(id);
             apartment.getPhotoPaths().add(fileName);
             apartmentService.save(apartment);

@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import tools.jackson.databind.JsonNode;
 
+import static org.junit.jupiter.api.Assertions.*;
 import static org.hamcrest.Matchers.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -60,8 +61,8 @@ class InspectionTest extends AbstractIntegrationTest {
                 .andExpect(header().string("Content-Type", "application/pdf"));
 
         Inspection saved = inspectionRepository.findById(inspectionId).orElseThrow();
-        assert saved.getGeneratedProtocolId() != null;
-        assert saved.getGeneratedProtocolId().equals(protocol.getId());
+        assertNotNull(saved.getGeneratedProtocolId(), "Inspection must have a generated protocol ID");
+        assertEquals(protocol.getId(), saved.getGeneratedProtocolId(), "Protocol ID must match the generated protocol");
     }
 
     @Test
@@ -122,7 +123,7 @@ class InspectionTest extends AbstractIntegrationTest {
 
         int sectionCount = objectMapper.readTree(updateResult.getResponse().getContentAsString())
                 .get("sections").size();
-        assert sectionCount == 2 : "Expected 2 sections after update, got " + sectionCount;
+        assertEquals(2, sectionCount, "Expected 2 sections after update");
 
         mockMvc.perform(post("/api/inspections/" + inspectionId + "/generate")
                         .header("Authorization", bearer("owner")))
@@ -161,14 +162,14 @@ class InspectionTest extends AbstractIntegrationTest {
 
         try (PDDocument doc = Loader.loadPDF(pdfBytes)) {
             String text = new PDFTextStripper().getText(doc);
-            assert text.contains("Ausziehender Mieter") : "PDF must contain the Moving out Tenant section";
-            assert text.contains("Einziehender Mieter") : "PDF must contain the Moving in Tenant section";
-            assert text.contains("Vorname") && text.contains("E-Mail") : "PDF must contain tenant fields";
-            assert text.contains("Test GmbH") && text.contains("Musterstr. 1") : "PDF must contain tenant data";
-            assert text.contains("Liegenschaft") : "PDF must contain property metadata";
-            assert text.contains("Wohnzimmer") && text.contains("Kueche") : "PDF must contain inspection sections";
-            assert text.contains("Bestaetigungen") : "PDF must contain confirmations";
-            assert text.contains("Unterschriften") : "PDF must contain signatures";
+            assertTrue(text.contains("Ausziehender Mieter"), "PDF must contain the Moving out Tenant section");
+            assertTrue(text.contains("Einziehender Mieter"), "PDF must contain the Moving in Tenant section");
+            assertTrue(text.contains("Vorname") && text.contains("E-Mail"), "PDF must contain tenant fields");
+            assertTrue(text.contains("Test GmbH") && text.contains("Musterstr. 1"), "PDF must contain tenant data");
+            assertTrue(text.contains("Liegenschaft"), "PDF must contain property metadata");
+            assertTrue(text.contains("Wohnzimmer") && text.contains("Kueche"), "PDF must contain inspection sections");
+            assertTrue(text.contains("Bestaetigungen"), "PDF must contain confirmations");
+            assertTrue(text.contains("Unterschriften"), "PDF must contain signatures");
         }
     }
 
@@ -203,13 +204,46 @@ class InspectionTest extends AbstractIntegrationTest {
 
         try (PDDocument doc = Loader.loadPDF(pdfBytes)) {
             String text = new PDFTextStripper().getText(doc);
-            assert text.contains("Moving out Tenant") : "PDF must contain the English Moving out Tenant section";
-            assert text.contains("Moving in Tenant") : "PDF must contain the English Moving in Tenant section";
-            assert text.contains("First Name") && text.contains("Email") : "PDF must contain English tenant fields";
-            assert text.contains("Property") : "PDF must contain English property metadata";
-            assert text.contains("Confirmations") : "PDF must contain English confirmations";
-            assert text.contains("Signatures") : "PDF must contain English signatures";
-            assert text.contains("Page 1/") : "PDF must contain the English page footer";
+            assertTrue(text.contains("Moving out Tenant"), "PDF must contain the English Moving out Tenant section");
+            assertTrue(text.contains("Moving in Tenant"), "PDF must contain the English Moving in Tenant section");
+            assertTrue(text.contains("First Name") && text.contains("Email"), "PDF must contain English tenant fields");
+            assertTrue(text.contains("Property"), "PDF must contain English property metadata");
+            assertTrue(text.contains("Confirmations"), "PDF must contain English confirmations");
+            assertTrue(text.contains("Signatures"), "PDF must contain English signatures");
+            assertTrue(text.contains("Page 1/"), "PDF must contain the English page footer");
+        }
+    }
+
+    @Test
+    void generatePdf_withMissingLabels_usesDefaults() throws Exception {
+        Apartment apt = createApartment("Default Labels Apt");
+
+        String confirmationsJson = jsonResource("inspections/confirmations-single.json");
+        String signaturesJson = jsonResource("inspections/signatures.json");
+        String body = jsonResource("inspections/full-inspection.json").formatted(confirmationsJson, signaturesJson);
+
+        var res = mockMvc.perform(post("/api/apartments/" + apt.getId() + "/inspections")
+                        .header("Authorization", bearer("owner"))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(body))
+                .andExpect(status().isOk()).andReturn();
+        Long inspectionId = objectMapper.readTree(res.getResponse().getContentAsString()).get("id").asLong();
+
+        mockMvc.perform(post("/api/inspections/" + inspectionId + "/generate")
+                        .header("Authorization", bearer("owner")))
+                .andExpect(status().isOk());
+
+        HandoverProtocol protocol = protocolRepository.findByApartmentId(apt.getId()).get(0);
+        byte[] pdfBytes = mockMvc.perform(get("/api/apartments/protocols/" + protocol.getFileName())
+                        .header("Authorization", bearer("owner")))
+                .andExpect(status().isOk())
+                .andReturn().getResponse().getContentAsByteArray();
+
+        try (PDDocument doc = Loader.loadPDF(pdfBytes)) {
+            String text = new PDFTextStripper().getText(doc);
+            assertTrue(text.contains("Ausziehender Mieter"), "PDF should fall back to the default German label");
+            assertTrue(text.contains("Bestaetigungen"), "PDF should use the default confirmations label");
+            assertFalse(text.contains("photoIndex"), "PDF must not contain raw internal label keys");
         }
     }
 

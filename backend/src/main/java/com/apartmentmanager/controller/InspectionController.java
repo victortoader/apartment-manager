@@ -2,6 +2,7 @@ package com.apartmentmanager.controller;
 
 import com.apartmentmanager.model.*;
 import com.apartmentmanager.service.InspectionService;
+import com.apartmentmanager.service.PdfLabels;
 import com.apartmentmanager.service.PhotoStorageService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -113,6 +114,10 @@ public class InspectionController {
     public ResponseEntity<?> generatePdf(@PathVariable Long id,
                                          @RequestBody(required = false) Map<String, String> labels) {
         try {
+            if (labels != null) {
+                labels.keySet().removeIf(key -> !PdfLabels.isValidLabelKey(key));
+                labels.replaceAll((k, v) -> v != null && v.length() > 200 ? v.substring(0, 200) : v);
+            }
             HandoverProtocol protocol = inspectionService.generatePdf(id, labels);
             return ResponseEntity.ok(protocol);
         } catch (IllegalStateException e) {

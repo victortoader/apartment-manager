@@ -12,6 +12,10 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 class TenantFlowTest extends AbstractIntegrationTest {
 
+    private static final byte[] PNG_BYTES = {
+        (byte) 0x89, 0x50, 0x4E, 0x47, 0x0D, 0x0A, 0x1A, 0x0A, 0, 0, 0, 13
+    };
+
     @Test
     void fullTenantWorkflow() throws Exception {
         Apartment apt = createApartment("Tenant Workflow Apt");
@@ -38,7 +42,7 @@ class TenantFlowTest extends AbstractIntegrationTest {
                 .andExpect(jsonPath("$.tenant").value("tenant"));
 
         MockMultipartFile file = new MockMultipartFile(
-                "file", "my_photo.jpg", "image/jpeg", "content".getBytes());
+                "file", "my_photo.jpg", "image/jpeg", PNG_BYTES);
         mockMvc.perform(multipart("/api/apartments/" + apt.getId() + "/photos").file(file)
                         .header("Authorization", bearer("tenant")))
                 .andExpect(status().isOk());

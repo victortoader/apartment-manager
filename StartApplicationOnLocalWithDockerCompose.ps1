@@ -10,7 +10,9 @@ Start-Sleep -Seconds 3
 Write-Host "Ensuring uploads directory exists..."
 if (-not (Test-Path "backend\uploads")) { New-Item -ItemType Directory -Path "backend\uploads" | Out-Null }
 
-Write-Host "Starting backend..."
+Write-Host "Starting backend with Flight Recorder..."
+Remove-Item Env:JAVA_TOOL_OPTIONS -ErrorAction SilentlyContinue
+$env:GRADLE_OPTS = "-XX:StartFlightRecording=filename=backend-recording.jfr,disk=true,settings=default"
 $backend = Start-Process -NoNewWindow -PassThru -FilePath "cmd" -ArgumentList "/c .\gradlew.bat :backend:bootRun --args='--spring.profiles.active=postgres'"
 
 Write-Host "Waiting for backend to be ready..."
