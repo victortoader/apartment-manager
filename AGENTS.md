@@ -73,6 +73,7 @@ Full-stack apartment management portal with JWT-based role-based access control.
 - Document types: "bill" (red label) and "proof" (blue label, detected from payment keywords or negative amounts)
 - Bill list shows per-month balance (green=overpaid, red=unpaid)
 - Summary section below bill list: Total Bills, Total Paid, Balance
+- Photos are downscaled client-side (max 1920px longest side, JPEG q0.85) before upload via `frontend/src/imageUtils.js` (`prepareImage`); HEIC/HEIF from iPhones are converted in-browser via `heic2any`. Applied to apartment, inspection-row, and ticket photo uploads. PDF/protocol/bill document uploads are NOT resized.
 
 ## Environment Variables
 

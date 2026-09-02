@@ -3,6 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from './AuthContext';
 import SignaturePad from './SignaturePad';
+import { prepareImage } from './imageUtils';
 
 const API = process.env.REACT_APP_API_URL || '';
 
@@ -200,7 +201,14 @@ function InspectionForm() {
       if (!rowId) { alert(t('inspection.saveFailed')); return; }
     }
     const formData = new FormData();
-    formData.append('file', file);
+    let prepared;
+    try {
+      prepared = await prepareImage(file);
+    } catch (err) {
+      alert(t('apartmentList.photoUploadError'));
+      return;
+    }
+    formData.append('file', prepared);
     const res = await fetch(`${API}/api/inspections/rows/${rowId}/photos`, {
       method: 'POST',
       headers: authHeader(),

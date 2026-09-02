@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from './AuthContext';
+import { prepareImage } from './imageUtils';
 
 const API = process.env.REACT_APP_API_URL || '';
 
@@ -35,8 +36,15 @@ function ManagePhotos() {
     event.target.value = '';
     setUploadError(null);
     if (!file) return;
+    let prepared;
+    try {
+      prepared = await prepareImage(file);
+    } catch (err) {
+      setUploadError(t('apartmentList.photoUploadError'));
+      return;
+    }
     const formData = new FormData();
-    formData.append('file', file);
+    formData.append('file', prepared);
     try {
       const res = await fetch(`${API}/api/apartments/${id}/photos`, {
         method: 'POST',

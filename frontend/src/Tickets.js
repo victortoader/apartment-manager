@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from './AuthContext';
 import { useSearchParams } from 'react-router-dom';
+import { prepareImage } from './imageUtils';
 
 const API = process.env.REACT_APP_API_URL || '';
 
@@ -82,7 +83,13 @@ function Tickets() {
 
       for (const file of selectedFiles) {
         const formData = new FormData();
-        formData.append('file', file);
+        let prepared;
+        try {
+          prepared = await prepareImage(file);
+        } catch (err) {
+          continue;
+        }
+        formData.append('file', prepared);
         await fetch(`${API}/api/tickets/${ticket.id}/photos`, {
           method: 'POST',
           headers: authHeader(),
@@ -100,7 +107,14 @@ function Tickets() {
   const handlePhotoUpload = async (ticketId, file) => {
     if (!file) return;
     const formData = new FormData();
-    formData.append('file', file);
+    let prepared;
+    try {
+      prepared = await prepareImage(file);
+    } catch (err) {
+      alert(t('apartmentList.photoUploadError'));
+      return;
+    }
+    formData.append('file', prepared);
     const res = await fetch(`${API}/api/tickets/${ticketId}/photos`, {
       method: 'POST',
       headers: authHeader(),
