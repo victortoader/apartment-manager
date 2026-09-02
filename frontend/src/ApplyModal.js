@@ -104,8 +104,6 @@ const FIELDS = [
   { section: 'documents', name: 'Kopie des Ausländerausweises / ID', labelKey: 'application.doc.idCopy', type: 'checkbox' },
   { section: 'documents', name: 'Betreibungsauszug (max. 3 Monate alt)', labelKey: 'application.doc.debtExtract', type: 'checkbox' },
   { section: 'documents', name: 'Datum', labelKey: 'application.doc.date', type: 'date' },
-  { section: 'documents', name: 'Unterschrift Mietinteressent/in', labelKey: 'application.doc.signatureMain' },
-  { section: 'documents', name: 'Unterschrift Co-Mietinteressent/in', labelKey: 'application.doc.signatureCo' },
 ];
 
 function ApplyModal({ apartment, onClose, onSuccess }) {
@@ -129,6 +127,11 @@ function ApplyModal({ apartment, onClose, onSuccess }) {
     e.preventDefault();
     if (files.length === 0) {
       setError(t('application.requiredFile'));
+      return;
+    }
+    const nonPdf = files.find(f => f.type !== 'application/pdf');
+    if (nonPdf) {
+      setError(t('application.pdfOnly'));
       return;
     }
     setUploading(true);
@@ -222,7 +225,7 @@ function ApplyModal({ apartment, onClose, onSuccess }) {
                 )}
                 <label className="btn-upload large">
                   {files.length > 0 ? t('presentationList.addMoreFiles') : t('presentationList.chooseFile')}
-                  <input type="file" hidden multiple onChange={e => setFiles(prev => [...prev, ...Array.from(e.target.files)])} />
+                  <input type="file" hidden accept=".pdf" onChange={e => { const pdfs = Array.from(e.target.files).filter(f => f.type === 'application/pdf'); if (pdfs.length < e.target.files.length) { setError(t('application.pdfOnly')); } else { setError(''); } setFiles(prev => [...prev, ...pdfs]); }} />
                 </label>
               </div>
 

@@ -360,6 +360,7 @@
   "application": {
     "yes": "Oui",
     "requiredFile": "Veuillez télécharger un document",
+    "pdfOnly": "Seuls les fichiers PDF sont autorisés",
     "noFormData": "Aucune donnée de formulaire disponible",
     "section": {
       "property": "Détails de la propriété",

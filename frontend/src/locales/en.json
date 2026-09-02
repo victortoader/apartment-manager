@@ -207,6 +207,7 @@
   "application": {
     "yes": "Yes",
     "requiredFile": "Please upload a document",
+    "pdfOnly": "Only PDF files are allowed",
     "noFormData": "No form data available",
     "section": {
       "property": "Property Details",

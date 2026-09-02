@@ -360,6 +360,7 @@
   "application": {
     "yes": "Ja",
     "requiredFile": "Bitte laden Sie ein Dokument hoch",
+    "pdfOnly": "Nur PDF-Dateien sind erlaubt",
     "noFormData": "Keine Formulardaten verfügbar",
     "section": {
       "property": "Angaben zur Liegenschaft",

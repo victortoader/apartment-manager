@@ -360,6 +360,7 @@
   "application": {
     "yes": "Da",
     "requiredFile": "Vă rugăm să încărcați un document",
+    "pdfOnly": "Doar fișierele PDF sunt permise",
     "noFormData": "Nu există date de formular disponibile",
     "section": {
       "property": "Detalii proprietate",

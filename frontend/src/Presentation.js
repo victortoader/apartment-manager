@@ -8,7 +8,7 @@ function Presentation() {
   const { t } = useTranslation();
   const { id } = useParams();
   const { user } = useAuth();
-  const isOwner = user && user.role === 'OWNER';
+  const isOwner = user && (user.role === 'OWNER' || user.role === 'ADMIN');
   const [apt, setApt] = useState(null);
   const [content, setContent] = useState('');
   const [editing, setEditing] = useState(false);
