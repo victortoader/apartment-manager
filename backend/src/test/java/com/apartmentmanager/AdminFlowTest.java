@@ -13,6 +13,10 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 class AdminFlowTest extends AbstractIntegrationTest {
 
+    private static final byte[] PNG_BYTES = {
+        (byte) 0x89, 0x50, 0x4E, 0x47, 0x0D, 0x0A, 0x1A, 0x0A, 0, 0, 0, 13
+    };
+
     @Test
     void fullAdminWorkflow() throws Exception {
         mockMvc.perform(post("/api/apartments")
@@ -30,7 +34,7 @@ class AdminFlowTest extends AbstractIntegrationTest {
                 .andExpect(jsonPath("$", hasSize(greaterThanOrEqualTo(1))));
 
         MockMultipartFile photo = new MockMultipartFile(
-                "file", "admin_photo.jpg", "image/jpeg", "data".getBytes());
+                "file", "admin_photo.jpg", "image/jpeg", PNG_BYTES);
         mockMvc.perform(multipart("/api/apartments/" + created.getId() + "/photos").file(photo)
                         .header("Authorization", bearer("admin")))
                 .andExpect(status().isOk());

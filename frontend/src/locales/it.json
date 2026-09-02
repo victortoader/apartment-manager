@@ -53,6 +53,7 @@
     "deletePhoto": "Elimina",
     "deletePhotoConfirm": "Eliminare questa foto?",
     "noPhotos": "Ancora nessuna foto.",
+    "photoUploadError": "Caricamento foto non riuscito. Controlla le dimensioni del file e riprova.",
     "deleteConfirm": "Eliminare questo appartamento?",
     "confirmPassword": "Conferma password",
     "passwordPrompt": "Inserisci la tua password per attivare la modalità gestione.",

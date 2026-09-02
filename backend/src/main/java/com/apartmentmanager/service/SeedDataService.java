@@ -107,7 +107,7 @@ public class SeedDataService {
                 String fileName = UUID.randomUUID() + ".jpg";
                 Path filePath = uploadPath.resolve(fileName);
                 try {
-                    byte[] placeholder = createPlaceholderImage(ticket.getTitle() + " photo " + (i + 1));
+                    byte[] placeholder = createGradientImage(0x4285F4, 0x34A853);
                     Files.write(filePath, placeholder);
                 } catch (IOException e) {
                     continue;
@@ -125,35 +125,35 @@ public class SeedDataService {
         contactRepository.save(new Contact("Garden Maintenance", "+49 30 87654321", ap2));
         contactRepository.save(new Contact("Locksmith", "locks@berlin-housing.de", ap2));
 
-        int[][] ap1Colors = {
-            {0x42, 0x85, 0xF4}, {0x34, 0xA8, 0x53}, {0xFB, 0xBC, 0x05},
-            {0xEA, 0x43, 0x35}, {0x9C, 0x27, 0xB0}, {0x00, 0xBC, 0xD4},
-            {0xFF, 0x98, 0x00}, {0x79, 0x55, 0x48}, {0x60, 0x7D, 0x8B},
-            {0xE9, 0x1E, 0x63}
+        int[][] ap1Gradients = {
+            {0x667eea, 0x764ba2}, {0xf093fb, 0xf5576c}, {0x4facfe, 0x00f2fe},
+            {0x43e97b, 0x38f9d7}, {0xfa709a, 0xfee140}, {0xa18cd1, 0xfbc2eb},
+            {0xfbc2eb, 0xa6c1ee}, {0xfda085, 0xf6d365}, {0xf5576c, 0xff6a88},
+            {0x667eea, 0x764ba2}
         };
         for (int i = 0; i < 10; i++) {
             String fileName = UUID.randomUUID() + ".jpg";
             Path filePath = uploadPath.resolve(fileName);
             try {
-                byte[] placeholder = createSolidImage(ap1Colors[i][0], ap1Colors[i][1], ap1Colors[i][2], "Apt 1 - Photo " + (i + 1));
-                Files.write(filePath, placeholder);
+                byte[] img = createGradientImage(ap1Gradients[i][0], ap1Gradients[i][1]);
+                Files.write(filePath, img);
             } catch (IOException e) { continue; }
             ap1.getPhotoPaths().add(fileName);
         }
         apartmentService.save(ap1);
 
-        int[][] ap2Colors = {
-            {0x3F, 0x51, 0xB5}, {0x00, 0x96, 0x88}, {0x8B, 0xC3, 0x4A},
-            {0xFF, 0x57, 0x22}, {0x67, 0x3A, 0xB7}, {0x03, 0xA9, 0xF4},
-            {0xF4, 0x43, 0x36}, {0x00, 0xE6, 0x76}, {0xFF, 0xEB, 0x3B},
-            {0x21, 0x21, 0x21}
+        int[][] ap2Gradients = {
+            {0x11998e, 0x38ef7d}, {0x0cebeb, 0x20e3b2}, {0xfc5c7d, 0x6a82fb},
+            {0xee9ca7, 0xffdde1}, {0x2193b0, 0x6dd5ed}, {0x834d9b, 0xd04ed6},
+            {0xc94b4b, 0x4b134f}, {0x2b5876, 0x4e4376}, {0x00b09b, 0x96c93d},
+            {0xfc4a1a, 0xf7b733}
         };
         for (int i = 0; i < 10; i++) {
             String fileName = UUID.randomUUID() + ".jpg";
             Path filePath = uploadPath.resolve(fileName);
             try {
-                byte[] placeholder = createSolidImage(ap2Colors[i][0], ap2Colors[i][1], ap2Colors[i][2], "Apt 2 - Photo " + (i + 1));
-                Files.write(filePath, placeholder);
+                byte[] img = createGradientImage(ap2Gradients[i][0], ap2Gradients[i][1]);
+                Files.write(filePath, img);
             } catch (IOException e) { continue; }
             ap2.getPhotoPaths().add(fileName);
         }
@@ -170,18 +170,18 @@ public class SeedDataService {
         ap2.setPresentation("Charming garden apartment on the ground floor of a quiet residential building in Berlin-Charlottenburg. This 3-room apartment offers a private garden terrace, perfect for families or anyone who loves outdoor space.\n\nThe apartment has been tastefully renovated while preserving its original character. Features include a modern open kitchen, spacious living room with garden access, two bright bedrooms, and a separate dining area.\n\nThe building has a shared courtyard with children's play area and bike storage. Street parking is available with a resident permit.\n\nNearest transit: U3 Wilmersdorfer Straße (5 min walk), bus 109 direct to Kurfürstendamm. Close to Savignyplatz, Charlottenburg Palace, and KaDeWe.\n\nPets are welcome upon discussion.");
         ap2 = apartmentService.save(ap2);
 
-        int[][] ap3Colors = {
-            {0xFF, 0x70, 0x92}, {0x53, 0xBA, 0xED}, {0x6B, 0x4C, 0x9A},
-            {0x1C, 0xA3, 0xEC}, {0x2E, 0x7D, 0x32}, {0xD8, 0x1B, 0x60},
-            {0x00, 0x96, 0xD6}, {0x9E, 0x9E, 0x9E}, {0x7B, 0x1F, 0xA2},
-            {0xE6, 0x5C, 0x00}
+        int[][] ap3Gradients = {
+            {0x8e2de2, 0x4a00e0}, {0xf953c6, 0xb91d73}, {0x1a2a6c, 0xb21f1f},
+            {0x614385, 0x516395}, {0x02aab0, 0x00cdac}, {0xda22ff, 0x9733ee},
+            {0xf12711, 0xf5af19}, {0x16a085, 0xf4d03f}, {0xc31432, 0x240b36},
+            {0x7f00ff, 0xe100ff}
         };
         for (int i = 0; i < 10; i++) {
             String fileName = UUID.randomUUID() + ".jpg";
             Path filePath = uploadPath.resolve(fileName);
             try {
-                byte[] placeholder = createSolidImage(ap3Colors[i][0], ap3Colors[i][1], ap3Colors[i][2], "Apt 3 - Photo " + (i + 1));
-                Files.write(filePath, placeholder);
+                byte[] img = createGradientImage(ap3Gradients[i][0], ap3Gradients[i][1]);
+                Files.write(filePath, img);
             } catch (IOException e) { continue; }
             ap3.getPhotoPaths().add(fileName);
         }
@@ -219,19 +219,21 @@ public class SeedDataService {
             "EUR"));
     }
 
-    private byte[] createPlaceholderImage(String label) {
-        return createSolidImage(0x42, 0x85, 0xF4, label);
-    }
-
-    private byte[] createSolidImage(int r, int g, int b, String label) {
+    private byte[] createGradientImage(int color1, int color2) {
         int width = 640;
         int height = 480;
+        int r1 = (color1 >> 16) & 0xFF, g1 = (color1 >> 8) & 0xFF, b1 = color1 & 0xFF;
+        int r2 = (color2 >> 16) & 0xFF, g2 = (color2 >> 8) & 0xFF, b2 = color2 & 0xFF;
         byte[] pixels = new byte[width * height * 3];
 
         for (int y = 0; y < height; y++) {
+            double t = (double) y / (height - 1);
+            int r = (int) (r1 + (r2 - r1) * t);
+            int g = (int) (g1 + (g2 - g1) * t);
+            int b = (int) (b1 + (b2 - b1) * t);
             for (int x = 0; x < width; x++) {
                 int idx = (y * width + x) * 3;
-                pixels[idx]     = (byte) r;
+                pixels[idx] = (byte) r;
                 pixels[idx + 1] = (byte) g;
                 pixels[idx + 2] = (byte) b;
             }

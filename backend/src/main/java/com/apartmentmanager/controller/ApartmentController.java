@@ -124,7 +124,7 @@ public class ApartmentController {
         }
 
         try {
-            String fileName = photoStorageService.store(file);
+            String fileName = photoStorageService.storeImage(file);
             Apartment apartment = apartmentService.findById(id);
             apartment.getPhotoPaths().add(fileName);
             apartmentService.save(apartment);
@@ -167,7 +167,7 @@ public class ApartmentController {
             Resource resource = new UrlResource(filePath.toUri());
             if (resource.exists()) {
                 return ResponseEntity.ok()
-                        .contentType(MediaType.IMAGE_JPEG)
+                        .contentType(photoStorageService.contentType(fileName))
                         .header(HttpHeaders.CONTENT_DISPOSITION, "inline")
                         .body(resource);
             }

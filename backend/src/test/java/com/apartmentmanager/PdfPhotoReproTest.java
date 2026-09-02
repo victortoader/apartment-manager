@@ -22,6 +22,7 @@ import java.io.ByteArrayOutputStream;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
+import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -62,7 +63,7 @@ class PdfPhotoReproTest extends AbstractIntegrationTest {
                         .header("Authorization", bearer("owner")))
                 .andExpect(status().isOk());
 
-        assert photoRepository.count() >= 1 : "photo should be persisted";
+        assertTrue(photoRepository.count() >= 1, "photo should be persisted");
 
         mockMvc.perform(post("/api/inspections/" + inspectionId + "/generate")
                         .header("Authorization", bearer("owner")))
@@ -85,7 +86,7 @@ class PdfPhotoReproTest extends AbstractIntegrationTest {
                     }
                 }
             }
-            assert images >= 1 : "expected at least one embedded image in the PDF, got " + images;
+            assertTrue(images >= 1, "expected at least one embedded image in the PDF, got " + images);
         }
     }
 
@@ -124,9 +125,9 @@ class PdfPhotoReproTest extends AbstractIntegrationTest {
         var afterPut = mockMvc.perform(get("/api/inspections/" + inspectionId)
                         .header("Authorization", bearer("owner")))
                 .andExpect(status().isOk()).andReturn();
-        assert objectMapper.readTree(afterPut.getResponse().getContentAsString())
-                .get("sections").get(0).get("rows").get(0).get("photos").size() == 1
-                : "photo should be re-linked to the row after update";
+        assertEquals(1, objectMapper.readTree(afterPut.getResponse().getContentAsString())
+                .get("sections").get(0).get("rows").get(0).get("photos").size(),
+                "photo should be re-linked to the row after update");
 
         mockMvc.perform(post("/api/inspections/" + inspectionId + "/generate")
                         .header("Authorization", bearer("owner")))
@@ -148,7 +149,7 @@ class PdfPhotoReproTest extends AbstractIntegrationTest {
                     }
                 }
             }
-            assert images >= 1 : "expected image in PDF after frontend-style update, got " + images;
+            assertTrue(images >= 1, "expected image in PDF after frontend-style update, got " + images);
         }
     }
 
@@ -187,6 +188,6 @@ class PdfPhotoReproTest extends AbstractIntegrationTest {
                 entries++;
             }
         }
-        assert entries == 1 : "expected 1 photo in zip, got " + entries;
+        assertEquals(1, entries, "expected 1 photo in zip");
     }
 }

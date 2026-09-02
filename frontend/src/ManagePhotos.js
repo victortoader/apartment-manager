@@ -11,48 +11,72 @@ function ManagePhotos() {
   const navigate = useNavigate();
   const { authHeader } = useAuth();
   const [apartment, setApartment] = useState(null);
+  const [uploadError, setUploadError] = useState(null);
 
   useEffect(() => {
     fetchApartment();
   }, [id]);
 
   const fetchApartment = async () => {
-    const res = await fetch(`${API}/api/apartments/${id}`, { headers: authHeader() });
-    if (res.ok) {
-      setApartment(await res.json());
-    } else if (res.status === 403 || res.status === 404) {
-      navigate('/');
+    try {
+      const res = await fetch(`${API}/api/apartments/${id}`, { headers: authHeader() });
+      if (res.ok) {
+        setApartment(await res.json());
+      } else if (res.status === 403 || res.status === 404) {
+        navigate('/');
+      }
+    } catch (err) {
+      setUploadError(t('apartmentList.photoUploadError'));
     }
   };
 
-  const handlePhotoUpload = async (file) => {
+  const handlePhotoUpload = async (event) => {
+    const file = event.target.files[0];
+    event.target.value = '';
+    setUploadError(null);
+    if (!file) return;
     const formData = new FormData();
     formData.append('file', file);
-    await fetch(`${API}/api/apartments/${id}/photos`, {
-      method: 'POST',
-      headers: authHeader(),
-      body: formData
-    });
-    fetchApartment();
+    try {
+      const res = await fetch(`${API}/api/apartments/${id}/photos`, {
+        method: 'POST',
+        headers: authHeader(),
+        body: formData
+      });
+      if (res.ok) {
+        fetchApartment();
+      } else {
+        setUploadError(t('apartmentList.photoUploadError'));
+      }
+    } catch (err) {
+      setUploadError(t('apartmentList.photoUploadError'));
+    }
   };
 
   const handleDeletePhoto = async (fileName) => {
-    if (window.confirm(t('apartmentList.deletePhotoConfirm'))) {
-      await fetch(`${API}/api/apartments/${id}/photos/${encodeURIComponent(fileName)}`, {
+    if (!window.confirm(t('apartmentList.deletePhotoConfirm'))) return;
+    try {
+      const res = await fetch(`${API}/api/apartments/${id}/photos/${encodeURIComponent(fileName)}`, {
         method: 'DELETE',
         headers: authHeader()
       });
-      fetchApartment();
+      if (res.ok) fetchApartment();
+    } catch (err) {
+      setUploadError(t('apartmentList.photoUploadError'));
     }
   };
 
   const handleSetMainPhoto = async (fileName) => {
-    await fetch(`${API}/api/apartments/${id}/photos/main`, {
-      method: 'PUT',
-      headers: { 'Content-Type': 'application/json', ...authHeader() },
-      body: JSON.stringify({ fileName })
-    });
-    fetchApartment();
+    try {
+      const res = await fetch(`${API}/api/apartments/${id}/photos/main`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json', ...authHeader() },
+        body: JSON.stringify({ fileName })
+      });
+      if (res.ok) fetchApartment();
+    } catch (err) {
+      setUploadError(t('apartmentList.photoUploadError'));
+    }
   };
 
   if (!apartment) return <div className="app"><p>{t('loading')}</p></div>;
@@ -69,9 +93,11 @@ function ManagePhotos() {
           <h2>{t('apartmentList.managePhotos')}</h2>
           <label className="btn-upload">
             {t('apartmentList.addPhoto')}
-            <input type="file" accept="image/*" hidden onChange={(e) => handlePhotoUpload(e.target.files[0])} />
+            <input type="file" accept="image/*" hidden onChange={handlePhotoUpload} />
           </label>
         </div>
+
+        {uploadError && <p className="login-error">{uploadError}</p>}
 
         {apartment.photoPaths && apartment.photoPaths.length > 0 ? (
           <div className="photo-manager-list">

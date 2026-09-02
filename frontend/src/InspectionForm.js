@@ -246,24 +246,29 @@ function InspectionForm() {
     if (!editId) { alert(t('inspection.saveFirst')); return; }
     if (!signaturesComplete()) { alert(t('inspection.signaturesRequired')); return; }
     setGenerating(true);
-    const saved = await doSaveRef.current();
-    if (!saved) { alert(t('inspection.saveFailed')); setGenerating(false); return; }
-    const labels = {};
-    for (const k of PDF_LABEL_KEYS) labels[k] = t(`inspection.pdf.${k}`);
-    const res = await fetch(`${API}/api/inspections/${editId}/generate`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json', ...authHeader() },
-      body: JSON.stringify(labels)
-    });
-    if (res.ok) {
-      const protocol = await res.json();
-      setGeneratedProtocol(protocol);
-      alert(t('inspection.generated'));
-    } else {
-      const data = await res.json().catch(() => null);
-      alert(data?.error || t('inspection.generateFailed'));
+    try {
+      const saved = await doSaveRef.current();
+      if (!saved) { alert(t('inspection.saveFailed')); return; }
+      const labels = {};
+      for (const k of PDF_LABEL_KEYS) labels[k] = t(`inspection.pdf.${k}`);
+      const res = await fetch(`${API}/api/inspections/${editId}/generate`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', ...authHeader() },
+        body: JSON.stringify(labels)
+      });
+      if (res.ok) {
+        const protocol = await res.json();
+        setGeneratedProtocol(protocol);
+        alert(t('inspection.generated'));
+      } else {
+        const data = await res.json().catch(() => null);
+        alert(data?.error || t('inspection.generateFailed'));
+      }
+    } catch (err) {
+      alert(t('inspection.generateFailed'));
+    } finally {
+      setGenerating(false);
     }
-    setGenerating(false);
   };
 
   const handleDownloadPhotos = async () => {

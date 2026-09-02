@@ -54,6 +54,7 @@
     "deletePhoto": "Delete",
     "deletePhotoConfirm": "Delete this photo?",
     "noPhotos": "No photos yet.",
+    "photoUploadError": "Photo upload failed. Check the file size and try again.",
     "deleteConfirm": "Delete this apartment?",
     "confirmPassword": "Confirm Password",
     "passwordPrompt": "Enter your password to enable management mode.",
