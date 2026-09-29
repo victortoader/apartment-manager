@@ -2,3 +2,29 @@ plugins {
     id 'org.springframework.boot' version '4.1.0' apply false
     id 'io.spring.dependency-management' version '1.1.7' apply false
 }
+
+def npm = System.getProperty('os.name').toLowerCase().contains('windows') ? 'npm.cmd' : 'npm'
+
+tasks.register('e2eSetup', Exec) {
+    group = 'verification'
+    description = 'Installs frontend dependencies.'
+    workingDir 'frontend'
+    commandLine npm, 'ci'
+    inputs.file('frontend/package-lock.json')
+    outputs.dir('frontend/node_modules')
+}
+
+tasks.register('e2eBrowsers', Exec) {
+    group = 'verification'
+    description = 'Downloads the Playwright chromium browser.'
+    workingDir 'frontend'
+    commandLine npm, 'exec', '--', 'playwright', 'install', 'chromium'
+}
+
+tasks.register('e2e', Exec) {
+    group = 'verification'
+    description = 'Runs the Playwright e2e suite. Starts the backend and frontend automatically.'
+    dependsOn 'e2eSetup', 'e2eBrowsers'
+    workingDir 'frontend'
+    commandLine npm, 'run', 'test:e2e'
+}

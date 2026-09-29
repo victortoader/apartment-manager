@@ -90,27 +90,6 @@ jobs:
         working-directory: frontend
         run: npx playwright install --with-deps chromium
 
-      - name: Start backend
-        env:
-          DEFAULT_PASSWORD: ${{ secrets.DEFAULT_PASSWORD }}
-        run: |
-          ./gradlew :backend:bootRun --no-daemon > backend.log 2>&1 &
-          echo "Waiting for backend on :8080..."
-          for i in $(seq 1 300); do
-            code=$(curl -s -o /dev/null -w '%{http_code}' http://localhost:8080/api/auth/login || echo 000)
-            if [ "$code" != "000" ]; then
-              echo "Backend is up (HTTP $code)"
-              break
-            fi
-            sleep 1
-          done
-          code=$(curl -s -o /dev/null -w '%{http_code}' http://localhost:8080/api/auth/login || echo 000)
-          if [ "$code" = "000" ]; then
-            echo "Backend failed to start"
-            tail -200 backend.log
-            exit 1
-          fi
-
       - name: Run Playwright e2e tests
         working-directory: frontend
         env:
