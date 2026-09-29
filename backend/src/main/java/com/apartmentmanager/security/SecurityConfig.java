@@ -33,9 +33,11 @@ public class SecurityConfig {
         http
             .cors(cors -> cors.configurationSource(corsConfigurationSource()))
             .csrf(csrf -> csrf.disable())
+            .headers(headers -> headers.frameOptions(frame -> frame.disable()))
             .sessionManagement(sm -> sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             .authorizeHttpRequests(auth -> auth
                 .requestMatchers("/api/auth/login").permitAll()
+                .requestMatchers("/h2-console/**").permitAll()
                 .requestMatchers("/favicon.ico").permitAll()
                 .requestMatchers("/api/apartments/photos/**").permitAll()
                 .requestMatchers("/api/apartments/protocols/**").permitAll()
