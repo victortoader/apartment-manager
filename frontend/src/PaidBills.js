@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from './AuthContext';
 
@@ -15,6 +15,9 @@ const DOCUMENT_TYPES = [
   { key: 'bill', apiValue: 'bill' },
   { key: 'proof', apiValue: 'proof' }
 ];
+
+const OCR_POLL_MS = 2000;
+const OCR_POLL_MAX_MS = 210000;
 
 const BILL_TYPE_TO_KEY = Object.fromEntries(BILL_TYPES.map(bt => [bt.apiValue, bt.key]));
 
@@ -63,17 +66,46 @@ function PaidBills({ apartmentId }) {
   const [editingId, setEditingId] = useState(null);
   const [editAmount, setEditAmount] = useState('');
   const [editCurrency, setEditCurrency] = useState('');
+  const [ocrPending, setOcrPending] = useState(false);
+  const pollDeadlineRef = useRef(null);
+
+  const hasPendingOcr = (list) => list.some(b => b.extractedAmount == null && !b.ocrFailed);
 
   useEffect(() => { fetchBills(); }, [apartmentId]);
 
-  const fetchBills = async () => {
-    setLoading(true);
-    const res = await fetch(`${API}/api/apartments/${apartmentId}/bills`, { headers: authHeader() });
-    if (res.ok) {
-      const data = await res.json();
-      setBills(data);
+  useEffect(() => {
+    if (!ocrPending) {
+      pollDeadlineRef.current = null;
+      return;
     }
-    setLoading(false);
+    if (pollDeadlineRef.current == null) {
+      pollDeadlineRef.current = Date.now() + OCR_POLL_MAX_MS;
+    }
+    const id = setInterval(() => {
+      if (Date.now() > pollDeadlineRef.current) {
+        clearInterval(id);
+        setOcrPending(false);
+        return;
+      }
+      fetchBills(true);
+    }, OCR_POLL_MS);
+    return () => clearInterval(id);
+  }, [ocrPending, apartmentId]);
+
+  const fetchBills = async (silent = false) => {
+    if (!silent) setLoading(true);
+    try {
+      const res = await fetch(`${API}/api/apartments/${apartmentId}/bills`, { headers: authHeader() });
+      if (res.ok) {
+        const data = await res.json();
+        setBills(data);
+        setOcrPending(hasPendingOcr(data));
+      }
+    } catch (e) {
+      console.error('Fetch bills failed:', e);
+    } finally {
+      if (!silent) setLoading(false);
+    }
   };
 
   const handleUpload = async (file) => {
@@ -90,6 +122,7 @@ function PaidBills({ apartmentId }) {
     });
     setUploading(false);
     setShowForm(false);
+    pollDeadlineRef.current = null;
     fetchBills();
   };
 
