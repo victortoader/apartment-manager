@@ -101,6 +101,16 @@ cd backend
 
 All tests use H2 in-memory database (no external dependencies needed).
 
+### End-to-end tests (Playwright)
+
+```bash
+./gradlew e2e                 # e2e suite only
+./gradlew build               # backend tests + e2e suite
+./gradlew build -PskipE2e     # backend tests only
+```
+
+The Gradle `e2e` task installs the frontend dependencies, downloads the Chromium browser and boots the packaged backend automatically. Set `DEFAULT_PASSWORD` in the environment or in the root `.env` file. Add `skipE2e=true` to `~/.gradle/gradle.properties` to keep IDE builds fast.
+
 ## Deploy to EC2
 
 Deployment is automated via GitHub Actions. Pushing to `main` triggers the CI/CD pipeline which runs tests, builds the frontend, and deploys to EC2.

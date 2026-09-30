@@ -30,6 +30,31 @@ function resolveDefaultPassword() {
 
 resolveDefaultPassword();
 
+// When Gradle drives the suite it passes the packaged jar; running the suite directly
+// still falls back to booting the backend through Gradle.
+function backendWebServer() {
+  const jar = process.env.E2E_BACKEND_JAR;
+  const common = {
+    url: 'http://localhost:8080/api/auth/login',
+    reuseExistingServer: !process.env.CI,
+    timeout: 300000,
+    stdout: 'pipe',
+    stderr: 'pipe',
+  };
+  if (jar) {
+    return {
+      command: 'node scripts/start-backend.cjs',
+      cwd: __dirname,
+      ...common,
+    };
+  }
+  return {
+    command: `${gradle} :backend:bootRun --no-daemon`,
+    cwd: root,
+    ...common,
+  };
+}
+
 module.exports = defineConfig({
   testDir: './test/e2e',
   fullyParallel: true,
@@ -51,15 +76,7 @@ module.exports = defineConfig({
     },
   ],
   webServer: [
-    {
-      command: `${gradle} :backend:bootRun --no-daemon`,
-      url: 'http://localhost:8080/api/auth/login',
-      reuseExistingServer: !process.env.CI,
-      timeout: 300000,
-      cwd: root,
-      stdout: 'pipe',
-      stderr: 'pipe',
-    },
+    backendWebServer(),
     {
       command: 'npx react-scripts start',
       port: 3000,
