@@ -122,7 +122,10 @@ Full-stack apartment management portal with JWT-based role-based access control.
 - Test password constant: `TEST_PASSWORD` comes from the `DEFAULT_PASSWORD` env var; the Gradle `test` task sets it to a random value
 - Run: `./gradlew test` (from `backend/`)
 - E2E tests (`frontend/`) never hardcode the password; they require `DEFAULT_PASSWORD` env var and fail fast if unset. Run: `DEFAULT_PASSWORD=... npm run test:e2e` (from `frontend/`)
-- E2E tests run on CI via `.github/workflows/deploy.yaml` (needs the `DEFAULT_PASSWORD` repository secret)
+- `./gradlew build` / `./gradlew check` also run the e2e suite (root `check` depends on `e2e`); `./gradlew e2e` runs it alone
+- The Gradle `e2e` task boots the packaged backend from `backend/build/libs/*.jar` (via `frontend/scripts/start-backend.cjs`, using the Java 21 toolchain) so the suite never spawns a nested Gradle build
+- Skip e2e with `./gradlew build -PskipE2e` (or `-x e2e`); `-PskipE2e=false` forces it on. Put `skipE2e=true` in `~/.gradle/gradle.properties` to keep IDE builds fast
+- E2E tests run on CI via `.github/workflows/deploy.yaml` (needs the `DEFAULT_PASSWORD` repository secret). CI runs `npm run test:e2e` directly, not `./gradlew e2e`, because the runner needs `playwright install --with-deps`
 
 ## Important Notes
 

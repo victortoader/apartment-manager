@@ -1,9 +1,17 @@
 plugins {
+    id 'base'
     id 'org.springframework.boot' version '4.1.0' apply false
     id 'io.spring.dependency-management' version '1.1.7' apply false
 }
 
 def npm = System.getProperty('os.name').toLowerCase().contains('windows') ? 'npm.cmd' : 'npm'
+
+// Pass -PskipE2e to build without the e2e suite (useful for IDE builds or Java-only machines).
+// -PskipE2e=false forces it on even if skipE2e=true is set in ~/.gradle/gradle.properties.
+def e2eEnabled = {
+    def skip = project.findProperty('skipE2e')
+    skip == null || skip.toString().equalsIgnoreCase('false')
+}
 
 tasks.register('e2eSetup', Exec) {
     group = 'verification'
@@ -12,6 +20,7 @@ tasks.register('e2eSetup', Exec) {
     commandLine npm, 'ci'
     inputs.file('frontend/package-lock.json')
     outputs.dir('frontend/node_modules')
+    onlyIf e2eEnabled
 }
 
 tasks.register('e2eBrowsers', Exec) {
@@ -19,12 +28,36 @@ tasks.register('e2eBrowsers', Exec) {
     description = 'Downloads the Playwright chromium browser.'
     workingDir 'frontend'
     commandLine npm, 'exec', '--', 'playwright', 'install', 'chromium'
+    onlyIf e2eEnabled
 }
 
 tasks.register('e2e', Exec) {
     group = 'verification'
-    description = 'Runs the Playwright e2e suite. Starts the backend and frontend automatically.'
-    dependsOn 'e2eSetup', 'e2eBrowsers'
+    description = 'Runs the Playwright e2e suite. Starts the packaged backend and the frontend automatically.'
+    dependsOn 'e2eSetup', 'e2eBrowsers', ':backend:bootJar'
     workingDir 'frontend'
     commandLine npm, 'run', 'test:e2e'
+    onlyIf e2eEnabled
+}
+
+// The backend jar and its toolchain JDK let Playwright boot the backend without a nested Gradle build.
+// Resolved after ':backend' is evaluated, since the bootJar task only exists then.
+gradle.projectsEvaluated {
+    def backend = project(':backend')
+    def backendJar = backend.tasks.named('bootJar').get().archiveFile.get().asFile.absolutePath
+    def backendJavaHome = backend.extensions
+            .getByType(org.gradle.jvm.toolchain.JavaToolchainService)
+            .launcherFor { it.languageVersion = org.gradle.jvm.toolchain.JavaLanguageVersion.of(21) }
+            .map { it.metadata.installationPath.asFile.absolutePath }
+    tasks.named('e2e') {
+        environment 'E2E_BACKEND_JAR', backendJar
+        // Resolved at execution time so a build that skips e2e never triggers toolchain resolution.
+        doFirst {
+            environment 'E2E_BACKEND_JAVA_HOME', backendJavaHome.getOrNull() ?: ''
+        }
+    }
+}
+
+tasks.named('check') {
+    dependsOn 'e2e'
 }
