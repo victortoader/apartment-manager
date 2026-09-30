@@ -35,6 +35,8 @@ module.exports = defineConfig({
   fullyParallel: true,
   forbidOnly: !!process.env.CI,
   retries: process.env.CI ? 2 : 0,
+  failOnFlakyTests: !!process.env.CI,
+  globalTimeout: process.env.CI ? 45 * 60 * 1000 : undefined,
   workers: process.env.CI ? 2 : undefined,
   reporter: 'html',
   use: {
