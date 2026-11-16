@@ -130,3 +130,17 @@ Full-stack apartment management portal with JWT-based role-based access control.
 - Never commit/push without explicit user approval
 - OCR keywords are stored in `ocr_keywords` table, editable by OWNER via Manage section
 - `OcrKeywords` entity has 5 fields: language, amountKeywords, languageKeywords, paymentKeywords, defaultCurrency
+
+## Agent skills
+
+### Issue tracker
+
+Issues live as local markdown files under `.scratch/<feature>/`. See `docs/agents/issue-tracker.md`.
+
+### Triage labels
+
+Default five-role vocabulary (needs-triage, needs-info, ready-for-agent, ready-for-human, wontfix), recorded as a `Status:` line in each issue file. See `docs/agents/triage-labels.md`.
+
+### Domain docs
+
+Single-context: `GLOSSARY.md` + `docs/adr/` at the repo root (created lazily). See `docs/agents/domain.md`.
