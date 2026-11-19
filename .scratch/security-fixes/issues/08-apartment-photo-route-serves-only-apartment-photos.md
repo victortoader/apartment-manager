@@ -4,7 +4,7 @@
 
 **Blocked by:** None (can start immediately).
 
-**Status:** ready-for-agent
+**Status:** resolved
 
 Source: split from `01-public-file-routes.md`. See it for research details.
 
@@ -13,3 +13,7 @@ Source: split from `01-public-file-routes.md`. See it for research details.
 - [ ] Any name not listed as an apartment photo gets 404.
 - [ ] Existing tests that say the apartment photo link is public still pass.
 - [ ] Tests written first, failing on the current code.
+
+## Comments
+
+- 2026-11-19: Done. The apartment photo route serves only names in some apartment's photos (else 404); it stays public. Covered by `FileAccessTest` (tests written first; full backend suite and e2e suite green). Not committed yet.

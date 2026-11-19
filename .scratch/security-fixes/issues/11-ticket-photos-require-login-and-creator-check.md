@@ -4,7 +4,7 @@
 
 **Blocked by:** 10 (adds the shared frontend helper).
 
-**Status:** ready-for-agent
+**Status:** resolved
 
 Source: split from `01-public-file-routes.md`. See it for research details.
 
@@ -15,3 +15,7 @@ Source: split from `01-public-file-routes.md`. See it for research details.
 - [ ] The ticket photo link is no longer public in the security configuration. The existing test that says it is public is updated.
 - [ ] On the tickets page, both the photo thumbnail and its link use the shared helper and still work.
 - [ ] Tests written first, failing on the current code. Existing e2e coverage of ticket photos, if any, still passes.
+
+## Comments
+
+- 2026-11-19: Done. Ticket photos need a login, must be on a ticket (else 404), and a tenant sees only photos on tickets they created (else 403). The tickets page loads thumbnails and opens photos through `authFiles.js`. Covered by `FileAccessTest` (tests written first; full backend suite and e2e suite green). Not committed yet.
