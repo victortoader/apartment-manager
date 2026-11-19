@@ -82,7 +82,7 @@ function PaidBills({ apartmentId }) {
       pollDeadlineRef.current = Date.now() + OCR_POLL_MAX_MS;
     }
     const id = setInterval(() => {
-      if (Date.now() > pollDeadlineRef.current) {
+      if (pollDeadlineRef.current != null && Date.now() > pollDeadlineRef.current) {
         clearInterval(id);
         setOcrPending(false);
         return;
@@ -122,7 +122,9 @@ function PaidBills({ apartmentId }) {
     });
     setUploading(false);
     setShowForm(false);
-    pollDeadlineRef.current = null;
+    // Give the new upload a full polling window. Don't clear the deadline: if polling is already
+    // running, a cleared deadline used to make it stop at its next tick (Date.now() > null).
+    pollDeadlineRef.current = Date.now() + OCR_POLL_MAX_MS;
     fetchBills();
   };
 
