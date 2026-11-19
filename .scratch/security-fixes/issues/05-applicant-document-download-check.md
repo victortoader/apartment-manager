@@ -1,6 +1,6 @@
 # 05 - Restrict applicant document downloads to owner and admin
 
-Status: ready-for-agent
+Status: resolved
 
 Spec: `../spec.md`
 
@@ -22,3 +22,7 @@ Spec: `../spec.md`
 - Without a login → 401/403.
 
 Frontend: no change. `ApartmentApplications.js:142-145` and `ApartmentDetail.js:150-153` already send the token, and only owner/admin pages show applications.
+
+## Comments
+
+- 2026-11-19: Done. `GET /api/applications/files/{fileName}` is OWNER/ADMIN only and serves only names listed on an application (else 404). Covered by `FileAccessTest` (tests written first; full backend suite and e2e suite green). Not committed yet.

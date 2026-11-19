@@ -1,6 +1,6 @@
 # 04 - Restrict billing document downloads to the tenant's assigned apartment
 
-Status: ready-for-agent
+Status: resolved
 
 Spec: `../spec.md`
 
@@ -24,3 +24,7 @@ Side note found during research: `BillPaymentService` reads the upload folder fr
 - An admin downloads any billing document → 200.
 
 Frontend: no change. `PaidBills.js:134-137` already sends the token.
+
+## Comments
+
+- 2026-11-19: Done. `GET /api/bills/{fileName}` serves only registered billing documents (else 404); a tenant gets 403 outside their assigned apartment. Covered by `FileAccessTest` (tests written first; full backend suite and e2e suite green). Not committed yet.

@@ -4,7 +4,7 @@
 
 **Blocked by:** None (can start immediately).
 
-**Status:** ready-for-agent
+**Status:** resolved
 
 Source: split from `01-public-file-routes.md`. See it for research details.
 
@@ -13,3 +13,7 @@ Source: split from `01-public-file-routes.md`. See it for research details.
 - [ ] Deleting an inspection photo still works.
 - [ ] Downloading an inspection's photos as a zip still works.
 - [ ] Tests written first, failing on the current code.
+
+## Comments
+
+- 2026-11-19: Done. Removed `GET /api/inspections/photos/{fileName}` and its permitAll; DELETE on the same path and the zip download are unchanged. Covered by `FileAccessTest` (tests written first; full backend suite and e2e suite green). Not committed yet.

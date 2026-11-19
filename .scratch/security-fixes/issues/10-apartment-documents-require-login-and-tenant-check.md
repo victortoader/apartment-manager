@@ -4,7 +4,7 @@
 
 **Blocked by:** None (can start immediately).
 
-**Status:** ready-for-agent
+**Status:** resolved
 
 Source: split from `01-public-file-routes.md`. See it for research details.
 
@@ -16,3 +16,7 @@ Source: split from `01-public-file-routes.md`. See it for research details.
 - [ ] A shared frontend helper fetches a file with the login and gives the page a temporary link, which is released when no longer needed.
 - [ ] The protocol download on the apartment page uses the helper and still works.
 - [ ] Tests written first, failing on the current code. Existing e2e coverage of the protocol download, if any, still passes.
+
+## Comments
+
+- 2026-11-19: Done. Apartment documents need a login, must match a HandoverProtocol (else 404), and a tenant gets 403 outside their assigned apartment. Shared frontend helper `authFiles.js` added; the apartment page downloads documents through it. Covered by `FileAccessTest` (tests written first; full backend suite and e2e suite green). Not committed yet.
