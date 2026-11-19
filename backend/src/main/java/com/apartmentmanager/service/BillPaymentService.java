@@ -86,6 +86,11 @@ public class BillPaymentService {
         return bill;
     }
 
+    public BillPayment findById(Long id) {
+        return billPaymentRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Billing document not found"));
+    }
+
     public List<BillPayment> findByApartmentId(Long apartmentId) {
         return billPaymentRepository.findByApartmentIdWithUploader(apartmentId);
     }
