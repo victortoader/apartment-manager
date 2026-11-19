@@ -2,7 +2,7 @@
 
 **What to build:** Once the security fixes have landed, an agent reading the docs learns the new file-access and tenant-access rules instead of the old ones.
 
-**Blocked by:** 02, and `.scratch/security-fixes/issues/01` to `05`.
+**Blocked by:** 02, and `.scratch/security-fixes/issues/` 02–05 and 07–11.
 
 **Status:** ready-for-agent
 

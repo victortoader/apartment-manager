@@ -1,6 +1,6 @@
 # 03 - Restrict amount correction to the tenant's assigned apartment
 
-Status: ready-for-agent
+Status: resolved
 
 Spec: `../spec.md`
 
@@ -21,3 +21,7 @@ Use the same inline check style as `getBills` (`:38-45`), comparing the billing 
 - A tenant assigned to apartment A corrects an amount on a billing document of apartment B → 403, and the stored amount is unchanged.
 - A tenant assigned to apartment A corrects an amount on a billing document of apartment A → 200, and the amount is updated.
 - An admin corrects any billing document's amount → 200.
+
+## Comments
+
+- 2026-11-19: Done. `PUT /api/bills/{id}/amount` returns 403 (amount unchanged) when a tenant corrects a billing document outside their assigned apartment. Covered by `BillingDocumentAmountCorrectionTest` (5 tests, incl. owner and unassigned tenant after review); full backend suite green. Not committed yet.

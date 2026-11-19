@@ -1,6 +1,6 @@
 # 06 - Fix stale statements in AGENTS.md and merge AGENT.md
 
-Status: ready-for-agent
+Status: wontfix
 
 Spec: `../spec.md`
 
