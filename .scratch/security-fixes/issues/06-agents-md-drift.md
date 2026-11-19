@@ -34,3 +34,7 @@ What to do:
 3. The File Storage and authorization-pattern sections describe the access checks that tickets 01–05 change. If those tickets have landed, describe the new rules; if not, describe current behaviour and note that `.scratch/security-fixes/` changes it.
 4. Delete `AGENT.md`.
 5. Use the `GLOSSARY.md` terms (billing document, assigned apartment, apartment document, etc.) in the merged text.
+
+## Comments
+
+- 2026-11-19: Split into `.scratch/agents-md-drift/issues/01-03`. Work from those tickets instead of this one.
