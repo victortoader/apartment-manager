@@ -162,6 +162,9 @@ public class ApartmentController {
 
     @GetMapping("/photos/{fileName}")
     public ResponseEntity<Resource> getPhoto(@PathVariable String fileName) {
+        if (!apartmentService.isApartmentPhoto(fileName)) {
+            return ResponseEntity.notFound().build();
+        }
         try {
             Path filePath = photoStorageService.load(fileName);
             Resource resource = new UrlResource(filePath.toUri());
@@ -211,14 +214,26 @@ public class ApartmentController {
     }
 
     @GetMapping("/protocols/{fileName}")
-    public ResponseEntity<Resource> getProtocolFile(@PathVariable String fileName) {
+    public ResponseEntity<Resource> getProtocolFile(@PathVariable String fileName, Authentication auth) {
+        HandoverProtocol protocol = protocolService.findByFileName(fileName);
+        if (protocol == null) {
+            return ResponseEntity.notFound().build();
+        }
+
+        User user = userRepository.findByUsername(auth.getName()).orElseThrow();
+        if (user.getRole() == com.apartmentmanager.model.Role.TENANT) {
+            Long documentApartmentId = protocol.getApartment().getId();
+            if (user.getApartment() == null || !user.getApartment().getId().equals(documentApartmentId)) {
+                return ResponseEntity.status(403).build();
+            }
+        }
+
         try {
             Path filePath = protocolService.loadFile(fileName);
             Resource resource = new UrlResource(filePath.toUri());
             if (resource.exists()) {
                 String contentType = determineContentType(fileName);
-                HandoverProtocol protocol = protocolService.findByFileName(fileName);
-                String originalName = (protocol != null ? protocol.getOriginalName() : fileName);
+                String originalName = protocol.getOriginalName() != null ? protocol.getOriginalName() : fileName;
                 return ResponseEntity.ok()
                         .contentType(MediaType.parseMediaType(contentType))
                         .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + originalName + "\"")

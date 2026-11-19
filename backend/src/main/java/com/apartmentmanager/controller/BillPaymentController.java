@@ -74,7 +74,20 @@ public class BillPaymentController {
     }
 
     @GetMapping("/bills/{fileName}")
-    public ResponseEntity<Resource> getBillFile(@PathVariable String fileName) {
+    public ResponseEntity<Resource> getBillFile(@PathVariable String fileName, Authentication auth) {
+        BillPayment billingDocument = billPaymentService.findByStoredFileName(fileName).orElse(null);
+        if (billingDocument == null) {
+            return ResponseEntity.notFound().build();
+        }
+
+        User user = userRepository.findByUsername(auth.getName()).orElseThrow();
+        if (user.getRole() == com.apartmentmanager.model.Role.TENANT) {
+            Long billingDocumentApartmentId = billingDocument.getApartment().getId();
+            if (user.getApartment() == null || !user.getApartment().getId().equals(billingDocumentApartmentId)) {
+                return ResponseEntity.status(403).build();
+            }
+        }
+
         try {
             Path filePath = billPaymentService.load(fileName);
             Resource resource = new UrlResource(filePath.toUri());

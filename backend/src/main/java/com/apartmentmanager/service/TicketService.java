@@ -43,6 +43,10 @@ public class TicketService {
         return ticketRepository.findByCreatedByIdWithUser(userId);
     }
 
+    public java.util.Optional<Ticket> findByPhotoPath(String fileName) {
+        return ticketRepository.findByPhotoPath(fileName).stream().findFirst();
+    }
+
     public Ticket findById(Long id) {
         return ticketRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Ticket not found"));

@@ -108,7 +108,11 @@ public class BillPaymentService {
     }
 
     public Path load(String storedFileName) {
-        return uploadPath.resolve(storedFileName);
+        return PhotoStorageService.resolveInside(uploadPath, storedFileName);
+    }
+
+    public java.util.Optional<BillPayment> findByStoredFileName(String storedFileName) {
+        return billPaymentRepository.findByStoredFileName(storedFileName);
     }
 
     public BillPayment analyze(Long id) throws IOException {

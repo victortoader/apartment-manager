@@ -28,6 +28,10 @@ public class ApartmentService {
         return repository.findAllWithTenants();
     }
 
+    public boolean isApartmentPhoto(String fileName) {
+        return repository.existsByPhotoPath(fileName);
+    }
+
     public Apartment findById(Long id) {
         return repository.findByIdWithTenants(id)
                 .orElseThrow(() -> new RuntimeException("Apartment not found with id: " + id));

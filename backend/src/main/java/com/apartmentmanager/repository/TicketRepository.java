@@ -24,6 +24,9 @@ public interface TicketRepository extends JpaRepository<Ticket, Long> {
 
     void deleteByApartment(com.apartmentmanager.model.Apartment apartment);
 
+    @Query("SELECT t FROM Ticket t LEFT JOIN FETCH t.createdBy JOIN t.photoPaths p WHERE p = :fileName")
+    List<Ticket> findByPhotoPath(String fileName);
+
     @Query("SELECT COUNT(t) FROM Ticket t WHERE t NOT IN (SELECT t2 FROM Ticket t2 JOIN t2.readBy u WHERE u.id = :userId)")
     long countUnreadForUser(Long userId);
 

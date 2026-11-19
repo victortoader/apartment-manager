@@ -73,7 +73,11 @@ public class ApplicationController {
     }
 
     @GetMapping("/files/{fileName}")
+    @PreAuthorize("hasAnyRole('OWNER', 'ADMIN')")
     public ResponseEntity<Resource> getFile(@PathVariable String fileName) {
+        if (!isApplicantDocument(fileName)) {
+            return ResponseEntity.notFound().build();
+        }
         try {
             Path filePath = photoStorageService.load(fileName);
             Resource resource = new UrlResource(filePath.toUri());
@@ -92,5 +96,12 @@ public class ApplicationController {
         } catch (Exception e) {
             return ResponseEntity.notFound().build();
         }
+    }
+
+    /** Applications store their documents as one ", "-joined list of stored file names. */
+    private boolean isApplicantDocument(String fileName) {
+        return applicationRepository.findByStoredFileNameContaining(fileName).stream()
+                .flatMap(app -> java.util.Arrays.stream(app.getStoredFileName().split(",\\s*")))
+                .anyMatch(fileName::equals);
     }
 }

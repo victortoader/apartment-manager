@@ -12,6 +12,9 @@ public interface ApartmentRepository extends JpaRepository<Apartment, Long> {
     @Query("SELECT DISTINCT a FROM Apartment a LEFT JOIN FETCH a.tenants")
     List<Apartment> findAllWithTenants();
 
+    @Query("SELECT COUNT(a) > 0 FROM Apartment a JOIN a.photoPaths p WHERE p = :fileName")
+    boolean existsByPhotoPath(String fileName);
+
     @Query("SELECT DISTINCT a FROM Apartment a LEFT JOIN FETCH a.tenants WHERE a.id = :id")
     Optional<Apartment> findByIdWithTenants(Long id);
 }

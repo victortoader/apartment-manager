@@ -42,7 +42,16 @@ public class PhotoStorageService {
     }
 
     public Path load(String fileName) {
-        return Paths.get(uploadDir).toAbsolutePath().normalize().resolve(fileName);
+        return resolveInside(Paths.get(uploadDir).toAbsolutePath().normalize(), fileName);
+    }
+
+    /** Resolves a stored file name inside the uploads folder; refuses any name that escapes it. */
+    public static Path resolveInside(Path uploadPath, String fileName) {
+        Path resolved = uploadPath.resolve(fileName).normalize();
+        if (!resolved.startsWith(uploadPath) || resolved.equals(uploadPath)) {
+            throw new IllegalArgumentException("Invalid file name");
+        }
+        return resolved;
     }
 
     public org.springframework.http.MediaType contentType(String fileName) {
