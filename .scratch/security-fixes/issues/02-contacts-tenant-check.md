@@ -1,6 +1,6 @@
 # 02 - Restrict contacts to the tenant's assigned apartment
 
-Status: ready-for-agent
+Status: resolved
 
 Spec: `../spec.md`
 
@@ -20,3 +20,7 @@ Use the same inline check as `BillPaymentController.getBills` (`:38-45`): look u
 - A tenant assigned to apartment A gets the contacts of apartment A → 200 with the contacts.
 - A tenant with no assigned apartment → 403.
 - An admin gets the contacts of any apartment → 200.
+
+## Comments
+
+- 2026-11-19: Done. `ContactController.getContacts` now returns 403 to a tenant asking for an apartment other than their assigned one. Covered by `ContactTest` (5 tests); full backend suite green. Not committed yet.

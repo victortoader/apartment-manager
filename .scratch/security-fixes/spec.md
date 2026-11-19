@@ -26,14 +26,22 @@ Access rules (see `GLOSSARY.md` for terms):
 
 ## Tickets
 
-- `issues/01-public-file-routes.md`
 - `issues/02-contacts-tenant-check.md`
 - `issues/03-amount-correction-tenant-check.md`
 - `issues/04-billing-document-download-check.md`
 - `issues/05-applicant-document-download-check.md`
-- `issues/06-agents-md-drift.md`
+- `issues/07-refuse-paths-outside-uploads.md`
+- `issues/08-apartment-photo-route-serves-only-apartment-photos.md`
+- `issues/09-remove-public-inspection-photo-download.md`
+- `issues/10-apartment-documents-require-login-and-tenant-check.md`
+- `issues/11-ticket-photos-require-login-and-creator-check.md`
 
-Tickets 01–05 are independent and can be done in any order. Ticket 06 is best done last, so the merged docs describe the new access rules.
+Tickets 02–05 and 07–10 are independent and can be done in any order. Ticket 11 is blocked by 10 (shared frontend download helper).
+
+Replaced (wontfix):
+
+- `issues/01-public-file-routes.md`: split into 07–11; kept for its research details.
+- `issues/06-agents-md-drift.md`: split into `.scratch/agents-md-drift/issues/01-03`. The last of those waits for the security fixes, so the docs describe the new access rules.
 
 ## Testing Decisions
 
