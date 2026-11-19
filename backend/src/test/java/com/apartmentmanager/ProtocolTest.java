@@ -195,18 +195,22 @@ class ProtocolTest extends AbstractIntegrationTest {
     }
 
     @Test
-    void getProtocolFile_isPublicEndpoint() throws Exception {
+    void getProtocolFile_withoutLogin_isRejected() throws Exception {
         uploadProtocol("HANDOVER_PROTOCOL");
 
         HandoverProtocol proto = protocolRepository.findByApartmentId(apt.getId()).get(0);
 
         mockMvc.perform(get("/api/apartments/protocols/" + proto.getFileName()))
+                .andExpect(status().isForbidden());
+        mockMvc.perform(get("/api/apartments/protocols/" + proto.getFileName())
+                        .header("Authorization", bearer("owner")))
                 .andExpect(status().isOk());
     }
 
     @Test
     void getProtocolFile_nonExistent_returns404() throws Exception {
-        mockMvc.perform(get("/api/apartments/protocols/nonexistent.pdf"))
+        mockMvc.perform(get("/api/apartments/protocols/nonexistent.pdf")
+                        .header("Authorization", bearer("owner")))
                 .andExpect(status().isNotFound());
     }
 }

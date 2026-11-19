@@ -9,6 +9,8 @@ public interface BillPaymentRepository extends JpaRepository<BillPayment, Long> 
 
     List<BillPayment> findByApartmentIdOrderByUploadDateDesc(Long apartmentId);
 
+    java.util.Optional<BillPayment> findByStoredFileName(String storedFileName);
+
     void deleteByApartment(com.apartmentmanager.model.Apartment apartment);
 
     @Query("SELECT b FROM BillPayment b LEFT JOIN FETCH b.uploadedBy WHERE b.apartment.id = :apartmentId ORDER BY b.uploadDate DESC")
