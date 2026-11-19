@@ -29,9 +29,11 @@ Full-stack apartment management portal with JWT-based role-based access control.
 | owner | from `DEFAULT_PASSWORD` env var | OWNER |
 | admin | from `DEFAULT_PASSWORD` env var | ADMIN |
 | tenant | from `DEFAULT_PASSWORD` env var | TENANT |
-| tenant2 | from `DEFAULT_PASSWORD` env var | TENANT |
+| tenant2 | from `DEFAULT_PASSWORD` env var | TENANT (created by the demo seed data, only when `app.seed.enabled=true`) |
 
 **IMPORTANT:** Passwords are NOT hardcoded in source. They come from the `DEFAULT_PASSWORD` environment variable (with a local-dev fallback to the root `.env` file). The application fails fast at startup if neither is set. Never commit hardcoded passwords.
+
+Backend internals (auth flow, authorization patterns, full API surface, file storage, test setup, conventions, quirks) are in `backend/AGENTS.md`.
 
 ## Key Backend Files
 
@@ -42,8 +44,8 @@ Full-stack apartment management portal with JWT-based role-based access control.
 - `backend/src/main/java/com/apartmentmanager/model/User.java` - User entity with username, password, role, email, apartment reference
 
 ### Services
-- `backend/src/main/java/com/apartmentmanager/service/BillPaymentService.java` - Bill upload, OCR analysis, amount extraction. Has `upload()` (MultipartFile) and `uploadFromBytes()` (byte[]) methods
-- `backend/src/main/java/com/apartmentmanager/service/OcrService.java` - Dual-path OCR: PDF text extraction via PDFBox → regex, fallback to Tesseract. Detects currency from symbols/language keywords. Detects document type (bill vs proof) from payment keywords and negative amounts
+- `backend/src/main/java/com/apartmentmanager/service/BillPaymentService.java` - Bill upload, OCR analysis, amount extraction. All uploads go through `uploadFromBytes()` (byte[]); the controller passes `file.getBytes()`, and `EmailFetchService` passes attachment bytes
+- `backend/src/main/java/com/apartmentmanager/service/OcrService.java` - Dual-path OCR: PDF text extraction via PDFBox → regex, fallback to Tesseract. Extracts amount and currency (currency from symbols/language keywords). The uploader chooses the document type (see Key Patterns); `paymentKeywords` is seeded and editable but unused
 - `backend/src/main/java/com/apartmentmanager/service/EmailFetchService.java` - IMAP polling for Gmail, downloads attachments, saves as bills to first apartment
 - `backend/src/main/java/com/apartmentmanager/service/UserService.java` - User CRUD, `@PostConstruct` creates default users only when DB is empty
 - `backend/src/main/java/com/apartmentmanager/service/SeedDataService.java` - Seeds OCR keywords (amount, language, payment) for RO/DE/EN
@@ -69,8 +71,8 @@ Full-stack apartment management portal with JWT-based role-based access control.
 
 - Backend uses `Map<String, String>` request bodies for most endpoints, not typed DTOs
 - OCR runs async on upload via `CompletableFuture.orTimeout(3, MINUTES)`; on failure → `ocrFailed=true`
-- All users (including TENANT) can see and edit OCR-extracted amounts
-- Document types: "bill" (red label) and "proof" (blue label, detected from payment keywords or negative amounts)
+- OWNER and ADMIN can see and edit OCR-extracted amounts on any billing document; a TENANT only on billing documents of their assigned apartment
+- Document types: "bill" (red label) and "proof" (blue label). The uploader picks it in the `PaidBills.js` selector and it's sent as the `documentType` upload param (default "bill"); documents fetched by email are always "bill"
 - Bill list shows per-month balance (green=overpaid, red=unpaid)
 - Summary section below bill list: Total Bills, Total Paid, Balance
 - Photos are downscaled client-side (max 1920px longest side, JPEG q0.85) before upload via `frontend/src/imageUtils.js` (`prepareImage`); HEIC/HEIF from iPhones are converted in-browser via `heic2any`. Applied to apartment, inspection-row, and ticket photo uploads. PDF/protocol/bill document uploads are NOT resized.
@@ -101,15 +103,9 @@ Full-stack apartment management portal with JWT-based role-based access control.
 - **User reset:** Every deployment truncates the users table and re-creates default users with current `DEFAULT_PASSWORD`
 - **Docker:** `backend/Dockerfile` installs tesseract-ocr + lang packs (deu, eng)
 
-## API Endpoints (Key)
+## API Endpoints
 
-| Method | Endpoint | Auth | Description |
-|--------|----------|------|-------------|
-| POST | `/api/apartments/{id}/bills` | All | Upload bill (params: file, billType, documentType) |
-| GET | `/api/apartments/{id}/bills` | All | List bills |
-| PUT | `/api/bills/{id}/amount` | All | Update extracted amount/currency |
-| POST | `/api/bills/{id}/analyze` | Owner/Admin | Re-run OCR analysis |
-| GET/PUT | `/api/ocr-keywords` | Owner | Manage OCR keywords |
+The full endpoint list with who can call each one is in `backend/AGENTS.md` ("API surface").
 
 ## Planned Features
 
@@ -147,3 +143,5 @@ Default five-role vocabulary (needs-triage, needs-info, ready-for-agent, ready-f
 ### Domain docs
 
 Single-context: `GLOSSARY.md` + `docs/adr/` at the repo root (created lazily). See `docs/agents/domain.md`.
+
+Use the `GLOSSARY.md` terms (billing document, proof of payment, assigned apartment, apartment document, etc.) in code, docs and tickets, in place of the terms it lists under _Avoid_.
