@@ -2,10 +2,14 @@ package com.apartmentmanager.controller;
 
 import com.apartmentmanager.audit.Audited;
 import com.apartmentmanager.model.Contact;
+import com.apartmentmanager.model.Role;
+import com.apartmentmanager.model.User;
+import com.apartmentmanager.repository.UserRepository;
 import com.apartmentmanager.service.ContactService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -17,10 +21,19 @@ import java.util.Map;
 public class ContactController {
 
     private final ContactService contactService;
+    private final UserRepository userRepository;
 
     @GetMapping("/apartments/{apartmentId}/contacts")
-    public List<Contact> getContacts(@PathVariable Long apartmentId) {
-        return contactService.findByApartmentId(apartmentId);
+    public ResponseEntity<List<Contact>> getContacts(@PathVariable Long apartmentId, Authentication auth) {
+        User user = userRepository.findByUsername(auth.getName()).orElseThrow();
+
+        if (user.getRole() == Role.TENANT) {
+            if (user.getApartment() == null || !user.getApartment().getId().equals(apartmentId)) {
+                return ResponseEntity.status(403).build();
+            }
+        }
+
+        return ResponseEntity.ok(contactService.findByApartmentId(apartmentId));
     }
 
     @Audited(action = "CONTACT_CREATED", message = "Created contact on apartment #{apartmentId}: {body['name']}")
