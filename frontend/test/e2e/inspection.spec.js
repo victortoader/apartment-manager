@@ -58,7 +58,12 @@ test.describe('Inspection E2E', () => {
 
     // Save first
     alertText = '';
+    const saveResponse = page.waitForResponse(
+      (r) => /\/api\/apartments\/\d+\/inspections$/.test(r.url()) && r.request().method() === 'POST'
+    );
     await page.getByRole('button', { name: /^save$/i }).click();
+    const inspectionId = (await (await saveResponse).json()).id;
+    const apartmentId = page.url().match(/\/apartments\/(\d+)\/inspections/)[1];
     await expect.poll(() => alertText.toLowerCase()).toContain('saved');
 
     // Draw signatures (mandatory before generating PDF)
@@ -90,6 +95,16 @@ test.describe('Inspection E2E', () => {
     expect(download.suggestedFilename()).toContain('Uebergabeprotokoll');
     expect(download.suggestedFilename()).toContain('.pdf');
     expect(await download.path()).toBeTruthy();
+
+    // Reopening the saved inspection still offers its generated PDF
+    await page.goto(`/apartments/${apartmentId}/inspections/${inspectionId}`);
+    await page.waitForSelector('.inspection-form', { timeout: 15000 });
+    await page.getByRole('button', { name: /download pdf/i }).waitFor({ state: 'visible', timeout: 10000 });
+    const [reopenedDownload] = await Promise.all([
+      page.waitForEvent('download', { timeout: 20000 }),
+      page.getByRole('button', { name: /download pdf/i }).click(),
+    ]);
+    expect(reopenedDownload.suggestedFilename()).toContain('Uebergabeprotokoll');
   });
 
   test('login as tenant cannot access inspection form', async ({ page }) => {
