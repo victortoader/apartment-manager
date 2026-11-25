@@ -42,8 +42,8 @@ Full-stack apartment management portal with JWT-based role-based access control.
 - `backend/src/main/java/com/apartmentmanager/model/User.java` - User entity with username, password, role, email, apartment reference
 
 ### Services
-- `backend/src/main/java/com/apartmentmanager/service/BillPaymentService.java` - Bill upload, OCR analysis, amount extraction. Has `upload()` (MultipartFile) and `uploadFromBytes()` (byte[]) methods
-- `backend/src/main/java/com/apartmentmanager/service/OcrService.java` - Dual-path OCR: PDF text extraction via PDFBox → regex, fallback to Tesseract. Detects currency from symbols/language keywords. Detects document type (bill vs proof) from payment keywords and negative amounts
+- `backend/src/main/java/com/apartmentmanager/service/BillPaymentService.java` - Bill upload, OCR analysis, amount extraction. Single entry point `uploadFromBytes()` (byte[]), used by both the upload endpoint and the email fetch
+- `backend/src/main/java/com/apartmentmanager/service/OcrService.java` - Dual-path OCR: PDF text extraction via PDFBox → regex, fallback to Tesseract. Detects currency from symbols/language keywords. Returns a negative amount when the text shows a minus sign; does not set the document type
 - `backend/src/main/java/com/apartmentmanager/service/EmailFetchService.java` - IMAP polling for Gmail, downloads attachments, saves as bills to first apartment
 - `backend/src/main/java/com/apartmentmanager/service/UserService.java` - User CRUD, `@PostConstruct` creates default users only when DB is empty
 - `backend/src/main/java/com/apartmentmanager/service/SeedDataService.java` - Seeds OCR keywords (amount, language, payment) for RO/DE/EN
@@ -70,7 +70,7 @@ Full-stack apartment management portal with JWT-based role-based access control.
 - Backend uses `Map<String, String>` request bodies for most endpoints, not typed DTOs
 - OCR runs async on upload via `CompletableFuture.orTimeout(3, MINUTES)`; on failure → `ocrFailed=true`
 - All users (including TENANT) can see and edit OCR-extracted amounts
-- Document types: "bill" (red label) and "proof" (blue label, detected from payment keywords or negative amounts)
+- Document types: "bill" (red label) and "proof" (blue label). The uploader chooses the type (`documentType` param, default `bill`); email-fetched files are always `bill`. Not auto-detected
 - Bill list shows per-month balance (green=overpaid, red=unpaid)
 - Summary section below bill list: Total Bills, Total Paid, Balance
 - Photos are downscaled client-side (max 1920px longest side, JPEG q0.85) before upload via `frontend/src/imageUtils.js` (`prepareImage`); HEIC/HEIF from iPhones are converted in-browser via `heic2any`. Applied to apartment, inspection-row, and ticket photo uploads. PDF/protocol/bill document uploads are NOT resized.
@@ -132,7 +132,7 @@ Full-stack apartment management portal with JWT-based role-based access control.
 - Never commit hardcoded passwords in source code
 - Never commit/push without explicit user approval
 - OCR keywords are stored in `ocr_keywords` table, editable by OWNER via Manage section
-- `OcrKeywords` entity has 5 fields: language, amountKeywords, languageKeywords, paymentKeywords, defaultCurrency
+- `OcrKeywords` entity has 5 fields: language, amountKeywords, languageKeywords, paymentKeywords, defaultCurrency (paymentKeywords is stored and seeded but not currently read by OCR)
 
 ## Agent skills
 
