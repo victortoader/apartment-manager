@@ -74,7 +74,20 @@ public class BillPaymentController {
     }
 
     @GetMapping("/bills/{fileName}")
-    public ResponseEntity<Resource> getBillFile(@PathVariable String fileName) {
+    public ResponseEntity<Resource> getBillFile(@PathVariable String fileName, Authentication auth) {
+        BillPayment billingDocument = billPaymentService.findByStoredFileName(fileName).orElse(null);
+        if (billingDocument == null) {
+            return ResponseEntity.notFound().build();
+        }
+
+        User user = userRepository.findByUsername(auth.getName()).orElseThrow();
+        if (user.getRole() == com.apartmentmanager.model.Role.TENANT) {
+            Long billingDocumentApartmentId = billingDocument.getApartment().getId();
+            if (user.getApartment() == null || !user.getApartment().getId().equals(billingDocumentApartmentId)) {
+                return ResponseEntity.status(403).build();
+            }
+        }
+
         try {
             Path filePath = billPaymentService.load(fileName);
             Resource resource = new UrlResource(filePath.toUri());
@@ -118,7 +131,17 @@ public class BillPaymentController {
     @Audited(action = "BILL_AMOUNT_UPDATED", message = "Updated bill #{id} amount to: {body['amount']} {body['currency']}")
     @PutMapping("/bills/{id}/amount")
     public ResponseEntity<?> updateBillAmount(@PathVariable Long id,
-                                              @RequestBody Map<String, Object> body) {
+                                              @RequestBody Map<String, Object> body,
+                                              Authentication auth) {
+        User user = userRepository.findByUsername(auth.getName()).orElseThrow();
+
+        if (user.getRole() == com.apartmentmanager.model.Role.TENANT) {
+            Long billingDocumentApartmentId = billPaymentService.findById(id).getApartment().getId();
+            if (user.getApartment() == null || !user.getApartment().getId().equals(billingDocumentApartmentId)) {
+                return ResponseEntity.status(403).build();
+            }
+        }
+
         Double amount = null;
         if (body.containsKey("amount")) {
             Object val = body.get("amount");

@@ -130,9 +130,13 @@ function InspectionForm() {
       setInspection(data);
       setEditId(data.id);
       if (data.generatedProtocolId) {
-        fetch(`${API}/api/apartments/protocols/find/${data.generatedProtocolId}`, { headers: authHeader() })
-          .then(r => r.ok ? r.json() : null)
-          .then(p => { if (p) setGeneratedProtocol({ id: p.id, fileName: p.fileName, originalName: p.originalName }); })
+        // The generated PDF is one of the apartment's documents; find it by id.
+        fetch(`${API}/api/apartments/${id}/protocols`, { headers: authHeader() })
+          .then(r => r.ok ? r.json() : [])
+          .then(protocols => {
+            const p = protocols.find(doc => doc.id === data.generatedProtocolId);
+            if (p) setGeneratedProtocol({ id: p.id, fileName: p.fileName, originalName: p.originalName });
+          })
           .catch(() => {});
       }
     }

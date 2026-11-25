@@ -4,7 +4,7 @@
 
 **Blocked by:** None (can start immediately).
 
-**Status:** ready-for-agent
+**Status:** resolved
 
 Source: `.scratch/security-fixes/issues/06-agents-md-drift.md`
 
@@ -16,3 +16,7 @@ Source: `.scratch/security-fixes/issues/06-agents-md-drift.md`
 - [ ] The merged text uses `GLOSSARY.md` terms (billing document, assigned apartment, apartment document, etc.).
 - [ ] `AGENT.md` is deleted.
 - [ ] No code changes.
+
+## Comments
+
+- 2026-11-19: Done. Wrote `backend/AGENTS.md` from the still-true parts of `AGENT.md`, checked against the code. Dropped stale items: the controller list, "owner/owner" default passwords, auditService.log calls (now `@Audited`) and the notes being OWNER-only. Added the missing inspections, applications and OCR keyword endpoints. Linked it from the root `AGENTS.md` and deleted `AGENT.md`. `frontend/AGENT.md` was out of scope and is untouched. Not committed yet.

@@ -66,13 +66,41 @@ test.describe('Apartment detail', () => {
     await loginAs(page, 'owner', DEFAULT_PASSWORD);
     await openFirstApartmentDetail(page);
 
+    const fileName = `e2e-protocol-${Date.now()}.pdf`;
     await page.locator('.doc-type-select').selectOption('OTHER');
     await page
       .locator('.protocols-header input[type="file"]')
       .first()
-      .setInputFiles({ name: 'e2e-protocol.pdf', mimeType: 'application/pdf', buffer: PDF_BUFFER });
+      .setInputFiles({ name: fileName, mimeType: 'application/pdf', buffer: PDF_BUFFER });
 
-    await expect(page.locator('.protocol-item').filter({ hasText: 'e2e-protocol.pdf' })).toBeVisible();
+    await expect(page.locator('.protocol-item').filter({ hasText: fileName })).toBeVisible();
+  });
+
+  test('owner downloads an apartment document with its original name', async ({ page }) => {
+    test.setTimeout(120000);
+    await loginAs(page, 'owner', DEFAULT_PASSWORD);
+    await openFirstApartmentDetail(page);
+
+    const fileName = `e2e-download-${Date.now()}.pdf`;
+    await page.locator('.doc-type-select').selectOption('OTHER');
+    await page
+      .locator('.protocols-header input[type="file"]')
+      .first()
+      .setInputFiles({ name: fileName, mimeType: 'application/pdf', buffer: PDF_BUFFER });
+
+    const item = page.locator('.protocol-item').filter({ hasText: fileName });
+    await expect(item).toBeVisible();
+
+    // Apartment documents need a login now, so the button fetches the file with the token
+    // and saves it under its original name.
+    const [download] = await Promise.all([
+      page.waitForEvent('download'),
+      item.getByRole('button', { name: new RegExp(fileName.replace('.', '\\.')) }).click(),
+    ]);
+    expect(download.suggestedFilename()).toBe(fileName);
+    const fs = await import('fs');
+    const saved = fs.readFileSync(await download.path());
+    expect(saved.subarray(0, 5).toString()).toBe('%PDF-');
   });
 
   test('owner can create a ticket from the detail page', async ({ page }) => {

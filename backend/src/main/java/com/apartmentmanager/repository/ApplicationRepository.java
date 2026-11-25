@@ -7,4 +7,6 @@ import java.util.List;
 
 public interface ApplicationRepository extends JpaRepository<Application, Long> {
     List<Application> findByApartmentIdOrderBySubmittedAtDesc(Long apartmentId);
+
+    List<Application> findByStoredFileNameContaining(String storedFileName);
 }

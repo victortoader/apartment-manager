@@ -159,7 +159,19 @@ public class TicketController {
     }
 
     @GetMapping("/tickets/photos/{fileName}")
-    public ResponseEntity<Resource> getPhoto(@PathVariable String fileName) {
+    public ResponseEntity<?> getPhoto(@PathVariable String fileName, Authentication auth) {
+        Ticket ticket = ticketService.findByPhotoPath(fileName).orElse(null);
+        if (ticket == null) {
+            return ResponseEntity.notFound().build();
+        }
+
+        User user = userRepository.findByUsername(auth.getName()).orElseThrow();
+        if (user.getRole() == Role.TENANT) {
+            if (ticket.getCreatedBy() == null || !ticket.getCreatedBy().getId().equals(user.getId())) {
+                return ResponseEntity.status(403).body(Map.of("error", "Access denied"));
+            }
+        }
+
         try {
             Path filePath = photoStorageService.load(fileName);
             Resource resource = new UrlResource(filePath.toUri());

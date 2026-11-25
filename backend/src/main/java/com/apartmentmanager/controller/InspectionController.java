@@ -3,7 +3,6 @@ package com.apartmentmanager.controller;
 import com.apartmentmanager.model.*;
 import com.apartmentmanager.service.InspectionService;
 import com.apartmentmanager.service.PdfLabels;
-import com.apartmentmanager.service.PhotoStorageService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -20,7 +19,6 @@ import java.util.Map;
 public class InspectionController {
 
     private final InspectionService inspectionService;
-    private final PhotoStorageService photoStorage;
 
     @GetMapping("/apartments/{apartmentId}/inspections")
     @PreAuthorize("hasAnyRole('OWNER', 'ADMIN')")
@@ -138,23 +136,6 @@ public class InspectionController {
                     .body(data);
         } catch (Exception e) {
             return ResponseEntity.internalServerError().body(java.util.Map.of("error", e.getMessage()));
-        }
-    }
-
-    @GetMapping("/inspections/photos/{fileName}")
-    public ResponseEntity<org.springframework.core.io.Resource> getPhoto(@PathVariable String fileName) {
-        try {
-            java.nio.file.Path filePath = photoStorage.load(fileName);
-            org.springframework.core.io.Resource resource = new org.springframework.core.io.UrlResource(filePath.toUri());
-            if (resource.exists()) {
-                return ResponseEntity.ok()
-                        .contentType(photoStorage.contentType(fileName))
-                        .header(org.springframework.http.HttpHeaders.CONTENT_DISPOSITION, "inline")
-                        .body(resource);
-            }
-            return ResponseEntity.notFound().build();
-        } catch (Exception e) {
-            return ResponseEntity.notFound().build();
         }
     }
 }

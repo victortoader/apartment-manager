@@ -1,6 +1,6 @@
 # 01 - Lock down public file routes
 
-Status: ready-for-agent
+Status: wontfix
 
 Spec: `../spec.md`
 
@@ -45,3 +45,7 @@ Spec: `../spec.md`
 ## Out of scope
 
 Image validation for ticket photo uploads; the stored-file module refactor.
+
+## Comments
+
+- 2026-11-19: Split into tickets 07-11 in this folder. Work from those instead of this one; keep this file for its research details.

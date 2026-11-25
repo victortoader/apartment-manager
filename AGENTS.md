@@ -29,9 +29,11 @@ Full-stack apartment management portal with JWT-based role-based access control.
 | owner | from `DEFAULT_PASSWORD` env var | OWNER |
 | admin | from `DEFAULT_PASSWORD` env var | ADMIN |
 | tenant | from `DEFAULT_PASSWORD` env var | TENANT |
-| tenant2 | from `DEFAULT_PASSWORD` env var | TENANT |
+| tenant2 | from `DEFAULT_PASSWORD` env var | TENANT (created by the demo seed data, only when `app.seed.enabled=true`) |
 
 **IMPORTANT:** Passwords are NOT hardcoded in source. They come from the `DEFAULT_PASSWORD` environment variable (with a local-dev fallback to the root `.env` file). The application fails fast at startup if neither is set. Never commit hardcoded passwords.
+
+Backend internals (auth flow, authorization patterns, full API surface, file storage, test setup, conventions, quirks) are in `backend/AGENTS.md`.
 
 ## Key Backend Files
 
@@ -101,15 +103,9 @@ Full-stack apartment management portal with JWT-based role-based access control.
 - **User reset:** Every deployment truncates the users table and re-creates default users with current `DEFAULT_PASSWORD`
 - **Docker:** `backend/Dockerfile` installs tesseract-ocr + lang packs (deu, eng)
 
-## API Endpoints (Key)
+## API Endpoints
 
-| Method | Endpoint | Auth | Description |
-|--------|----------|------|-------------|
-| POST | `/api/apartments/{id}/bills` | All | Upload bill (params: file, billType, documentType) |
-| GET | `/api/apartments/{id}/bills` | All | List bills |
-| PUT | `/api/bills/{id}/amount` | All | Update extracted amount/currency |
-| POST | `/api/bills/{id}/analyze` | Owner/Admin | Re-run OCR analysis |
-| GET/PUT | `/api/ocr-keywords` | Owner | Manage OCR keywords |
+The full endpoint list with who can call each one is in `backend/AGENTS.md` ("API surface").
 
 ## Planned Features
 
@@ -147,3 +143,5 @@ Default five-role vocabulary (needs-triage, needs-info, ready-for-agent, ready-f
 ### Domain docs
 
 Single-context: `GLOSSARY.md` + `docs/adr/` at the repo root (created lazily). See `docs/agents/domain.md`.
+
+Use the `GLOSSARY.md` terms (billing document, proof of payment, assigned apartment, apartment document, etc.) in code, docs and tickets, in place of the terms it lists under _Avoid_.

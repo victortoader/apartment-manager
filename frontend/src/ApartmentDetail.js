@@ -3,6 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from './AuthContext';
 import PaidBills from './PaidBills';
+import { downloadAuthFile } from './authFiles';
 
 const API = process.env.REACT_APP_API_URL || '';
 
@@ -296,25 +297,25 @@ function ApartmentDetail() {
             <div className="protocol-list">
               {protocols.map(proto => (
                 <div key={proto.id} className="protocol-item">
-                  <a
-                    href={`${API}/api/apartments/protocols/${proto.fileName}`}
-                    target="_blank"
-                    rel="noreferrer"
+                  <button
+                    type="button"
                     className="protocol-link"
+                    onClick={() => downloadAuthFile(
+                      `${API}/api/apartments/protocols/${proto.fileName}`, authHeader(), proto.originalName)}
                   >
                     <span className={`protocol-icon ${getProtocolIcon(proto.contentType).toLowerCase()}`}>
                       {getProtocolIcon(proto.contentType)}
                     </span>
-                    <div className="protocol-info">
+                    <span className="protocol-info">
                       <span className="protocol-name">{proto.originalName}</span>
-                      <div className="protocol-meta">
+                      <span className="protocol-meta">
                         <span className="protocol-type">{formatDocType(proto.documentType)}</span>
                         <span className="protocol-date">
                           {new Date(proto.createdAt).toLocaleDateString()}
                         </span>
-                      </div>
-                    </div>
-                  </a>
+                      </span>
+                    </span>
+                  </button>
                   {canDelete && (
                     <button className="btn-delete-small" onClick={() => handleDeleteProtocol(proto.id)}>×</button>
                   )}

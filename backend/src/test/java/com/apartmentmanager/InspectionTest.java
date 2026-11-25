@@ -56,13 +56,44 @@ class InspectionTest extends AbstractIntegrationTest {
 
         HandoverProtocol protocol = protocolRepository.findByApartmentId(apt.getId()).stream().findFirst().orElseThrow();
 
-        mockMvc.perform(get("/api/apartments/protocols/" + protocol.getFileName()))
+        mockMvc.perform(get("/api/apartments/protocols/" + protocol.getFileName())
+                        .header("Authorization", bearer("owner")))
+                .andExpect(status().isOk())
+                .andExpect(header().string("Content-Type", "application/pdf"));
+        mockMvc.perform(get("/api/apartments/protocols/" + protocol.getFileName())
+                        .header("Authorization", bearer("admin")))
                 .andExpect(status().isOk())
                 .andExpect(header().string("Content-Type", "application/pdf"));
 
         Inspection saved = inspectionRepository.findById(inspectionId).orElseThrow();
         assertNotNull(saved.getGeneratedProtocolId(), "Inspection must have a generated protocol ID");
         assertEquals(protocol.getId(), saved.getGeneratedProtocolId(), "Protocol ID must match the generated protocol");
+    }
+
+    @Test
+    void deleteRowPhoto_stillWorks() throws Exception {
+        Apartment apt = createApartment("Inspection Photo Apt");
+        String body = jsonResource("inspections/full-inspection.json")
+                .formatted(jsonResource("inspections/confirmations.json"), jsonResource("inspections/signatures.json"));
+        String json = mockMvc.perform(post("/api/apartments/" + apt.getId() + "/inspections")
+                        .header("Authorization", bearer("owner"))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(body))
+                .andExpect(status().isOk())
+                .andReturn().getResponse().getContentAsString();
+        long rowId = objectMapper.readTree(json).get("sections").get(0).get("rows").get(0).get("id").asLong();
+
+        byte[] png = {(byte) 0x89, 0x50, 0x4E, 0x47, 0x0D, 0x0A, 0x1A, 0x0A, 0, 0, 0, 13};
+        String photoJson = mockMvc.perform(multipart("/api/inspections/rows/" + rowId + "/photos")
+                        .file(new org.springframework.mock.web.MockMultipartFile("file", "row.png", "image/png", png))
+                        .header("Authorization", bearer("owner")))
+                .andExpect(status().isOk())
+                .andReturn().getResponse().getContentAsString();
+        long photoId = objectMapper.readTree(photoJson).get("id").asLong();
+
+        mockMvc.perform(delete("/api/inspections/photos/" + photoId)
+                        .header("Authorization", bearer("owner")))
+                .andExpect(status().isNoContent());
     }
 
     @Test

@@ -696,6 +696,13 @@ h1 {
   text-decoration: none;
   color: inherit;
   flex: 1;
+  /* rendered as a <button>: reset the browser's button look */
+  background: none;
+  border: none;
+  padding: 0;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
 }
 
 .protocol-link:hover .protocol-name {
@@ -1368,7 +1375,19 @@ h1 {
   margin-bottom: 12px;
 }
 
+.ticket-photo-button {
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+}
+
+.ticket-photo-button:disabled {
+  cursor: default;
+}
+
 .ticket-photo-thumb {
+  display: block;
   width: 80px;
   height: 80px;
   object-fit: cover;

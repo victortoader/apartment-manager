@@ -86,6 +86,11 @@ public class BillPaymentService {
         return bill;
     }
 
+    public BillPayment findById(Long id) {
+        return billPaymentRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Billing document not found"));
+    }
+
     public List<BillPayment> findByApartmentId(Long apartmentId) {
         return billPaymentRepository.findByApartmentIdWithUploader(apartmentId);
     }
@@ -103,7 +108,11 @@ public class BillPaymentService {
     }
 
     public Path load(String storedFileName) {
-        return uploadPath.resolve(storedFileName);
+        return PhotoStorageService.resolveInside(uploadPath, storedFileName);
+    }
+
+    public java.util.Optional<BillPayment> findByStoredFileName(String storedFileName) {
+        return billPaymentRepository.findByStoredFileName(storedFileName);
     }
 
     public BillPayment analyze(Long id) throws IOException {

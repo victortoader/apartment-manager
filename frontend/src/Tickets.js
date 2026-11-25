@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { useAuth } from './AuthContext';
 import { useSearchParams } from 'react-router-dom';
 import { prepareImage } from './imageUtils';
+import { AuthImageButton } from './authFiles';
 
 const API = process.env.REACT_APP_API_URL || '';
 
@@ -259,9 +260,14 @@ function Tickets() {
               {ticket.photoPaths && ticket.photoPaths.length > 0 && (
                 <div className="ticket-photos">
                   {ticket.photoPaths.map((photo, i) => (
-                    <a key={i} href={`${API}/api/tickets/photos/${photo}`} target="_blank" rel="noreferrer">
-                      <img src={`${API}/api/tickets/photos/${photo}`} alt={`Photo ${i + 1}`} className="ticket-photo-thumb" />
-                    </a>
+                    <AuthImageButton
+                      key={i}
+                      src={`${API}/api/tickets/photos/${photo}`}
+                      headers={authHeader()}
+                      alt={`Photo ${i + 1}`}
+                      className="ticket-photo-thumb"
+                      buttonClassName="ticket-photo-button"
+                    />
                   ))}
                 </div>
               )}

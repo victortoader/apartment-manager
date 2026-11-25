@@ -64,9 +64,15 @@ class SecurityTest extends AbstractIntegrationTest {
     }
 
     @Test
-    void protocolsEndpoint_isAccessibleWithoutAuth() throws Exception {
+    void apartmentDocumentsEndpoint_requiresAuth() throws Exception {
         mockMvc.perform(get("/api/apartments/protocols/somefile.pdf"))
-                .andExpect(status().isNotFound());
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
+    void ticketPhotosEndpoint_requiresAuth() throws Exception {
+        mockMvc.perform(get("/api/tickets/photos/somefile.jpg"))
+                .andExpect(status().isForbidden());
     }
 
     @Test
