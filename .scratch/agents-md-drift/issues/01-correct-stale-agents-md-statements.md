@@ -8,10 +8,10 @@
 
 Source: `.scratch/security-fixes/issues/06-agents-md-drift.md`
 
-- [ ] The billing service entry lists only the upload methods that exist in the code.
-- [ ] Both places that describe proof detection (the OCR service entry and Key Patterns) state the real mechanism, checked against the code.
-- [ ] `AGENTS.md` points to `GLOSSARY.md` for domain terms, unless the Agent skills section already does.
-- [ ] No code changes. Whether payment keywords *should* be used is out of scope.
+- [x] The billing service entry lists only the upload methods that exist in the code.
+- [x] Both places that describe proof detection (the OCR service entry and Key Patterns) state the real mechanism, checked against the code.
+- [x] `AGENTS.md` points to `GLOSSARY.md` for domain terms, unless the Agent skills section already does.
+- [x] No code changes. Whether payment keywords *should* be used is out of scope.
 
 ## Comments
 

@@ -54,35 +54,43 @@ Paths are under `/api`. "Tenant check" = pattern 2 above.
 | | `PUT /{id}/details`, `PUT /{id}/presentation` | OWNER/ADMIN |
 | | `GET /{id}/presentation`, `GET /apartments/presentation-list` | **Public** |
 | Apartment photos | `POST /apartments/{id}/photos` | Tenant check |
-| | `GET /apartments/photos/{fileName}` | **Public** |
-| Apartment documents | `GET`/`POST /apartments/{id}/protocols` | Tenant check |
-| | `GET /apartments/protocols/{fileName}` | **Public** |
+| | `GET /apartments/photos/{fileName}` | **Public**, apartment photos only |
+| Apartment documents | `GET /apartments/{id}/protocols` | Tenant check (a denied tenant gets an empty list, not 403) |
+| | `POST /apartments/{id}/protocols` | Tenant check |
+| | `GET /apartments/protocols/{fileName}` | Tenant check (on the apartment document's apartment) |
 | | `DELETE /apartments/protocols/{id}` | OWNER |
 | Billing documents | `GET /apartments/{id}/bills` | Tenant check |
 | | `POST /apartments/{id}/bills` (params `file`, `billType`, `documentType`) | Tenant check |
-| | `GET /bills/{fileName}` | Logged in, no apartment check |
+| | `GET /bills/{fileName}` | Tenant check (on the billing document's apartment) |
 | | `PUT /bills/{id}/amount` (body `{ amount, currency }`) | Tenant check (on the billing document's apartment) |
 | | `POST /bills/{id}/analyze` (re-runs OCR) | OWNER/ADMIN |
 | | `DELETE /bills/{id}` | OWNER |
 | Tickets | `GET`/`POST /apartments/{id}/tickets` | Tenant check |
 | | `GET /tickets/{id}` | Tenant sees only tickets they created |
 | | `POST /tickets/{id}/photos` | Tenant only on tickets they created, max 5 photos |
-| | `GET /tickets/photos/{fileName}` | **Public** |
+| | `GET /tickets/photos/{fileName}` | Tenant only on tickets they created |
 | | `GET /tickets` (also marks every ticket read for the caller), `/tickets/unread`, `/tickets/unread/count`, `POST /tickets/{id}/read`, `PATCH /tickets/{id}` (body `{ status }`) | OWNER/ADMIN |
 | Contacts | `GET /apartments/{id}/contacts` | Tenant check |
 | | `POST /apartments/{id}/contacts`, `PUT`/`DELETE /contacts/{id}` | OWNER |
 | Notes | all `/apartments/{id}/notes`, `/notes/{id}` | OWNER/ADMIN |
 | Inspections | all `/inspections/**` and `/apartments/{id}/inspections` | OWNER/ADMIN (`DELETE /inspections/{id}` OWNER) |
-| | `GET /inspections/photos/{fileName}` | **Public** |
+| | `GET /inspections/{id}/photos` (all photos as a zip) | OWNER/ADMIN. There is no single inspection photo download route |
 | Applications | `POST /applications` | **Public** |
 | | `GET /applications`, `/applications/counts` | OWNER/ADMIN |
-| | `GET /applications/files/{fileName}` | Logged in, no role check |
+| | `GET /applications/files/{fileName}` | OWNER/ADMIN |
 | Users | `GET`/`POST /users`, `DELETE /users/{id}`, `PUT /users/{id}/apartment` (body `{ apartmentId }`), `PUT /users/{id}/email` (body `{ email }`) | OWNER |
 | Audit | `GET /audit?username=` | OWNER |
 | OCR keywords | `GET /ocr-keywords` | Logged in |
 | | `PUT /ocr-keywords/{id}`, `POST /ocr-keywords` | OWNER |
 
-**Pending changes:** the **Public** file routes and the two routes marked "no apartment check" / "no role check" are being locked down by `.scratch/security-fixes/` (tickets 04, 05, 07–11). Check those tickets' status before relying on the rows above.
+**Access rules** (from `.scratch/security-fixes/spec.md`):
+
+- OWNER and ADMIN reach everything, on every apartment.
+- A TENANT reaches only what belongs to their **assigned apartment**, based on the current assignment only. A previous apartment gives no access.
+- Ticket photos follow the ticket rule: a tenant sees them only on tickets they created.
+- Applicant documents: OWNER and ADMIN only.
+- Only apartment photos are public, because the public presentation pages need them. Every other file route needs a login.
+- A denied tenant gets **403**. The exceptions are listed in the table above and under Known quirks.
 
 ## Request bodies and validation
 
@@ -104,7 +112,8 @@ Mutating endpoints are annotated with `@Audited(action = "...", message = "...")
 
 - Every stored file (apartment photos, apartment documents, ticket and inspection photos, applicant documents, billing documents) goes into one shared `uploads/` folder, named `UUID + original extension`. Max upload 10MB. Docker mounts it as a named volume.
 - `PhotoStorageService` reads the Spring property `app.upload.dir`. `BillPaymentService` and `SeedDataService` read the JVM system property `app.upload.dir` instead, so in tests billing documents land in `./uploads`, not the test temp folder.
-- File routes look the name up in that shared folder. Until `.scratch/security-fixes/` lands, most of them don't check that the name is the right kind of file or block names outside the folder.
+- Every file route serves only its own kind of file. It first looks the name up in that kind's records (e.g. `ApartmentService.isApartmentPhoto`, `BillPaymentService.findByStoredFileName`, `TicketService.findByPhotoPath`) and returns 404 for a name of another kind, before running any access check.
+- Names are resolved with `PhotoStorageService.resolveInside`, which refuses any name that escapes the uploads folder. A new file route must do both: check the kind, then call `resolveInside`.
 
 ## Error handling
 
