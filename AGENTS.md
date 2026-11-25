@@ -73,6 +73,7 @@ Backend internals (auth flow, authorization patterns, full API surface, file sto
 - OCR runs async on upload via `CompletableFuture.orTimeout(3, MINUTES)`; on failure → `ocrFailed=true`
 - OWNER and ADMIN can see and edit OCR-extracted amounts on any billing document; a TENANT only on billing documents of their assigned apartment
 - Document types: "bill" (red label) and "proof" (blue label). The uploader picks it in the `PaidBills.js` selector and it's sent as the `documentType` upload param (default "bill"); documents fetched by email are always "bill"
+- File access: only apartment photos are public. Every other file needs a login, a TENANT reaches only files of their assigned apartment (ticket photos only on tickets they created; no applicant documents), and denials return 403. Each route serves only its own kind of file. The frontend loads protected files through `frontend/src/authFiles.js`. Details are in `backend/AGENTS.md`.
 - Bill list shows per-month balance (green=overpaid, red=unpaid)
 - Summary section below bill list: Total Bills, Total Paid, Balance
 - Photos are downscaled client-side (max 1920px longest side, JPEG q0.85) before upload via `frontend/src/imageUtils.js` (`prepareImage`); HEIC/HEIF from iPhones are converted in-browser via `heic2any`. Applied to apartment, inspection-row, and ticket photo uploads. PDF/protocol/bill document uploads are NOT resized.
